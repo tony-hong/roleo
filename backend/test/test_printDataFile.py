@@ -1,12 +1,28 @@
+import os
 import pickle, pprint
 
-file_cake = open('sharevectors/cake-n.pcl', 'rb')
-file_animal = open('sharevectors/eat-subject-animal-n.pcl', 'rb')
+vectorDir = 'sharevectors'
+fileList = os.listdir(vectorDir)
+fileIndex = dict()
+dataIndex = dict()
 
-data1 = pickle.load(file_cake)
-print 'file: cake-n.pcl'
-pprint.pprint(data1)
+print 'File list is: '
+for i in range(len(fileList)):
+    fileIndex[i] = fileList[i]
+    print str(i) + ': ' + fileList[i]
+print '\n'
 
-data2 = pickle.load(file_animal)
-print 'file: eat-subject-animal-n.pcl'
-pprint.pprint(data2)
+print 'Obtaining data list...'
+for key, val in fileIndex.items():
+    f = open(vectorDir + '/' + val, 'rb')
+    dataIndex[val] = pickle.load(f)
+    print 'ID: ' + str(key) + '\t File name: ' + val
+print '\n'
+
+def printAll():
+    for key, val in dataIndex.items():
+        print 'Data for file ' + key
+        pprint.pprint(val)
+        print '\n'
+
+printAll()
