@@ -2,18 +2,32 @@ body {
   padding-top: 50px;
 }
 div.query {
-  padding-top: 200px;
-  text-align: center;
+  padding-top: 25px;
+  text-align: center
 }
 
-select.select_model {
+.select_role {
   width: 100px;
-  display:inline-block;
 }
 
-input.input_word {
+.input_word {
   width: 250px;
+  margin:0 !important;
+}
+
+div.layout_div {
+  width: 80px;
+}
+
+.left_align {
+  float: left;
+  padding: 0px;
+  margin: 0px;
+}
+
+div.inline_elements {
   display:inline-block;
+  vertical-align: top;
 }
 
 img.visualization {
@@ -26,6 +40,5 @@ img.visualization {
 div.visualization {
   padding-top: 25px;
   text-align: center;
-  display:none;
   padding-bottom: 25px;
 }
