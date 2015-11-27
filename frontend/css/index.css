@@ -30,13 +30,6 @@ div.inline_elements {
   vertical-align: top;
 }
 
-img.visualization {
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  padding-bottom: 25px;
-}
-
 div.visualization {
   padding-top: 25px;
   text-align: center;
