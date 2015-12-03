@@ -14,6 +14,8 @@
  *         Input data X and Y coordinate value should be in the interval [-1, 1]
  *         
  *         Invoke updateQuerySet(nodeArray) then everything should work as expected
+ *
+ *  TODO history of queries
  */
 
 /** Global Vars **/
@@ -68,9 +70,9 @@ function createNodesFromJSON(responseJSON_Object) {
 	var centeroid = new Node(new Point2D(), "centeroid", 1);
 	var q = set.queried;
 	var queried = new Node(new Point2D(q.x, q.y), q.word, q.cos, true);
-	nodes.push(centeroid);
-	nodes.push(queried);
-	for (i=0; i<set.nodes.length; ++i) {
+	nodes.push(centeroid); // [0]
+	nodes.push(queried);   // [1]
+	for (i=0; i<set.nodes.length; ++i) { // [2...N]
 		var e = set.nodes[i];
 		nodes.push(new Node(new Point2D(e.x, e.y), e.word, e.cos));
 	}
@@ -346,8 +348,6 @@ NodeElement.prototype.computeRGBA = function() {
 	}
 }
 NodeElement.prototype.draw = function(ctx) {
-
-	// TODO distinguish prototypical words, centeroid and queried word
 	// draw circle
 	var a = this.isMouseOver ? 1 : this.a;
 	ctx.fillStyle = rgbaToString(this.r, this.g, this.b, a);
@@ -359,6 +359,10 @@ NodeElement.prototype.draw = function(ctx) {
 	// draw text
 	TRANSFORMATION.resetTransform();
 	ctx.font = "20px Comic Sans MS";
+	// TODO also show difference between selectedNode and others
+	//      e.g. make text larger? more distinguishable
+	// TODO also mark text same color as node respectively
+	//      but how to distinguish queried node then???
 	ctx.fillStyle = this.node.needHighlight ? "red" : "grey";
 	ctx.textAlign = "center";
 	ctx.fillText(this.node.word, this.bbox.pos.x + this.bbox.w*0.5, this.bbox.pos.y - DEFAULT_NODE_RADIUS);
@@ -387,12 +391,21 @@ CanvasView.prototype.update = function() {
 	}
 }
 CanvasView.prototype.draw = function(ctx) {
+	// TODO move the selected node to the top
+	//      simply draw selected node at last so it appears at the top of the canvas
+	//      i.e. nodeElements[{0...N}\X]
+	//           nodeElements[X] -> selected word
 	// draw all nodes
 	for (i=0; i<this.nodeElements.length; ++i) {
 		this.nodeElements[i].draw(ctx);
 	}
 	// draw info if necessary
+	ctx.textBaseline = "bottom";
 	if (selectedNode) {
+		// don't even have to care which is the selected node
+		// simply draw it again at last
+		selectedNode.draw(ctx);
+		//
 		TRANSFORMATION.resetTransform();
 		ctx.font = "20px sans-serif";
 		ctx.fillStyle = "grey";
@@ -401,6 +414,16 @@ CanvasView.prototype.draw = function(ctx) {
 		ctx.fillText(text, WIDTH, HEIGHT);
 		TRANSFORMATION.updateTransform();
 	}
+	// always draw the info for the queried word
+	var queriedElementNode = this.nodeElements[1];
+	if (!queriedElementNode) alert("No queried word find in array[1]");
+	TRANSFORMATION.resetTransform();
+	ctx.font = "20px sans-serif";
+	ctx.fillStyle = "grey";
+	ctx.textAlign = "left";
+	var text = queriedElementNode.node.word + " : cos = " + queriedElementNode.node.cos;
+	ctx.fillText(text, 0, HEIGHT);
+	TRANSFORMATION.updateTransform();
 }
 
 /* Transformation handle the view transformation from node 2D projection coordinate to canvas coordinate */
