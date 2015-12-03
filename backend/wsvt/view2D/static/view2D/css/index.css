@@ -1,0 +1,44 @@
+body {
+  padding-top: 50px;
+}
+div.query {
+  padding-top: 25px;
+  text-align: center
+}
+
+.select_role {
+  width: 100px;
+}
+
+.input_word {
+  width: 250px;
+  margin:0 !important;
+}
+
+div.layout_div {
+  width: 80px;
+}
+
+.left_align {
+  float: left;
+  padding: 0px;
+  margin: 0px;
+}
+
+div.inline_elements {
+  display:inline-block;
+  vertical-align: top;
+}
+
+img.visualization {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  padding-bottom: 25px;
+}
+
+div.visualization {
+  padding-top: 25px;
+  text-align: center;
+  padding-bottom: 25px;
+}
