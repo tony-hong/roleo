@@ -67,7 +67,7 @@ function createNodesFromJSON(responseJSON_Object) {
 
 	if (set == null) alert("parseJSON object returns null");
 	var nodes = [];
-	var centeroid = new Node(new Point2D(), "centeroid", 1);
+	var centeroid = new Node(new Point2D(), "centroid", 1);
 	var q = set.queried;
 	var queried = new Node(new Point2D(q.x, q.y), q.word, q.cos, true);
 	nodes.push(centeroid); // [0]
