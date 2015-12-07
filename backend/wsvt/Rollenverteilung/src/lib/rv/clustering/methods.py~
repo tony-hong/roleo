@@ -1,0 +1,124 @@
+#!/usr/bin/python
+
+<<<<<<< .mine
+import os
+import sys
+from Tensor import Matricisation, LengthStore
+from Similarity import cosine_sim
+import pandas as pd
+import numpy
+#from nmf import *
+=======
+from Agglomerative import *
+>>>>>>> .r23
+
+def main() :
+
+<<<<<<< .mine
+def SimpleCentroid(mat, word, link):
+    return mat.getCentroid(word, 'word1', 'word0', {'link':mapping[link]}, n)
+
+def Centroid(mat, word, link) :
+    '''rho = 0.51 on Pado data'''
+    if word + '-' + link not in clusters :
+        clusters[word + '-' + link] = [mat.getCentroid(word, 'word1', 'word0', {'link':mapping[link]}, n)]
+    return None
+=======
+    import sys
+    from Tensor import Matricisation
+    from Similarity import cosine_sim
+>>>>>>> .r23
+
+    if len(sys.argv) != 8:
+        print >>sys.stderr, "Syntax: PadoEvaluateMatricised.py humanscores word0matrices word1matrices mappingfile #ofTopVectors MinClusters MaxClusters"
+        sys.exit(-1)
+
+    clusters = {}
+    padofilename = sys.argv[1]
+    matrixsources = {'word0':sys.argv[2], 'word1':sys.argv[3]}
+    mappingfilename = sys.argv[4]
+    n = int(sys.argv[5])
+    minclusters = int(sys.argv[6])
+    maxclusters = int(sys.argv[7])
+
+    with open(mappingfilename, "r") as mappingfile, Matricisation(matrixsources) as mat, open(padofilename, "r") as padofile:
+        mappingtext = mappingfile.readlines()
+        mapping = eval(" ".join(mappingtext))
+        #print mapping
+
+        for line in padofile:
+            words = line.split()
+            verb = words[0]
+            link = words[2]
+            filler = mat.getRow('word0', words[1])
+            #print "link is " + str(mapping[words[2]])
+            if words[0] + '-' + link not in clusters :
+                if maxclusters == 1 :
+                    clusters[verb + '-' + link] = [mat.getCentroid(verb, 'word1', 'word0', {'link':mapping[link]}, n)]
+                else :
+                    bothparts = mat.getMemberVectors(verb, 'word1', 'word0', {'link':mapping[link]}, n)
+                    top = bothparts[0]
+                    vectoword = bothparts[1]
+                    #print vectoword
+                    #if len(top) == 0 : clusters[verb + '-' + link] = None
+                    if minclusters >= len(top) : clusters[verb + '-' + link] = top
+                    else : 
+                        orig = undoSparseness(top)
+                        khat = Clustering(orig, minclusters, maxclusters)
+                        print >>sys.stderr, verb + '-' + link + " clusters: " + str(khat[1])
+                        (groups, humanGroups) = redoSparseness(top, vectoword, khat[1], khat[2])
+                        print >>sys.stderr, humanGroups
+                        clusters[verb + '-' + link] = groups
+
+            maxsim = "nan"
+            if verb + '-' + link in clusters :
+                for vector in clusters[verb + '-' + link] :
+                    sim = cosine_sim(vector, filler)
+                    #print "similarity found " + str(sim)
+                    if len(vector) == len(filler) : 
+                        if sim > 0.999 : continue
+                    if sim > 0.999 : print >>sys.stderr, "\t".join(words + [str(maxsim)])
+                    if maxsim == "nan" or sim > maxsim : maxsim = sim
+
+            print "\t".join(words + [str(maxsim)])
+            sys.stdout.flush()
+
+<<<<<<< .mine
+        # store best clusters
+        groups = []
+        for i in range(k) : groups.append([])
+        for i in range(n) : groups[list(wo[i]).index(max(wo[i]))].append(top[i])
+        for i in range(k) :
+            if len(groups[i]) == 0 : groups[i] = centroid
+            else : groups[i] = pd.concat(groups[i]).sum(level=[0,1])
+        clusters[word + '-' + link] = groups
+    return None
+
+if len(sys.argv) < 6:
+    print >>sys.stderr, "Syntax: PadoEvaluateMatricised.py padofile word0matrices word1matrices mappingfile N"
+    sys.exit(-1)
+
+mappingfilename = sys.argv[4]
+matrixsources = {'word0':sys.argv[2], 'word1':sys.argv[3]}
+padofilename = sys.argv[1]
+n = int(sys.argv[5])
+
+with open(mappingfilename, "r") as mappingfile, Matricisation(matrixsources) as matricisation, open(padofilename, "r") as padofile:
+    mappingtext = mappingfile.readlines()
+    mapping = eval(" ".join(mappingtext))
+    #print mapping
+
+    for line in padofile:
+        words = line.split()
+        row = matricisation.getRow('word0', words[1])
+        #print "link is " + str(mapping[words[2]])
+        Centroid(matricisation, words[0], words[2])
+
+        maxsim = cosine_sim(clusters[words[0] + "-" + words[2]][0], row)
+
+        print "\t".join(words + [str(maxsim)])
+        sys.stdout.flush()
+=======
+if __name__ == "__main__":
+    main()
+>>>>>>> .r23

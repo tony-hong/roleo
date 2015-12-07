@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import pandas as pd
+from Tensor import Tensor
+from numpy import log
+
+def go(infilename, outfilename):
+    with Tensor(infilename, "tensor") as mytensor:
+        print >>sys.stderr, "Getting counts total."
+        origtotal = float(mytensor.aggregateDimension("counts"))
+        print >>sys.stderr, "Counts total is %f." % origtotal
+
+        print >>sys.stderr, "Getting counts per link."
+        linkdf = mytensor.dimensionAggregate("link", "counts")
+        linkdf['probs'] = linkdf['counts']/origtotal
+        linkdf = linkdf.drop('counts', axis=1)
+        linkdf.columns = ['link', 'probslink']
+
+        print >>sys.stderr, "Getting counts per word0."
+        word0df = mytensor.dimensionAggregate("word0", "counts")
+        word0df['probs'] = word0df['counts']/origtotal
+        word0df = word0df.drop('counts', axis=1)
+        word0df.columns = ['word0', 'probsword0']
+
+        print >>sys.stderr, "Getting counts per word1."
+        word1df = mytensor.dimensionAggregate("word1", "counts")
+        word1df['probs'] = word1df['counts']/origtotal
+        word1df = word1df.drop('counts', axis=1)
+        word1df.columns = ['word1', 'probsword1']
+
+
+        #return (origtotal, word0df, linkdf, word1df)
+        def chunkProcessor(the_chunk):
+            mergedchunk = the_chunk.merge(word0df, how='left', on='word0').merge(linkdf, how='left', on='link').merge(word1df, how='left', on='word1')
+            mergedchunk['lmi'] = mergedchunk['counts'] * log(mergedchunk['counts'] / (mergedchunk['probslink'] * mergedchunk['probsword0'] * mergedchunk['probsword1'] * origtotal))
+            #mergedchunk['lmi'][mergedchunk['lmi'] < 0] = 0.0
+            mergedchunk = mergedchunk.drop('counts', axis=1).drop('probslink', axis=1).drop('probsword0', axis=1).drop('probsword1', axis=1)
+            mergedchunk = mergedchunk[mergedchunk['lmi'] > 0.0]
+
+            inversechunk = mergedchunk.copy()
+            inversechunk = inversechunk[['word1', 'link', 'word0', 'lmi']]
+            inversechunk.columns = ['word0', 'link', 'word1', 'lmi']
+            inversechunk['link'] = inversechunk['link'].map(lambda x: x+"-1")
+            return mergedchunk.append(inversechunk)
+
+        return mytensor.reprocess(outfilename, chunkProcessor, ["word0", "link", "word1"], {'word0':55, 'link':15, 'word1':55})
+
+if __name__ == "__main__":        
+    if len(sys.argv) < 3:
+        print >>sys.stderr, "Syntax: CreateLMITensorFromCountsTensor.py infile.h5 outfile.h5"
+        sys.exit(-1)
+        
+    infilename = sys.argv[1]
+    outfilename = sys.argv[2]
+
+    go(infilename, outfilename)
