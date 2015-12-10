@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    {% load staticfiles %}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,15 +13,34 @@
     <title>Web-based semantic visualization tool</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="css/index.css" rel="stylesheet">
 
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="js/index.js"></script>
-    <script src="js/view2D.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="{% static 'view2D/js/index.js' %}"></script>
+
+    <script src="{% static 'view2D/js/view2D.js' %}"></script>
+	   <!-- <script src="{% static 'view2D/js/xmlHttpRequest.js' %}"></script> -->
+    <script type="text/javascript">
+        //$().ready(updateQuerySet(createNodesFromJSON({{ data }})))
+        function buttonClicked(){
+          $.ajax({
+            url:      'query/',
+            type:     'POST',
+            data:     $('#myDiv').serialize(),
+            async:    false,
+            success:  function(response){
+              updateQuerySet(createNodesFromJSON(response))
+            }
+          });
+        }
+    </script>
+
   </head>
 
   <body>
@@ -39,7 +59,6 @@
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             <li class="active"><a href="index.html">Query</a></li>
-            <li><a href="">Change Model</a></li>
             <li><a href="">Help</a></li>
             <li><a href="">Contact</a></li>
           </ul>
@@ -63,35 +82,47 @@
           </div>
           <div class="inline_elements layout_div">
           </div><br>
+          <form id="myDiv">
+            <!-- second line for the actual input fields with tooltips-->
+            <div class="inline_elements input_word" data-toggle="tooltip_noun" title="Add a noun here!">
+              <input id="input_noun" type="text" name="noun" class="form-control"  placeholder="apple">
+            </div>
+            <div class="inline_elements" data-toggle="tooltip" title="Specify the role of the noun!">
+              <select id="select_role" class="form-control select_role" name='role'>
+                {% if role_list %}
+                  {% for r in role_list %}
+                      <option value="{{r.name}}">{{r.name}}</option>
+                  {% endfor %}
+                {% else %}
+                  <p>No roles are available.</p>
+                {% endif %}
+              </select>
+            </div>
+            <div class="inline_elements input_word" data-toggle="tooltip" title="Add a verb!">
+              <input id="input_verb" type="text" name="verb" class="form-control"  placeholder="eat">
+            </div>
+            <div class="inline_elements layout_div" data-toggle="tooltip_button" title="Send the query!">
+              <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:buttonClicked()>Submit Query</button>
+              <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            </div><br>
 
-          <!-- second line for the actual input fields with tooltips-->
-          <div class="inline_elements input_word" data-toggle="tooltip_noun" title="Add a noun here!">
-            <input type="text" name="noun" class="form-control"  placeholder="apple">
-          </div>
-          <div class="inline_elements" data-toggle="tooltip" title="Specify the role of the noun!">
-            <select class="form-control select_role">
-             <option value="agent">agent</option>
-             <option value="pattient">patient</option>
-            </select>
-          </div>
-          <div class="inline_elements input_word" data-toggle="tooltip" title="Add a verb!">
-            <input type="text" name="verb" class="form-control"  placeholder="eat">
-          </div>
-          <div class="inline_elements layout_div" data-toggle="tooltip_button" title="Send the query!">
-            <button type="submit" onclick="" class="btn btn-primary">Search</button>
-          </div><br>
-
-          <!-- third line for the checkboxes-->
-          <div class="inline_elements input_word checkbox">
-            <label class="left_align"><input type="checkbox" value="checkbox_noun" id="checkbox_noun" onclick="checkbox_constraint('checkbox_noun');">Noun more important</label>
-          </div>
-          <div class="inline_elements select_role checkbox">
-          </div>
-          <div class="inline_elements input_word checkbox">
-            <label class="left_align"><input type="checkbox" value="checkbox_verb" id="checkbox_verb" onclick="checkbox_constraint('checkbox_verb');">Verb more important</label>
-          </div>
-          <div class="inline_elements layout_div">
-          </div><br>
+            <!-- third line for the checkboxes-->
+            <div class="inline_elements input_word radio">
+              <label class="left_align">
+                <input type="radio" name="group1" value="noun">Noun selects verb
+              </label>
+            </div>
+            <div class="inline_elements select_role">
+            </div>
+            <div class="inline_elements input_word radio">
+              <label class="left_align">
+                <input type="radio" name="group1" value="verb">Verb selects noun
+              </label>
+            </div>
+            <div class="inline_elements layout_div">
+            </div>
+          </form>
+<br>
 
       <div class="visualization" id="visualization_result">
         <canvas id="myCanvas" width="600" height="600" style="border:1px solid #000000;">
@@ -111,5 +142,6 @@
     $('[data-toggle="tooltip_noun"]').tooltip({'placement': 'left'});
     $('[data-toggle="tooltip_button"]').tooltip({'placement': 'right'});
     </script>
+
   </body>
 </html>

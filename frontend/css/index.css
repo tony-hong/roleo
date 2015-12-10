@@ -16,13 +16,11 @@ div.query {
 }
 
 div.layout_div {
-  width: 80px;
+  width: 110px;
 }
 
 .left_align {
   float: left;
-  padding: 0px;
-  margin: 0px;
 }
 
 div.inline_elements {
