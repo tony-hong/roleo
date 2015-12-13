@@ -57,16 +57,20 @@ def process(verb='eat-v', semanticRole='A0', queryWord='apple'):
 
     # process query
     query = matrix.getRow('word0', queryWord)
-    queryCosine = cosine_sim(centroid, query)
 
     if query.get(semanticRole, 0) == 0:
+        print 'case: semanticRole is empty'
         queryFraction = 0
+        queryCosine = -1
     elif query.ix[semanticRole].get(verb, 0) == 0:
+        print 'case: verb is empty'
         queryFraction = 0
+        queryCosine = -1
     else:
         # ISSUE: add the self-count to the denominator
         queryFraction = query.ix[semanticRole].ix[verb] / (countOfCentroid + query.ix[semanticRole].ix[verb])
         # queryFraction = query.ix[semanticRole].ix[verb] / (countOfCentroid )
+        queryCosine = cosine_sim(centroid, query)
 
 
     q_r = pow((1 - queryFraction), power)
