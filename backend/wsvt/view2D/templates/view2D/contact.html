@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    {% load staticfiles %}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,7 +16,7 @@
     <link href="../../static/view2D/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="css/index.css" rel="stylesheet">
+    <link href="{% static 'view2D/css/contact.css' %}" rel="stylesheet">
   </head>
 
   <body>
@@ -29,7 +30,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="index.html">Web-based semantic visualization tool</a>
+          <a class="navbar-brand" href="../">Web-based semantic visualization tool</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
@@ -42,12 +43,14 @@
       </div>
     </nav>
 
-    <div class="container">
+    <div class="container padding_top_menu">
       <h2> Contact </h2>
+      <div style="width:72%;display:inline-block; float:left;">
       <p class="well">
+
       Vera Demberg<br><br>
       Head of Independent Research Group in Saarbrücken,<br>
-      Cluster of Excellence
+      Cluster of Excellence<br>
       Saarland University<br><br>
       email:   FIRSTNAME@coli.uni-saarland.de<br>
       address:<br>
@@ -58,6 +61,31 @@
       office: Campus C7 4, room 3.05<br>
       phone: +49 (0)681 302 70024<br>
       </p>
+    </div>
+    <div style="display:inline-block; float:right;" >
+      <img src="../../static/view2D/img/SFB-251-top.jpg" width="300" style="border: 1px solid lightgrey">
+    </div>
+    <br>
+        <div style="width:72%; display:inline-block;">
+        <p class="well">
+
+        Asad Sayeed<br><br>
+        TBF<br>
+        TBF<br>
+        Saarland University<br><br>
+        email:   FIRSTNAME@coli.uni-saarland.de<br>
+        address:<br>
+            Saarland University<br>
+            Campus C7.4<br>
+            66123 Saarbrücken<br>
+            Germany<br>
+        office: Campus C7 4, TBF<br>
+        phone: TBF<br>
+        </p>
+      </div>
+      <div style="display:inline-block; float:right;">
+            <img src="../../static/view2D/img/twitterprofile_400x400.jpg" height="300" width="300" style="border: 1px solid lightgrey">
+          </div>
     </div><!-- /.container -->
 
 
