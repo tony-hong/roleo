@@ -54,15 +54,39 @@ def process(verb='eat-v', semanticRole='A0', queryWord='apple'):
     centroid = pd.concat(memberVectors).sum(level=[0,1])
     countOfCentroid = centroid.ix[semanticRole].ix[verb]
 
+
+    # process query
+    query = matrix.getRow('word0', queryWord)
+
+    if query.get(semanticRole, 0) == 0:
+        print 'case: semanticRole is empty'
+        queryFraction = 0
+        queryCosine = -1
+    elif query.ix[semanticRole].get(verb, 0) == 0:
+        print 'case: verb is empty'
+        queryFraction = 0
+        queryCosine = -1
+    else:
+        # ISSUE: add the self-count to the denominator
+        queryFraction = query.ix[semanticRole].ix[verb] / (countOfCentroid + query.ix[semanticRole].ix[verb])
+        # queryFraction = query.ix[semanticRole].ix[verb] / (countOfCentroid )
+        queryCosine = cosine_sim(centroid, query)
+
+
+    q_r = pow((1 - queryFraction), power)
+    q_rad = math.acos(queryCosine) * 4
+    q_x = q_r * math.cos(q_rad)
+    q_y = q_r * math.sin(q_rad)
+
+
     for w in wordList:
+        if w == queryWord:
+            continue
         row = matrix.getRow('word0', w)
         topWords[w] = row
         wordCosine = cosine_sim(centroid, row)
 
-        if row.ix[semanticRole].get(verb, 0) == 0:
-            count = 0
-        else:
-            count = row.ix[semanticRole].ix[verb]
+        count = row.ix[semanticRole].ix[verb]
 
         fraction = float(count) / countOfCentroid
 
@@ -84,22 +108,6 @@ def process(verb='eat-v', semanticRole='A0', queryWord='apple'):
         })
 
     print 'result list is prepared'
-
-    # process query
-    query = matrix.getRow('word0', queryWord)
-    queryCosine = cosine_sim(centroid, query)
-
-    if query.ix[semanticRole].get(verb, 0) == 0:
-        queryFraction = 0
-    else:
-        # ISSUE: add the self-count to the denominator
-        queryFraction = query.ix[semanticRole].ix[verb] / (countOfCentroid + query.ix[semanticRole].ix[verb])
-        # queryFraction = query.ix[semanticRole].ix[verb] / (countOfCentroid )
-
-    q_r = pow((1 - queryFraction), power)
-    q_rad = math.acos(queryCosine) * 4
-    q_x = q_r * math.cos(q_rad)
-    q_y = q_r * math.sin(q_rad)
 
     result = {
         'queried' : 
