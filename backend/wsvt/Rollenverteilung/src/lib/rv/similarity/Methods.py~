@@ -1,0 +1,15 @@
+import os
+import sys
+import pandas as pd
+import numpy
+from Agglomerative import *
+from 
+
+def SimpleCentroid(mat, word, link):
+    return mat.getCentroid(word, 'word1', 'word0', {'link':mapping[link]}, n)
+
+def Centroid(mat, word, link) :
+    '''rho = 0.51 on Pado data'''
+    if word + '-' + link not in clusters :
+        clusters[word + '-' + link] = [mat.getCentroid(word, 'word1', 'word0', {'link':mapping[link]}, n)]
+    return None
