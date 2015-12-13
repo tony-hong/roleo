@@ -32,13 +32,15 @@
     <script type="text/javascript">
         //$().ready(updateQuerySet(createNodesFromJSON({{ data }})))
         function buttonClicked(){
+			setIsInProcessing(true);
           $.ajax({
             url:      'query/',
             type:     'POST',
             data:     $('#myDiv').serialize(),
-            async:    false,
+            async:    true,
             success:  function(response){
-              updateQuerySet(createNodesFromJSON(response))
+              updateQuerySet(createNodesFromJSON(response));
+			  setIsInProcessing(false);
             }
           });
         }

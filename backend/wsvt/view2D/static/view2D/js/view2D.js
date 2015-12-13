@@ -32,6 +32,8 @@ var prevMousePos;
 var mouseWheelCnt;
 var selectedNode;
 
+var isInProcessing = false;
+
 var debugCnt = 0;
 
 /* Default values */
@@ -95,7 +97,18 @@ function updateQuerySet(nodes) {
 }
 
 function draw() {
-	if (!isValid) {
+	// In processing
+	if (isInProcessing) {
+		clear();
+		TRANSFORMATION.resetTransform();
+		ctx.font = "30px Comic Sans MS";
+		ctx.textAlign = "center";
+		ctx.fillText("Is Querying...", 0.5*WIDTH, 0.5*HEIGHT);
+		TRANSFORMATION.updateTransform();
+		validate();
+	}
+	// After processing, visualize results
+	else if (!isValid) {
 		clear();
 		// recompute bboxes
 		for (i=0; i<view.nodeElements.length; ++i) {
@@ -120,6 +133,10 @@ function invalidate() {
 
 function validate() {
 	isValid = true;
+}
+
+function setIsInProcessing(b) {
+	isInProcessing = b;
 }
 
 window.onload = function() { 
@@ -341,8 +358,8 @@ NodeElement.prototype.computeRGBA = function() {
 			else if (H2 < 3) { this.r = 0.0; this.g = C; this.b = X; }
 			else if (H2 < 4) { this.r = 0.0; this.g = X; this.b = C; }
 			else if (H2 < 5) { this.r = X; this.g = 0.0; this.b = C; }
-			else if (H2 < 6) { this.r = C; this.g = 0.0; this.b = X; }
-			else alert("error when computing RGB mapping");
+			else if (H2 <= 6) { this.r = C; this.g = 0.0; this.b = X; }
+			else alert("error when computing RGB mapping " + deltaX + ":" + deltaY + ":" + H2);
 		}
 		this.a = 0.5;
 	}
