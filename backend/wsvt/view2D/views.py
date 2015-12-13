@@ -21,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def index(request):
-    
+
     template = loader.get_template('view2D/index.html')
     role_list = SemanticRole.objects.all()
     response = { 'role_list' : role_list }
@@ -29,6 +29,21 @@ def index(request):
     context = RequestContext(request, response)
 
     return HttpResponse(template.render(context))
+
+def help(request):
+    template = loader.get_template('view2D/help.html')
+
+    return HttpResponse(template.render())
+
+def contact(request):
+    template = loader.get_template('view2D/contact.html')
+
+    return HttpResponse(template.render())
+
+def impressum(request):
+    template = loader.get_template('view2D/impressum.html')
+
+    return HttpResponse(template.render())
 
 def query(request):
     verb = request.POST['verb'] + '-v'
@@ -49,10 +64,9 @@ def query(request):
 
     # result = json.dumps(result)
     # response = {
-    #     'role_list' : role_list, 
-    #     'data' : result, 
+    #     'role_list' : role_list,
+    #     'data' : result,
     # }
     # context = RequestContext(request, response)
 
     return JsonResponse(result)
-
