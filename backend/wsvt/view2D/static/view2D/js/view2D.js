@@ -39,7 +39,7 @@ var debugCnt = 0;
 /* Default values */
 var DEFAULT_NODE_RADIUS = 5;
 // TODO Bellow two vars should be inited dynamically according to the data set
-var MAX_MOUSE_WHEEL_CNT = 20;
+var MAX_MOUSE_WHEEL_CNT = 30;
 var MIN_MOUSE_WHEEL_CNT = -20;
 
 /** APIs **/
@@ -76,7 +76,8 @@ function createNodesFromJSON(responseJSON_Object) {
 	nodes.push(queried);   // [1]
 	for (i=0; i<set.nodes.length; ++i) { // [2...N]
 		var e = set.nodes[i];
-		nodes.push(new Node(new Point2D(e.x, e.y), e.word, e.cos));
+		//                                                 round to two digits
+		nodes.push(new Node(new Point2D(e.x, e.y), e.word, Math.round((e.cos + 0.00001) * 100) / 100));
 	}
 	return nodes;
 }
@@ -234,9 +235,13 @@ function addEventListners(canvas) {
 			// clear previous state
 			if (selectedNode) selectedNode.isMouseOver = false;
 			//
-			selectedNode = getSelectedNode(getMouse(e));
-			if (selectedNode) {
-				selectedNode.isMouseOver = true;
+			selectedNodes = getSelectedNode(getMouse(e));
+			if (selectedNodes.length == 1) {
+				selectedNodes[0].isMouseOver = true;
+				selectedNode = selectedNodes[0];
+			}
+			else if (selectedNodes.length > 1) {
+				// TODO
 			}
 			invalidate();
 		}
@@ -251,11 +256,11 @@ function addEventListners(canvas) {
 	});
 	
 	canvas.addEventListener('dblclick', function(e) {
-		var nodeElement = getSelectedNode(getMouse(e));
-		if (nodeElement) {
+		var nodeElements = getSelectedNode(getMouse(e));
+		if (nodeElements.length != 0) {
 			// translation move the current node to the center of the canvas
-			var offsetX = (0.5*WIDTH)  - (nodeElement.bbox.pos.x + nodeElement.bbox.w*0.5);
-			var offsetY = (0.5*HEIGHT) - (nodeElement.bbox.pos.y + nodeElement.bbox.h*0.5);
+			var offsetX = (0.5*WIDTH)  - (nodeElements[0].bbox.pos.x + nodeElements[0].bbox.w*0.5);
+			var offsetY = (0.5*HEIGHT) - (nodeElements[0].bbox.pos.y + nodeElements[0].bbox.h*0.5);
 			TRANSFORMATION.translationX += offsetX;
 			TRANSFORMATION.translationY += offsetY;
 			invalidate();
@@ -264,8 +269,17 @@ function addEventListners(canvas) {
 	
 	canvas.addEventListener('wheel', function(e) {
 		e.preventDefault(); // prevent browser get scrolled
-		mouseWheelCnt = Math.min(MAX_MOUSE_WHEEL_CNT, Math.max(MIN_MOUSE_WHEEL_CNT, mouseWheelCnt + normalizeWheelSpeed(e)));
+		var delta = normalizeWheelSpeed(e);
+		mouseWheelCnt = Math.min(MAX_MOUSE_WHEEL_CNT, Math.max(MIN_MOUSE_WHEEL_CNT, mouseWheelCnt + delta));
+		var pos = getMouse(e);
 		TRANSFORMATION.scale = Math.pow(1.05, mouseWheelCnt);
+		// Quality of Life improvement when zoom-in and zoom-out
+		if (mouseWheelCnt != MIN_MOUSE_WHEEL_CNT && mouseWheelCnt != MAX_MOUSE_WHEEL_CNT) {
+			var tx = 0.15*(pos.x - 0.5*WIDTH);
+			var ty = 0.15*(pos.y - 0.5*HEIGHT);
+			TRANSFORMATION.translationX -= tx;
+			TRANSFORMATION.translationY -= ty;
+		}
 		invalidate();
 	});
 	
@@ -275,13 +289,14 @@ function addEventListners(canvas) {
 
 /* Get the node which it's BBox contains current mouse position, return null if nothing get involved */
 function getSelectedNode(mousePos) {
+	var nodes = [];
 	if (!mousePos) alert("arg mousePos is null");
 	for (i=0; i<view.nodeElements.length; ++i) {
 		var nodeElement = view.nodeElements[i];
 		if (nodeElement.bbox.contains(mousePos))
-			return nodeElement;
+			nodes.push(nodeElement);
 	}
-	return null;
+	return nodes;
 }
 
 /* Get precise mouse position, reference: http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/ */
@@ -380,7 +395,7 @@ NodeElement.prototype.draw = function(ctx) {
 	//      e.g. make text larger? more distinguishable
 	// TODO also mark text same color as node respectively
 	//      but how to distinguish queried node then???
-	ctx.fillStyle = this.node.needHighlight ? "red" : "grey";
+	ctx.fillStyle = this.node.needHighlight ? "red" : rgbaToString(this.r, this.g, this.b, a);
 	ctx.textAlign = "center";
 	ctx.fillText(this.node.word, this.bbox.pos.x + this.bbox.w*0.5, this.bbox.pos.y - DEFAULT_NODE_RADIUS);
 	TRANSFORMATION.updateTransform();
