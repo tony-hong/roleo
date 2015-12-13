@@ -28,6 +28,7 @@ var querySet;
 var view;
 var isValid;
 var isDragging;
+var isOverlap;
 var prevMousePos;
 var mouseWheelCnt;
 var selectedNode;
@@ -61,6 +62,7 @@ function init(canvas2) {
 	//
 	isValid = false;
 	isDragging = false;
+	isOverlap = false;
 	mouseWheelCnt = 0;
 }
 
@@ -239,10 +241,14 @@ function addEventListners(canvas) {
 			if (selectedNodes.length == 1) {
 				selectedNodes[0].isMouseOver = true;
 				selectedNode = selectedNodes[0];
+				isOverlap = false;
 			}
 			else if (selectedNodes.length > 1) {
-				// TODO
+				selectedNodes[0].isMouseOver = true;
+				selectedNode = selectedNodes[0];
+				isOverlap = true;
 			}
+			else isOverlap = false;
 			invalidate();
 		}
 	});
@@ -270,6 +276,29 @@ function addEventListners(canvas) {
 	canvas.addEventListener('wheel', function(e) {
 		e.preventDefault(); // prevent browser get scrolled
 		var delta = normalizeWheelSpeed(e);
+		// handle wheel on overlap selection
+		if (isOverlap) {
+			selectedNodes = getSelectedNode(getMouse(e));
+			var curIndex = 0;
+			// find index if selectedNode is among the overlapped nodes, otherwise set it to first element
+			if (selectedNode) {
+				selectedNode.isMouseOver = false;
+				for (i=0; i<selectedNodes.length; ++i) {
+					if (selectedNode == selectedNodes[i]) {
+						curIndex = i;
+						break;
+					}
+				}
+			}
+			//
+			curIndex = (curIndex + (delta > 0 ? 1 : -1)) % selectedNodes.length;
+			if (curIndex < 0) curIndex = selectedNodes.length + curIndex;
+			selectedNode = selectedNodes[curIndex];
+			selectedNode.isMouseOver = true;
+			invalidate();
+			return;
+		}
+		// handle wheel on zooming
 		mouseWheelCnt = Math.min(MAX_MOUSE_WHEEL_CNT, Math.max(MIN_MOUSE_WHEEL_CNT, mouseWheelCnt + delta));
 		var pos = getMouse(e);
 		TRANSFORMATION.scale = Math.pow(1.05, mouseWheelCnt);
@@ -376,7 +405,7 @@ NodeElement.prototype.computeRGBA = function() {
 			else if (H2 <= 6) { this.r = C; this.g = 0.0; this.b = X; }
 			else alert("error when computing RGB mapping " + deltaX + ":" + deltaY + ":" + H2);
 		}
-		this.a = 0.5;
+		this.a = 0.3;
 	}
 }
 NodeElement.prototype.draw = function(ctx) {
@@ -457,6 +486,8 @@ CanvasView.prototype.draw = function(ctx) {
 	ctx.fillText(text, 0, HEIGHT);
 	TRANSFORMATION.updateTransform();
 }
+
+/* Overlapped nodes list */
 
 /* Transformation handle the view transformation from node 2D projection coordinate to canvas coordinate */
 function Transformation() {
