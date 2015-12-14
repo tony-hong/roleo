@@ -74,13 +74,13 @@ function createNodesFromJSON(responseJSON_Object) {
 	var nodes = [];
 	var centeroid = new Node(new Point2D(), "centroid", 1);
 	var q = set.queried;
-	var queried = new Node(new Point2D(q.x, q.y), q.word, q.cos, true);
+	var queried = new Node(new Point2D(q.x, q.y), q.word, Math.round((q.cos + 0.00001) * 10000) / 10000, true);
 	nodes.push(centeroid); // [0]
 	nodes.push(queried);   // [1]
 	for (i=0; i<set.nodes.length; ++i) { // [2...N]
 		var e = set.nodes[i];
 		//                                                 round to two digits
-		nodes.push(new Node(new Point2D(e.x, e.y), e.word, Math.round((e.cos + 0.00001) * 100) / 100));
+		nodes.push(new Node(new Point2D(e.x, e.y), e.word, Math.round((e.cos + 0.00001) * 10000) / 10000));
 	}
 	return nodes;
 }
@@ -406,7 +406,7 @@ NodeElement.prototype.computeRGBA = function() {
 			else if (H2 <= 6) { this.r = C; this.g = 0.0; this.b = X; }
 			else alert("error when computing RGB mapping " + deltaX + ":" + deltaY + ":" + H2);
 		}
-		this.a = 0.3;
+		this.a = 0.5;
 	}
 }
 NodeElement.prototype.draw = function(ctx) {
