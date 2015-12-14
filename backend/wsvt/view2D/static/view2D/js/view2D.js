@@ -60,6 +60,7 @@ function init(canvas2) {
 	//
 	view = new CanvasView();
 	//
+	selectedNode = null;
 	isValid = false;
 	isDragging = false;
 	isOverlap = false;
@@ -108,7 +109,7 @@ function draw() {
 		ctx.textAlign = "center";
 		ctx.fillText("Is Querying...", 0.5*WIDTH, 0.5*HEIGHT);
 		TRANSFORMATION.updateTransform();
-		validate();
+		invalidate();
 	}
 	// After processing, visualize results
 	else if (!isValid) {
