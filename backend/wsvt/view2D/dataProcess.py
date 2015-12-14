@@ -38,7 +38,7 @@ matrix = Matricisation({
 #         super(BusinessLogic, self).__init__()
 
     
-def process(verb='eat-v', semanticRole='A0', queryWord='apple'):
+def process(verb='eat-v', semanticRole='A0', queryWord='apple-n'):
     print 'process start...'
     # members[0]: vectors
     # members[1]: list of words
@@ -48,24 +48,25 @@ def process(verb='eat-v', semanticRole='A0', queryWord='apple'):
     print wordList
 
     resultList = []
+    queryFraction = 0
+    queryCosine = -1
 
     # ISSUE: double call of getMemberVectors, need improvement
     # centroid = matrix.getCentroid(verb, 'word1', 'word0', {'link':[semanticRole]})
     centroid = pd.concat(memberVectors).sum(level=[0,1])
     countOfCentroid = centroid.ix[semanticRole].ix[verb]
 
-
     # process query
     query = matrix.getRow('word0', queryWord)
 
-    if query.get(semanticRole, 0) == 0:
-        print 'case: semanticRole is empty'
-        queryFraction = 0
-        queryCosine = -1
+    print 'getting query finished'
+
+    if query.isnull().all():
+        # TODO: rasie exception
+        print 'case: query is empty'
     elif query.ix[semanticRole].get(verb, 0) == 0:
-        print 'case: verb is empty'
-        queryFraction = 0
-        queryCosine = -1
+        # TODO: rasie exception
+        print 'case: query.ix[semanticRole].ix[verb] is empty'
     else:
         # ISSUE: add the self-count to the denominator
         queryFraction = query.ix[semanticRole].ix[verb] / (countOfCentroid + query.ix[semanticRole].ix[verb])
