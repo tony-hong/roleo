@@ -127,7 +127,7 @@ function draw() {
 function clear(bbox2D) {
 	var bbox = bbox2D || new BBox2D();
 	TRANSFORMATION.resetTransform();
-	ctx.clearRect(bbox.pos.x, bbox.pos.x, bbox.w, bbox.h);
+	ctx.clearRect(bbox.pos.x, bbox.pos.y, bbox.w, bbox.h);
 	TRANSFORMATION.updateTransform();
 }
 
@@ -152,7 +152,7 @@ window.onload = function() {
 
 /** For Test Purpose **/
 function dummyUpdate() {
-	var centeroid = new Node(new Point2D(), "centeroid", 1);
+	var centeroid = new Node(new Point2D(), "centroid", 1);
 	var queried = new Node(new Point2D(0.515128023024, -0.853062236398), "teenager", 1, true); 
 	var n1 = new Node(new Point2D(0.002124, 0.011698), "i", 1);
 	var n2 = new Node(new Point2D(-0.172109, -0.081946), "he", 1);
@@ -240,13 +240,13 @@ function addEventListners(canvas) {
 			//
 			selectedNodes = getSelectedNode(getMouse(e));
 			if (selectedNodes.length == 1) {
-				selectedNodes[0].isMouseOver = true;
 				selectedNode = selectedNodes[0];
+				selectedNode.isMouseOver = true;
 				isOverlap = false;
 			}
 			else if (selectedNodes.length > 1) {
-				selectedNodes[0].isMouseOver = true;
 				selectedNode = selectedNodes[0];
+				selectedNode.isMouseOver = true;
 				isOverlap = true;
 			}
 			else isOverlap = false;
@@ -462,24 +462,18 @@ CanvasView.prototype.draw = function(ctx) {
 		this.nodeElements[i].draw(ctx);
 	}
 	// draw info if necessary
+	TRANSFORMATION.resetTransform();
 	ctx.textBaseline = "bottom";
 	if (selectedNode) {
-		// don't even have to care which is the selected node
-		// simply draw it again at last
-		selectedNode.draw(ctx);
-		//
-		TRANSFORMATION.resetTransform();
 		ctx.font = "20px sans-serif";
 		ctx.fillStyle = "grey";
 		ctx.textAlign = "right";
 		var text = selectedNode.node.word + " : cos = " + selectedNode.node.cos;
 		ctx.fillText(text, WIDTH, HEIGHT);
-		TRANSFORMATION.updateTransform();
 	}
 	// always draw the info for the queried word
 	var queriedElementNode = this.nodeElements[1];
 	if (!queriedElementNode) alert("No queried word find in array[1]");
-	TRANSFORMATION.resetTransform();
 	ctx.font = "20px sans-serif";
 	ctx.fillStyle = "grey";
 	ctx.textAlign = "left";
