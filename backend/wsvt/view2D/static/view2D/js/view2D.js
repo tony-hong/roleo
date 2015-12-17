@@ -69,7 +69,6 @@ function init(canvas2) {
 
 function createNodesFromJSON(responseJSON_Object) {
 	var set = responseJSON_Object;
-
 	if (set == null) alert("parseJSON object returns null");
 	var nodes = [];
 	var centeroid = new Node(new Point2D(), "centroid", 1);
@@ -82,6 +81,13 @@ function createNodesFromJSON(responseJSON_Object) {
 		//                                                 round to two digits
 		nodes.push(new Node(new Point2D(e.x, e.y), e.word, Math.round((e.cos + 0.00001) * 10000) / 10000));
 	}
+	// store session storage
+	if(typeof(Storage) !== "undefined") {
+		sessionStorage.prevQuery = JSON.stringify(responseJSON_Object);
+	} else {
+		// Sorry! No Web Storage support..
+	}
+	//
 	return nodes;
 }
 
@@ -146,7 +152,18 @@ function setIsInProcessing(b) {
 window.onload = function() { 
 	init(document.getElementById("myCanvas"));
 	addEventListners(canvas);
-	dummyUpdate();
+	// load session storage
+	if(typeof(Storage) !== "undefined") {
+		if (sessionStorage.prevQuery) {
+			updateQuerySet(createNodesFromJSON(JSON.parse(sessionStorage.prevQuery)));
+		}
+		else {
+			dummyUpdate();
+		}
+	} else {
+		dummyUpdate();
+	}
+	//
 	setInterval(draw, 30);
 }
 
