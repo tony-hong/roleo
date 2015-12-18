@@ -123,12 +123,12 @@ function draw() {
 }
 
 function drawProgressBar() {
+	clear();
 	var date = new Date();
 	var i = Math.round(2*(date.getSeconds() + date.getMilliseconds() / 1000)) % 4;
 	var str = "Is Querying";
 	for (ii=0; ii<i; ++ii) str += ".";
 	for (ii=0; ii<(3-i); ++i) str += " ";
-	clear();
 	TRANSFORMATION.resetTransform();
 	ctx.font = "30px Comic Sans MS";
 	ctx.textAlign = "center";
@@ -155,7 +155,8 @@ function setIsInProcessing(b) {
 	isInProcessing = b;
 }
 
-window.onload = function() { 
+// add to window.onload
+function loadView2D() { 
 	init(document.getElementById("myCanvas"));
 	addEventListners(canvas);
 	// load last query JSON string from session storage

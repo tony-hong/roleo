@@ -31,7 +31,11 @@
 	<script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
 	   <!-- <script src="{% static 'view2D/js/xmlHttpRequest.js' %}"></script> -->
     <script type="text/javascript">
-        //$().ready(updateQuerySet(createNodesFromJSON({{ data }})))
+		// window.onload can only be defined at here
+        window.onload = function() {
+			loadView2D(); // view2D.js
+			loadInputTextFilter(); // inputTextFilter.js
+		}
         function buttonClicked(){
 			setIsInProcessing(true);
           $.ajax({
