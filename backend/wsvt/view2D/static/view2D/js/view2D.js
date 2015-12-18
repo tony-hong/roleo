@@ -1,21 +1,19 @@
 /** Supporting for 2D visualization of WSVT **/
 
 /*
- *  2015.11.29 Fanyu Ye
+ *  2015.12.17 Fanyu Ye
  *
- *  TODO: set z-depth for all words, the selected word should be at the top
  *
  *  In order for this implementation to work:
- *  Usage: Each vector should be represented by a Node element, including centeroid vector
+ *  Usage: Each vector should be represented by a Node element, including centroid vector
  *         Queried Word is also a Node element with needHighlight set to true
- *         All nodes should be stored in an array, in which the first element must be centeroid
+ *         All nodes should be stored in an array, in which the first element must be centroid
  *
- *         Centeroid should by default at (0, 0)
+ *         Centroid should by default at (0, 0)
  *         Input data X and Y coordinate value should be in the interval [-1, 1]
  *         
  *         Invoke updateQuerySet(nodeArray) then everything should work as expected
  *
- *  TODO history of queries
  */
 
 /** Global Vars **/
@@ -81,7 +79,7 @@ function createNodesFromJSON(responseJSON_Object) {
 		//                                                 round to two digits
 		nodes.push(new Node(new Point2D(e.x, e.y), e.word, Math.round((e.cos + 0.00001) * 10000) / 10000));
 	}
-	// store session storage
+	// store JSON string into session storage
 	if(typeof(Storage) !== "undefined") {
 		sessionStorage.prevQuery = JSON.stringify(responseJSON_Object);
 	} else {
@@ -109,13 +107,7 @@ function updateQuerySet(nodes) {
 function draw() {
 	// In processing
 	if (isInProcessing) {
-		clear();
-		TRANSFORMATION.resetTransform();
-		ctx.font = "30px Comic Sans MS";
-		ctx.textAlign = "center";
-		ctx.fillText("Is Querying...", 0.5*WIDTH, 0.5*HEIGHT);
-		TRANSFORMATION.updateTransform();
-		invalidate();
+		drawProgressBar();
 	}
 	// After processing, visualize results
 	else if (!isValid) {
@@ -128,6 +120,20 @@ function draw() {
 		view.draw(ctx);
 		validate();
 	}
+}
+
+function drawProgressBar() {
+	var date = new Date();
+	var i = Math.round(2*(date.getSeconds() + date.getMilliseconds() / 1000)) % 4;
+	var str = "Is Querying";
+	for (ii=0; ii<i; ++ii) str += ".";
+	for (ii=0; ii<(3-i); ++i) str += " ";
+	clear();
+	TRANSFORMATION.resetTransform();
+	ctx.font = "30px Comic Sans MS";
+	ctx.textAlign = "center";
+	ctx.fillText(str, 0.5*WIDTH, 0.5*HEIGHT);
+	TRANSFORMATION.updateTransform();
 }
 
 function clear(bbox2D) {
@@ -152,7 +158,7 @@ function setIsInProcessing(b) {
 window.onload = function() { 
 	init(document.getElementById("myCanvas"));
 	addEventListners(canvas);
-	// load session storage
+	// load last query JSON string from session storage
 	if(typeof(Storage) !== "undefined") {
 		if (sessionStorage.prevQuery) {
 			updateQuerySet(createNodesFromJSON(JSON.parse(sessionStorage.prevQuery)));
