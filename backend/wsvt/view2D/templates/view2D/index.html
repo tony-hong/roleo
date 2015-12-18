@@ -28,6 +28,7 @@
     <script src="{% static 'view2D/js/index.js' %}"></script>
 
     <script src="{% static 'view2D/js/view2D.js' %}"></script>
+	<script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
 	   <!-- <script src="{% static 'view2D/js/xmlHttpRequest.js' %}"></script> -->
     <script type="text/javascript">
         //$().ready(updateQuerySet(createNodesFromJSON({{ data }})))
@@ -122,7 +123,7 @@
             </div>
             <div class="inline_elements input_word radio">
               <label class="left_align">
-                <input type="radio" name="group1" value="verb">Verb selects noun
+                <input type="radio" name="group1" value="verb" checked="checked">Verb selects noun
               </label>
             </div>
             <div class="inline_elements layout_div">
