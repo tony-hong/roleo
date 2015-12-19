@@ -76,13 +76,14 @@ function createNodesFromJSON(responseJSON_Object) {
 	var nodes = [];
 	var centeroid = new Node(new Point2D(), "centroid", 1);
 	var q = set.queried;
-	var queried = new Node(new Point2D(q.x, q.y), q.word, Math.round((q.cos + 0.00001) * 10000) / 10000, true);
+	//                                            substring remove "-n"                round to two digits
+	var queried = new Node(new Point2D(q.x, q.y), q.word.substring(0,q.word.length-2), Math.round((q.cos + 0.00001) * 10000) / 10000, true);
 	nodes.push(centeroid); // [0]
 	nodes.push(queried);   // [1]
 	for (i=0; i<set.nodes.length; ++i) { // [2...N]
 		var e = set.nodes[i];
-		//                                                 round to two digits
-		nodes.push(new Node(new Point2D(e.x, e.y), e.word, Math.round((e.cos + 0.00001) * 10000) / 10000));
+		//                                         substring remove "-n"                round to two digits
+		nodes.push(new Node(new Point2D(e.x, e.y), e.word.substring(0,e.word.length-2), Math.round((e.cos + 0.00001) * 10000) / 10000));
 	}
 	// store JSON string into session storage
 	if(typeof(Storage) !== "undefined") {
