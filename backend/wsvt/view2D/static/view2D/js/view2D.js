@@ -541,10 +541,14 @@ CanvasView.prototype.draw = function(ctx) {
 	//      simply draw selected node at last so it appears at the top of the canvas
 	//      i.e. nodeElements[{0...N}\X]
 	//           nodeElements[X] -> selected word
-	// draw all nodes
+	// draw all nodes except for the selected node
 	for (i=0; i<this.nodeElements.length; ++i) {
-		this.nodeElements[i].draw(ctx);
+		var nodeElement = this.nodeElements[i];
+		if (nodeElement != selectedNode)
+			nodeElement.draw(ctx);
 	}
+	// draw selectedNode at here to simply make it always on top
+	if (selectedNode) selectedNode.draw(ctx);
 	// draw info if necessary
 	TRANSFORMATION.resetTransform();
 	ctx.textBaseline = "bottom";
