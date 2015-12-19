@@ -17,21 +17,24 @@
  */
 
 /** Global Vars **/
-var TRANSFORMATION;
-var WIDTH;
-var HEIGHT;
-var canvas;
-var ctx;
-var querySet;
-var view;
-var isValid;
-var isDragging;
-var isOverlap;
-var prevMousePos;
-var mouseWheelCnt;
-var selectedNode;
+var TRANSFORMATION;    // Transformation object
+var WIDTH;             // Width of canvas
+var HEIGHT;            // Height of canvas
+var GLOBAL_OFFSET_X;   // Offset move origin from left-top corner to centre of the canvas
+var GLOBAL_OFFSET_Y;   // Offset move origin from left-top corner to centre of the canvas
+var canvas;            // Canvas object in index.html
+var ctx;               // 2D Context object in Canvas
+var querySet;          // Container stores all nodes(words) returned from a single query
+var view;              // Container stores all node views responsible for draw
+var isValid;           // Boolean tells should canvas redraw or not 
+var isDragging;        // Boolean tells whether the mouse is under dragging condition
+var isOverlap;         // Boolean tells whether mouse position is over overlap zone multiple nodes
+var prevMousePos;      // Position stores mouse position of previous tick
+var mouseWheelCnt;     // Scalar stores mouse wheel value similar as delta value
+var selectedNode;      // The current node get focused(mouse is over)
 
-var isInProcessing = false;
+var isInProcessing = false;  // Boolean tells current post request is still in processing not returned yet
+                             // Works only under async-request
 
 var debugCnt = 0;
 
@@ -52,9 +55,11 @@ function init(canvas2) {
 	ctx    = canvas.getContext('2d');
 	querySet = new QuerySet();
 	// move origin from upper-left corner to center of the canvas
+	GLOBAL_OFFSET_X = WIDTH   * 0.5;
+	GLOBAL_OFFSET_Y = HEIGHT  * 0.5;
 	TRANSFORMATION = new Transformation();
-	TRANSFORMATION.translationX += WIDTH  * 0.5;
-	TRANSFORMATION.translationY += HEIGHT * 0.5;
+	TRANSFORMATION.translationX += GLOBAL_OFFSET_X;
+	TRANSFORMATION.translationY += GLOBAL_OFFSET_Y;
 	//
 	view = new CanvasView();
 	//
@@ -116,6 +121,11 @@ function draw() {
 		for (i=0; i<view.nodeElements.length; ++i) {
 			view.nodeElements[i].bbox = view.nodeElements[i].computeBBox();
 		}
+		// recheck grids
+		// TODO check scale first, only checkGrids if scale changed
+		//      with setInterval 30 for draw(), do not need addtional check, won't influence performance
+		view.checkGrids();
+		//
 		TRANSFORMATION.updateTransform();
 		view.draw(ctx);
 		validate();
@@ -383,6 +393,7 @@ function NodeElement(node) {
 	this.r; this.g; this.b; this.a;
 	this.computeRGBA();
 	this.isMouseOver = false;
+	this.ifDrawText = true;
 	//alert(this.node.word + " " + rgbaToString(this.r, this.g, this.b, this.a));
 }
 NodeElement.prototype.computeBBox = function() {
@@ -443,16 +454,18 @@ NodeElement.prototype.draw = function(ctx) {
 	ctx.fill();
 	
 	// draw text
-	TRANSFORMATION.resetTransform();
-	ctx.font = "20px Comic Sans MS";
-	// TODO also show difference between selectedNode and others
-	//      e.g. make text larger? more distinguishable
-	// TODO also mark text same color as node respectively
-	//      but how to distinguish queried node then???
-	ctx.fillStyle = this.node.needHighlight ? "red" : rgbaToString(this.r, this.g, this.b, a);
-	ctx.textAlign = "center";
-	ctx.fillText(this.node.word, this.bbox.pos.x + this.bbox.w*0.5, this.bbox.pos.y - DEFAULT_NODE_RADIUS);
-	TRANSFORMATION.updateTransform();
+	if (this.ifDrawText || this.isMouseOver) { // not draw text for nodes being in same virtual grid to avoid heavy overlapping
+		TRANSFORMATION.resetTransform();
+		ctx.font = "20px Comic Sans MS";
+		// TODO also show difference between selectedNode and others
+		//      e.g. make text larger? more distinguishable
+		// TODO also mark text same color as node respectively
+		//      but how to distinguish queried node then???
+		ctx.fillStyle = this.node.needHighlight ? "red" : rgbaToString(this.r, this.g, this.b, a);
+		ctx.textAlign = "center";
+		ctx.fillText(this.node.word, this.bbox.pos.x + this.bbox.w*0.5, this.bbox.pos.y - DEFAULT_NODE_RADIUS);
+		TRANSFORMATION.updateTransform();
+	}
 	
 	// DEBUG BBOX
 	/*
@@ -474,6 +487,53 @@ CanvasView.prototype.update = function() {
 	if (!querySet) alert("querySet is null");
 	for (i=0; i<querySet.nodes.length; ++i) {
 		this.nodeElements.push(new NodeElement(querySet.nodes[i]));
+	}
+}
+CanvasView.prototype.checkGrids = function() {
+	// default grid size when scale is 1
+	// can be tuned for practical performance
+	var w = WIDTH  / 15.0;
+	var h = HEIGHT / 15.0;
+	// grid size after scale transformation
+	w = w * (1 / TRANSFORMATION.scale);
+	h = h * (1 / TRANSFORMATION.scale);
+	// uniform grids used to store nodeElements
+	var rows = Math.ceil(HEIGHT / h);
+	var cols = Math.ceil(WIDTH  / w);
+	var grids = [];
+	// init grids
+	for (x=0; x<cols; ++x) {
+		for (y=0; y<rows; ++y) {
+			var nodes = []
+			grids.push(nodes);
+		}
+	}
+	// iterate over all NodeElement.node.pos
+	for (i=0; i<this.nodeElements.length; ++i) {
+		var nodeElement = this.nodeElements[i];
+		var pos = nodeElement.node.pos;
+		var x = pos.x + GLOBAL_OFFSET_X;
+		var y = pos.y + GLOBAL_OFFSET_Y;
+		var ix = Math.floor(x / w);
+		var iy = Math.floor(y / h);
+		var index = ix + (iy * rows);
+		if (index >= grids.length) alert("out of bound array access in CanvasView.checkGrids()");
+		var nodes = grids[index];
+		// grid contains only current element, so draw text
+		if (nodes.length == 0) {
+			nodeElement.ifDrawText = true;
+		}
+		// grid already contains another element, do not draw text
+		else if (nodes.length == 1) {
+			nodeElement.ifDrawText = false;
+			nodes[0].ifDrawText = false;
+		}
+		// grid already contains other elements, do not draw text
+		else {
+			nodeElement.ifDrawText = false;
+		}
+		// push current element into the grid
+		nodes.push(nodeElement);
 	}
 }
 CanvasView.prototype.draw = function(ctx) {
