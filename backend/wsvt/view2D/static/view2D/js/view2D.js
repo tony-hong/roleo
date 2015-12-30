@@ -29,9 +29,11 @@ var view;              // Container stores all node views responsible for draw
 var isValid;           // Boolean tells should canvas redraw or not 
 var isDragging;        // Boolean tells whether the mouse is under dragging condition
 var isOverlap;         // Boolean tells whether mouse position is over overlap zone multiple nodes
+var isZoomIn;          // Boolean tells whether previous zoom event is in or out
 var prevMousePos;      // Position stores mouse position of previous tick
 var mouseWheelCnt;     // Scalar stores mouse wheel value similar as delta value
 var selectedNode;      // The current node get focused(mouse is over)
+
 
 var isInProcessing = false;  // Boolean tells current post request is still in processing not returned yet
                              // Works only under async-request
@@ -67,6 +69,7 @@ function init(canvas2) {
 	isValid = false;
 	isDragging = false;
 	isOverlap = false;
+	isZoomIn = true;
 	mouseWheelCnt = 0;
 }
 
@@ -125,7 +128,7 @@ function draw() {
 		// recheck grids
 		// TODO check scale first, only checkGrids if scale changed
 		//      with setInterval 30 for draw(), do not need addtional check, won't influence performance
-		view.checkGrids();
+		view.checkGrids(isZoomIn);
 		//
 		TRANSFORMATION.updateTransform();
 		view.draw(ctx);
@@ -143,6 +146,7 @@ function drawProgressBar() {
 	TRANSFORMATION.resetTransform();
 	ctx.font = "30px Comic Sans MS";
 	ctx.textAlign = "center";
+	ctx.fillStyle = "grey";
 	ctx.fillText(str, 0.5*WIDTH, 0.5*HEIGHT);
 	TRANSFORMATION.updateTransform();
 }
@@ -151,6 +155,8 @@ function clear(bbox2D) {
 	var bbox = bbox2D || new BBox2D();
 	TRANSFORMATION.resetTransform();
 	ctx.clearRect(bbox.pos.x, bbox.pos.y, bbox.w, bbox.h);
+	ctx.fillStyle = "black";
+	ctx.fillRect(bbox.pos.x, bbox.pos.y, bbox.w, bbox.h);
 	TRANSFORMATION.updateTransform();
 }
 
@@ -274,7 +280,11 @@ function addEventListners(canvas) {
 			if (selectedNode) selectedNode.isMouseOver = false;
 			//
 			selectedNodes = getSelectedNode(getMouse(e));
-			if (selectedNodes.length == 1) {
+			if (selectedNodes.length == 0) {
+				selectedNode = null;
+				isOverlap = false;
+			}
+			else if (selectedNodes.length == 1) {
 				selectedNode = selectedNodes[0];
 				selectedNode.isMouseOver = true;
 				isOverlap = false;
@@ -284,7 +294,6 @@ function addEventListners(canvas) {
 				selectedNode.isMouseOver = true;
 				isOverlap = true;
 			}
-			else isOverlap = false;
 			invalidate();
 		}
 	});
@@ -335,6 +344,7 @@ function addEventListners(canvas) {
 			return;
 		}
 		// handle wheel on zooming
+		isZoomIn = delta > 0 ? true : false;
 		mouseWheelCnt = Math.min(MAX_MOUSE_WHEEL_CNT, Math.max(MIN_MOUSE_WHEEL_CNT, mouseWheelCnt + delta));
 		var pos = getMouse(e);
 		TRANSFORMATION.scale = Math.pow(1.05, mouseWheelCnt);
@@ -348,8 +358,20 @@ function addEventListners(canvas) {
 		invalidate();
 	});
 	
-    //fixes a problem where double clicking causes text to get selected on the canvas
-    //canvas.addEventListener('selectstart', function(e) { e.preventDefault(); return false; }, false);
+    // fixes a problem where double clicking causes text to get selected on the canvas
+    canvas.addEventListener('selectstart', function(e) { e.preventDefault(); return false; }, false);
+	
+	// add image downloader listener
+	var dlBtn = document.getElementById("downloadBtn");
+	if (!dlBtn) alert("getElementById(\"downloadBtn\") failed!");
+	dlBtn.addEventListener('click', function(e) {
+		var dlA = document.getElementById("downloadA");
+		if (!dlA) alert("getElementById(\"downloadA\") failed!");
+		// TODO change suffix using a dropdown menu
+		dlA.href = canvas.toDataURL('image/jpeg');
+		dlA.download = "WSVT_Result.jpeg" ;
+		dlA.click();
+	});;
 }
 
 /* Get the node which it's BBox contains current mouse position, return null if nothing get involved */
@@ -490,17 +512,17 @@ CanvasView.prototype.update = function() {
 		this.nodeElements.push(new NodeElement(querySet.nodes[i]));
 	}
 }
-CanvasView.prototype.checkGrids = function() {
+CanvasView.prototype.checkGrids = function(isZoomIn) {
 	// default grid size when scale is 1
 	// can be tuned for practical performance
-	var w = WIDTH  / 15.0;
-	var h = HEIGHT / 15.0;
+	var w = WIDTH  / 10.0;
+	var h = HEIGHT / 10.0;
 	// grid size after scale transformation
 	w = w * (1 / TRANSFORMATION.scale);
 	h = h * (1 / TRANSFORMATION.scale);
 	// uniform grids used to store nodeElements
-	var rows = Math.ceil(HEIGHT / h);
-	var cols = Math.ceil(WIDTH  / w);
+	var rows = Math.ceil(HEIGHT / h) + 1;
+	var cols = Math.ceil(WIDTH  / w) + 1;
 	var grids = [];
 	// init grids
 	for (x=0; x<cols; ++x) {
@@ -513,8 +535,9 @@ CanvasView.prototype.checkGrids = function() {
 	for (i=0; i<this.nodeElements.length; ++i) {
 		var nodeElement = this.nodeElements[i];
 		var pos = nodeElement.node.pos;
-		var x = pos.x + GLOBAL_OFFSET_X;
-		var y = pos.y + GLOBAL_OFFSET_Y;
+		// TODO offset another half grid would be better?
+		var x = pos.x + GLOBAL_OFFSET_X + 0.5*w;
+		var y = pos.y + GLOBAL_OFFSET_Y + 0.5*h;
 		var ix = Math.floor(x / w);
 		var iy = Math.floor(y / h);
 		var index = ix + (iy * rows);
@@ -522,16 +545,20 @@ CanvasView.prototype.checkGrids = function() {
 		var nodes = grids[index];
 		// grid contains only current element, so draw text
 		if (nodes.length == 0) {
-			nodeElement.ifDrawText = true;
+			if (isZoomIn)
+				nodeElement.ifDrawText = true;
 		}
 		// grid already contains another element, do not draw text
 		else if (nodes.length == 1) {
-			nodeElement.ifDrawText = false;
-			nodes[0].ifDrawText = false;
+			if (!isZoomIn) {
+				nodeElement.ifDrawText = false;
+				nodes[0].ifDrawText = false;
+			}
 		}
 		// grid already contains other elements, do not draw text
 		else {
-			nodeElement.ifDrawText = false;
+			if (!isZoomIn)
+				nodeElement.ifDrawText = false;
 		}
 		// push current element into the grid
 		nodes.push(nodeElement);
