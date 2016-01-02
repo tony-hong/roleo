@@ -18,7 +18,9 @@ from django.contrib import admin
 import view2D
 
 urlpatterns = [
+    # Using view2D as index by default
+    # url(r'^$', include('view2D.urls')),
+
     url(r'^admin/', include(admin.site.urls)),
     url(r'^view2D/', include('view2D.urls')),
-    url(r'^$/', include('view2D.urls')),
 ]
