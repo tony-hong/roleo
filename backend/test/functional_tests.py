@@ -2,6 +2,6 @@ from selenium import webdriver
 
 browser = webdriver.Firefox()
 
-browser.get('http://localhost:8000')
+browser.get('http://localhost:8000/view2D')
 
-assert 'Django' in browser.title
+assert 'Web-based semantic visualization tool' in browser.title
