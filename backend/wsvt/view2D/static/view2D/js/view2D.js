@@ -78,13 +78,13 @@ function createNodesFromJSON(responseJSON_Object) {
 	if (set == null) alert("parseJSON object returns null");
 	var nodes = [];
 	var centeroid = new Node(new Point2D(), "centroid", 1);
+	nodes.push(centeroid); // [0]
 	var q = set.queried;
-	if (q.word != "") {
+	if (q != null) { // handle queried == null properly
 		//                                            substring remove "-n"                round to two digits
 		var queried = new Node(new Point2D(q.x, q.y), q.word.substring(0,q.word.length-2), Math.round((q.cos + 0.00001) * 10000) / 10000, true);
+		nodes.push(queried);   // [1]
 	}
-	nodes.push(centeroid); // [0]
-	nodes.push(queried);   // [1]
 	for (i=0; i<set.nodes.length; ++i) { // [2...N]
 		var e = set.nodes[i];
 		//                                         substring remove "-n"                round to two digits
@@ -175,7 +175,7 @@ function setIsInProcessing(b) {
 }
 
 // add to window.onload
-function loadView2D() { 
+function loadView2D() {
 	init(document.getElementById("myCanvas"));
 	addEventListners(canvas);
 	// load last query JSON string from session storage
