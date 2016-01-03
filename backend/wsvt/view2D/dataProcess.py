@@ -145,7 +145,6 @@ def process(verb, noun, semanticRole, group):
         }
     else:
         result = {
-            'queried' : '', 
             'nodes' : resultList
         }
 
