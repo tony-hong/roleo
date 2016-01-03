@@ -28,21 +28,42 @@ simularities = dict()
 counts = dict()
 fractions = dict()
 power = 10
+
 matrix = Matricisation({
     'word0' : os.path.join(BASE_DIR, 'wackylmi-malt-v2-36K.word0.h5'),
     'word1' : os.path.join(BASE_DIR, 'wackylmi-malt-v2-36K.word1.h5') 
 })
-# class BusinessLogic(object):
-#     """docstring for BusinessLogic"""
-#     def __init__(self):
-#         super(BusinessLogic, self).__init__()
 
-    
-def process(verb='eat-v', semanticRole='A0', queryWord='apple-n'):
+
+def process(verb, noun, semanticRole, group):
     print 'process start...'
+
+    double = False
+    if group == 'noun':
+        if noun:
+            query0 = noun + '-n'
+            semanticRole = semanticRole + '-1'
+            if verb:
+                query1 = verb + '-v'
+                double = True
+        else:
+            # EXCEPTION
+            print 'case: noun is empty'
+    elif group == 'verb':
+        if verb:
+            query0 = verb + '-v'
+            if noun:
+                query1 = noun + '-n'
+                double = True
+        else:
+            # EXCEPTION
+            print 'case: verb is empty'
+    else:
+        print 'internal error!'
+
     # members[0]: vectors
     # members[1]: list of words
-    memberVectors, wordList = matrix.getMemberVectors(verb, 'word1', 'word0', {'link':[semanticRole]})
+    memberVectors, wordList = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]})
 
     print 'getMemberVectors finished...'
     print wordList
@@ -52,42 +73,43 @@ def process(verb='eat-v', semanticRole='A0', queryWord='apple-n'):
     queryCosine = -1
 
     # ISSUE: double call of getMemberVectors, need improvement
-    # centroid = matrix.getCentroid(verb, 'word1', 'word0', {'link':[semanticRole]})
+    # centroid = matrix.getCentroid(query0, 'word1', 'word0', {'link':[semanticRole]})
     centroid = pd.concat(memberVectors).sum(level=[0,1])
-    countOfCentroid = centroid.ix[semanticRole].ix[verb]
+    # TODO
+    countOfCentroid = centroid.ix[semanticRole].ix[query0]
 
-    # process query
-    query = matrix.getRow('word0', queryWord)
+    if double:
+        # process query
+        query = matrix.getRow('word0', query1)
 
-    print 'getting query finished'
+        print 'getting query finished'
 
-    if query.isnull().all():
-        # TODO: rasie exception
-        print 'case: query is empty'
-    elif query.ix[semanticRole].get(verb, 0) == 0:
-        # TODO: rasie exception
-        print 'case: query.ix[semanticRole].ix[verb] is empty'
-    else:
-        # ISSUE: add the self-count to the denominator
-        queryFraction = query.ix[semanticRole].ix[verb] / (countOfCentroid + query.ix[semanticRole].ix[verb])
-        # queryFraction = query.ix[semanticRole].ix[verb] / (countOfCentroid )
-        queryCosine = cosine_sim(centroid, query)
+        if query.isnull().all():
+            # TODO: raise exception
+            print 'case: query is empty'
+        elif query.ix[semanticRole].get(query0, 0) == 0:
+            # TODO: raise exception
+            print 'case: query.ix[semanticRole].ix[query0] is empty'
+        else:
+            # ISSUE: add the self-count to the denominator
+            queryFraction = query.ix[semanticRole].ix[query0] / (countOfCentroid + query.ix[semanticRole].ix[query0])
+            # queryFraction = query.ix[semanticRole].ix[query0] / (countOfCentroid )
+            queryCosine = cosine_sim(centroid, query)
 
-
-    q_r = pow((1 - queryFraction), power)
-    q_rad = math.acos(queryCosine) * 4
-    q_x = q_r * math.cos(q_rad)
-    q_y = q_r * math.sin(q_rad)
+        q_r = pow((1 - queryFraction), power)
+        q_rad = math.acos(queryCosine) * 4
+        q_x = q_r * math.cos(q_rad)
+        q_y = q_r * math.sin(q_rad)
 
 
     for w in wordList:
-        if w == queryWord:
+        if double and w == query1:
             continue
         row = matrix.getRow('word0', w)
         topWords[w] = row
         wordCosine = cosine_sim(centroid, row)
 
-        count = row.ix[semanticRole].ix[verb]
+        count = row.ix[semanticRole].ix[query0]
 
         fraction = float(count) / countOfCentroid
 
@@ -110,42 +132,27 @@ def process(verb='eat-v', semanticRole='A0', queryWord='apple-n'):
 
     print 'result list is prepared'
 
-    result = {
-        'queried' : 
-        {
-            'y'    : q_y,
-            'x'    : q_x,
-            'cos'  : queryCosine,
-            'word' : queryWord,
-        }, 
-        'nodes' : resultList
-    }
+    if double:
+        result = {
+            'queried' : 
+            {
+                'y'    : q_y,
+                'x'    : q_x,
+                'cos'  : queryCosine,
+                'word' : query1,
+            }, 
+            'nodes' : resultList
+        }
+    else:
+        result = {
+            'queried' : '', 
+            'nodes' : resultList
+        }
 
     print 'result creating is prepared'
 
     return result
 
-# def printSims_Counts():
-#     for w in printingList:
-#         sub = 20
-#         s = str.ljust(w, sub)
-#         print 'word: %s simularity:\t %f \t count:\t %d \t fraction:\t %f' % (s, simularities[w], counts[w], fractions[w])
-
-# printSims_Counts()
-
-# def printCoordinates():
-#     for w in wordList:
-#         sub = 20
-#         s = str.ljust(w, sub)
-#         x = (1 - simularities[w]) * 100
-#         y = (1 - fractions[w]) * 100
-#         r = math.sqrt(math.pow(x, 2) + math.pow(y, 2))
-#         rad = math.atan(y / x) * 4 # / (2 * math.pi) * 360 # degree
-#         x = r * math.cos(rad)
-#         y = r * math.sin(rad)
-#         X.append(x)
-#         Y.append(y)
-#         # print 'word: %s x:\t %f \t y:\t %f \t r:\t %f \t deg:\t %f' % (s, x, y, r, rad)
 
 def printCoordinates():
     X = []
@@ -163,8 +170,7 @@ def printCoordinates():
 
     print X
     print Y
-    print 'queryWord: \t' + queryWord + '\t cosine_sim: \t' + str(queryCosine) + '\tx: \t' + str(q_x) + '\ty: \t' + str(q_y)
-
+    print 'query1: \t' + query1 + '\t cosine_sim: \t' + str(queryCosine) + '\tx: \t' + str(q_x) + '\ty: \t' + str(q_y)
 
 def plotG():
     plt.plot(0, 0, 'ro')
