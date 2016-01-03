@@ -7,21 +7,7 @@ from django.template import RequestContext, loader
 from models import SemanticRole
 from dataProcess import *
 
-
-'''
-import os
-import math
-import pandas as pd
-
-from rv.structure.Tensor import Matricisation
-from rv.similarity.Similarity import cosine_sim
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-'''
-
-
 def index(request):
-
     template = loader.get_template('view2D/index.html')
     role_list = SemanticRole.objects.all()
     response = { 'role_list' : role_list }
@@ -46,27 +32,21 @@ def impressum(request):
     return HttpResponse(template.render())
 
 def query(request):
-    verb = request.POST['verb'] + '-v'
+    verb = request.POST['verb']
     role = request.POST['role']
-    noun = request.POST['noun'] + '-n'
+    noun = request.POST['noun']
+    group = request.POST['group1']
+    result = {}
 
-    if not (verb and noun):
-        print 'one word is empty'
     print 'v: ' + verb
     print 'r: ' + role
     print 'n: ' + noun
+    print 'group: ' + group
 
-    # logic = Logic()
-    result = process(verb, role, noun)
+    if not (verb or noun):
+        # EXCEPTION
+        print 'case: both words is empty'
 
-    # template = loader.get_template('view2D/index.html')
-    # role_list = SemanticRole.objects.all()
-
-    # result = json.dumps(result)
-    # response = {
-    #     'role_list' : role_list,
-    #     'data' : result,
-    # }
-    # context = RequestContext(request, response)
+    result = process(verb, noun, role, group)
 
     return JsonResponse(result)
