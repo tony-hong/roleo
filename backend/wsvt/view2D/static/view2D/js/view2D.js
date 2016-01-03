@@ -584,7 +584,7 @@ CanvasView.prototype.draw = function(ctx) {
 	ctx.textBaseline = "bottom";
 	if (selectedNode) {
 		ctx.font = "20px sans-serif";
-		ctx.fillStyle = "grey";
+		ctx.fillStyle = rgbaToString(selectedNode.r, selectedNode.g, selectedNode.b, 1);
 		ctx.textAlign = "right";
 		var text = selectedNode.node.word + " : cos = " + selectedNode.node.cos;
 		ctx.fillText(text, WIDTH, HEIGHT);
@@ -593,7 +593,7 @@ CanvasView.prototype.draw = function(ctx) {
 	var queriedElementNode = this.nodeElements[1];
 	if (!queriedElementNode) alert("No queried word find in array[1]");
 	ctx.font = "20px sans-serif";
-	ctx.fillStyle = "grey";
+	ctx.fillStyle = "red";
 	ctx.textAlign = "left";
 	var text = queriedElementNode.node.word + " : cos = " + queriedElementNode.node.cos;
 	ctx.fillText(text, 0, HEIGHT);
