@@ -6,12 +6,12 @@ div.query {
   text-align: center
 }
 
-.select_role {
-  width: 100px;
+.select_elements {
+  width: 150px;
 }
 
 .input_word {
-  width: 250px;
+  width: 150px;
   margin:0 !important;
 }
 
@@ -32,4 +32,13 @@ div.visualization {
   padding-top: 25px;
   text-align: center;
   padding-bottom: 25px;
+}
+
+.row{
+    overflow: hidden;
+}
+
+[class*="col-"]{
+    margin-bottom: -99999px;
+    padding-bottom: 99999px;
 }

@@ -66,30 +66,25 @@
         </div><!--/.nav-collapse -->
       </div>
     </nav>
-    <div style="display:inline-block; width:9%"></div>
-    <div style="display:inline-block; width:80%">
-      <div class="query" id="query_form">
+    <div class="container-fluid">
+      <div class="row">
+      <div class="col-sm-2" style="background-color:lavender; height:100%;">
+      <div id="query_form">
           <h1>WSVT</h1>
 
-          <!-- first line with the descriptions for the input fields-->
-          <div class="inline_elements  input_word">
-            <span class="left_align">Noun:</span>
-          </div>
-          <div class="inline_elements select_role">
-            <span class="left_align">Role:</span>
-          </div>
-          <div class="inline_elements input_word">
-            <span class="left_align">Verb:</span>
-          </div>
-          <div class="inline_elements layout_div">
-          </div><br>
           <form id="myDiv">
-            <!-- second line for the actual input fields with tooltips-->
             <div class="inline_elements input_word" data-toggle="tooltip_noun" title="Add a noun here!">
+              <span class="left_align">Noun:</span>
               <input id="input_noun" type="text" name="noun" class="form-control"  placeholder="apple">
-            </div>
+              <div class="inline_elements input_word radio">
+                <label class="left_align">
+                  <input type="radio" name="group1" value="noun">Noun selects verb
+                </label>
+              </div>
+            </div><br><br>
             <div class="inline_elements" data-toggle="tooltip" title="Specify the role of the noun!">
-              <select id="select_role" class="form-control select_role" name='role'>
+              <span class="left_align">Role:</span>
+              <select id="select_role" class="form-control select_elements" name='role'>
                 {% if role_list %}
                   {% for r in role_list %}
                       <option value="{{r.name}}">{{r.name}}</option>
@@ -98,57 +93,47 @@
                   <p>No roles are available.</p>
                 {% endif %}
               </select>
-            </div>
+            </div><br><br>
             <div class="inline_elements input_word" data-toggle="tooltip" title="Add a verb!">
+              <span class="left_align">Verb:</span>
               <input id="input_verb" type="text" name="verb" class="form-control"  placeholder="eat">
-            </div>
+              <div class="inline_elements input_word radio">
+                <label class="left_align">
+                  <input type="radio" name="group1" value="verb">Verb selects noun
+                </label>
+            </div></div><br><br>
             <div class="inline_elements layout_div" data-toggle="tooltip_button" title="Send the query!">
               <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:buttonClicked()>Submit Query</button>
               <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-            </div><br>
-
-            <!-- third line for the radio buttons-->
-            <div class="inline_elements input_word radio">
-              <label class="left_align">
-                <input type="radio" name="group1" value="noun">Noun selects verb
-              </label>
-            </div>
-            <div class="inline_elements select_role">
-            </div>
-            <div class="inline_elements input_word radio">
-              <label class="left_align">
-                <input type="radio" name="group1" value="verb">Verb selects noun
-              </label>
-            </div>
-            <div class="inline_elements layout_div">
+            </div><br><br>
+            <div class="select_elements">
+                Change Model:
+                <select class="form-control" name='model'>
+                  <option value="model1">Model 1</option>
+                  <option value="model2">Model 2</option>
+                  <option value="model3">Model 3</option>
+                </select>
+              </div>
             </div>
           </form>
 
-          </div><br>
-
+          </div>
+      <div class="col-sm-10">
       <div class="visualization" id="visualization_result">
         <canvas id="myCanvas" width="600" height="600" style="border:1px solid #000000;">
     			This text is displayed if your browser does not support HTML5 Canvas.
-    		</canvas><br>
+    		</canvas><br><br>
         <button type="submit" class="btn btn-primary">Download Result</button>
-      </div>
+      </div></div>
     </div><!-- /.container -->
 
-    <div style="display:inline-block; float:right; width:9%;">
-        Change Model:
-        <select class="form-control" name='model'>
-          <option value="model1">Model 1</option>
-          <option value="model2">Model 2</option>
-          <option value="model3">Model 3</option>
-        </select>
-      </div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
 
     <script>
-    $('[data-toggle="tooltip"]').tooltip({'placement': 'top'});
-    $('[data-toggle="tooltip_noun"]').tooltip({'placement': 'left'});
+    $('[data-toggle="tooltip"]').tooltip({'placement': 'right'});
+    $('[data-toggle="tooltip_noun"]').tooltip({'placement': 'right'});
     $('[data-toggle="tooltip_button"]').tooltip({'placement': 'right'});
     </script>
 
