@@ -96,10 +96,21 @@ def process(verb, noun, semanticRole, group):
             # queryFraction = query.ix[semanticRole].ix[query0] / (countOfCentroid )
             queryCosine = cosine_sim(centroid, query)
 
-        q_r = pow((1 - queryFraction), power)
-        q_rad = math.acos(queryCosine) * 4
-        q_x = q_r * math.cos(q_rad)
-        q_y = q_r * math.sin(q_rad)
+        # TODO: Find a better mapping
+        # Type 1
+        # q_r = pow((1 - queryFraction), power)
+        # q_rad = math.acos(queryCosine) * 4
+
+        # Type 2
+        x = math.pow(queryFraction, 0.4)
+        y = math.pow(queryCosine, 1.25)
+        r = math.sqrt(math.pow(1 - x, 2) + math.pow(1 - y, 2)) / 2
+        if x == 0:
+            rad = math.pi / 2
+        else:
+            rad = math.atan(y / x) * 4
+        q_x = r * math.cos(rad)
+        q_y = r * math.sin(rad)
 
 
     for w in wordList:
@@ -113,8 +124,17 @@ def process(verb, noun, semanticRole, group):
 
         fraction = float(count) / countOfCentroid
 
-        rad = math.acos(wordCosine) * 4
-        r = pow((1 - fraction), power)
+        # TODO: Find a better mapping
+        # Type 1
+        # rad = math.acos(wordCosine) * 4
+        # r = pow((1 - fraction), power)
+
+        # Type 2
+        x = math.pow(fraction, 0.4)
+        y = math.pow(wordCosine, 1.25)
+        r = math.sqrt(math.pow(1 - x, 2) + math.pow(1 - y, 2)) / 2
+        rad = math.atan(y / x) * 4
+
         x = r * math.cos(rad)
         y = r * math.sin(rad)
 
