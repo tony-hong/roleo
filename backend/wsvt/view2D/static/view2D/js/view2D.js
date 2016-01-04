@@ -593,7 +593,7 @@ CanvasView.prototype.draw = function(ctx) {
 	// if it exist
 	var queriedElementNode = this.nodeElements[1];
 	if (!queriedElementNode) alert("No queried word find in array[1]");
-	if (queriedElementNode.needHighlight == true) {
+	if (queriedElementNode.node.needHighlight == true) {
 		ctx.font = "20px sans-serif";
 		ctx.fillStyle = "red";
 		ctx.textAlign = "left";
