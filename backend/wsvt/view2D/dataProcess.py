@@ -70,7 +70,7 @@ def process(verb, noun, semanticRole, group):
 
     resultList = []
     queryFraction = 0
-    queryCosine = -1
+    queryCosine = 0
 
     # ISSUE: double call of getMemberVectors, need improvement
     # centroid = matrix.getCentroid(query0, 'word1', 'word0', {'link':[semanticRole]})
