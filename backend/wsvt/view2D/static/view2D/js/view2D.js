@@ -157,8 +157,8 @@ function clear(bbox2D) {
 	var bbox = bbox2D || new BBox2D();
 	TRANSFORMATION.resetTransform();
 	ctx.clearRect(bbox.pos.x, bbox.pos.y, bbox.w, bbox.h);
-	ctx.fillStyle = "black";
-	ctx.fillRect(bbox.pos.x, bbox.pos.y, bbox.w, bbox.h);
+	//ctx.fillStyle = "black";
+	//ctx.fillRect(bbox.pos.x, bbox.pos.y, bbox.w, bbox.h);
 	TRANSFORMATION.updateTransform();
 }
 
