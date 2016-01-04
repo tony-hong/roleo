@@ -1,4 +1,5 @@
 { 
+	"errMsg" : "msg here"
 	"queried" : 
 	{
 		"word" : "apple",
