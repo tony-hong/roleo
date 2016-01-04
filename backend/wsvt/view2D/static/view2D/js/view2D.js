@@ -565,6 +565,10 @@ CanvasView.prototype.checkGrids = function(isZoomIn) {
 		// push current element into the grid
 		nodes.push(nodeElement);
 	}
+	// always draw text for the queried word
+	if (this.nodeElements[1].node.needHighlight == true) {
+		this.nodeElements[1].ifDrawText = true;
+	}
 }
 CanvasView.prototype.draw = function(ctx) {
 	// TODO move the selected node to the top
