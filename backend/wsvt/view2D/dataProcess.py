@@ -27,6 +27,8 @@ topWords = dict()
 simularities = dict()
 counts = dict()
 fractions = dict()
+
+# ISSUE can be controlled form the front end
 power = 10
 
 matrix = Matricisation({
@@ -63,7 +65,7 @@ def process(verb, noun, semanticRole, group):
 
     # members[0]: vectors
     # members[1]: list of words
-    memberVectors, wordList = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]})
+    memberVectors, wordList = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, 20)
 
     print 'getMemberVectors finished...'
     print wordList
@@ -88,29 +90,18 @@ def process(verb, noun, semanticRole, group):
             # TODO: raise exception
             print 'case: query is empty'
         elif query.ix[semanticRole].get(query0, 0) == 0:
+            queryCosine = cosine_sim(centroid, query)
             # TODO: raise exception
             print 'case: query.ix[semanticRole].ix[query0] is empty'
         else:
             # ISSUE: add the self-count to the denominator
-            queryFraction = query.ix[semanticRole].ix[query0] / (countOfCentroid + query.ix[semanticRole].ix[query0])
+            count = query.ix[semanticRole].ix[query0] 
+            queryFraction = float(count) / (countOfCentroid + count)
             # queryFraction = query.ix[semanticRole].ix[query0] / (countOfCentroid )
             queryCosine = cosine_sim(centroid, query)
 
         # TODO: Find a better mapping
-        # Type 1
-        # q_r = pow((1 - queryFraction), power)
-        # q_rad = math.acos(queryCosine) * 4
-
-        # Type 2
-        x = math.pow(queryFraction, 0.4)
-        y = math.pow(queryCosine, 1.25)
-        r = math.sqrt(math.pow(1 - x, 2) + math.pow(1 - y, 2)) / 2
-        if x == 0:
-            rad = math.pi / 2
-        else:
-            rad = math.atan(y / x) * 4
-        q_x = r * math.cos(rad)
-        q_y = r * math.sin(rad)
+        q_x, q_y = mapping2(queryFraction, queryCosine)
 
 
     for w in wordList:
@@ -125,18 +116,7 @@ def process(verb, noun, semanticRole, group):
         fraction = float(count) / countOfCentroid
 
         # TODO: Find a better mapping
-        # Type 1
-        # rad = math.acos(wordCosine) * 4
-        # r = pow((1 - fraction), power)
-
-        # Type 2
-        x = math.pow(fraction, 0.4)
-        y = math.pow(wordCosine, 1.25)
-        r = math.sqrt(math.pow(1 - x, 2) + math.pow(1 - y, 2)) / 2
-        rad = math.atan(y / x) * 4
-
-        x = r * math.cos(rad)
-        y = r * math.sin(rad)
+        x, y = mapping2(fraction, wordCosine)
 
         simularities[w] = wordCosine
         counts[w] = count        
@@ -152,26 +132,49 @@ def process(verb, noun, semanticRole, group):
 
     print 'result list is prepared'
 
+    result = {
+        'nodes' : resultList
+    }
     if double:
-        result = {
-            'queried' : 
-            {
+        result['queried'] = {
                 'y'    : q_y,
                 'x'    : q_x,
                 'cos'  : queryCosine,
                 'word' : query1,
-            }, 
-            'nodes' : resultList
-        }
-    else:
-        result = {
-            'nodes' : resultList
-        }
+            }
 
     print 'result creating is prepared'
 
     return result
 
+
+def mapping1(fraction, cosine):
+    rad = math.acos(cosine) * 4
+    r = pow((1 - fraction), power)
+    x = r * math.cos(rad)
+    y = r * math.sin(rad)    
+    return x, y
+
+def mapping2(fraction, cosine):
+    y = math.pow(fraction, 0.4)
+    x = math.pow(cosine, 0.8)
+    r = float(math.sqrt((math.pow(1 - x, 2) + math.pow(1 - y, 2)) / 2))
+    if x == 0:
+        rad = math.pi / 2
+    else:
+        rad = math.atan(y / x) * 4   
+    x = r * math.cos(rad)
+    y = r * math.sin(rad)
+    return x, y
+
+
+def mapping3(fraction, cosine):
+    f = fraction * 2 * math.pi % math.pi
+    r = math.pow(1 - cosine, 10)
+    rad = f
+    x = r * math.cos(rad)
+    y = r * math.sin(rad)
+    return x, y
 
 def printCoordinates():
     X = []
