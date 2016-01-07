@@ -13,7 +13,7 @@
     <title>Web-based semantic visualization tool</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="../../static/view2D/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'view2D/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <!-- Custom styles for this template -->
     <link href="{% static 'view2D/css/help.css' %}" rel="stylesheet">
   </head>
@@ -47,54 +47,65 @@
       <h3> Step 1 </h3>
       <div style="width:72%;display:inline-block;">
       <p class="well">
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        At first you have to enter a noun in the "Noun" input field. This field must be filled in order to send the query.<br><br> For example: apple
       </p>
     </div>
     <div style="display:inline-block; float:right;" >
-      <img src="../../static/view2D/img/noun.png" width="300" style="border: 1px solid lightgrey">
+      <img src="{% static 'view2D/img/noun.png' %}" width="300" style="border: 1px solid lightgrey">
     </div><br>
       <h3> Step 2 </h3>
       <div style="width:72%;display:inline-block;">
       <p class="well">
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+      There are different roles available to choose from. Different semantic roles lead to different results of the query.<br><br> For example: Do you mean an apple is eaten or the apple eats something?
       </p>
     </div>
     <div style="display:inline-block; float:right;">
-      <img src="../../static/view2D/img/role.png" width="300" style="border: 1px solid lightgrey">
+      <img src="{% static 'view2D/img/role.png' %}" width="300" style="border: 1px solid lightgrey">
     </div>
 
-
-
-          <h3> Step 3 </h3><br>
+          <h3> Step 3 </h3>
           <div style="width:72%;display:inline-block;">
           <p class="well">
-    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-          </p>
+        Then you have to enter a verb in the "Verb" input field. This field must be filled in order to send the query.<br><br> For example: eat
+        </p>
         </div>
         <div style="display:inline-block; float:right;" >
-          <img src="../../static/view2D/img/verb.png" width="300" style="border: 1px solid lightgrey">
+          <img src="{% static 'view2D/img/verb.png' %}" width="300" style="border: 1px solid lightgrey">
         </div><br><br>
-        <h3> Step 4 </h3><br>
+        <h3> Step 4 </h3>
         <div style="width:72%;display:inline-block;">
         <p class="well">
-    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        This option defines whether you are more interested in verbs, which are surrounding the entered noun or in nouns, which are surrounding the entered verb. This is why you have these two options to choose from:<br>
+        Noun selects verb<br>
+        Verb selects noun<br><br>
+        For example: Noun selects verb
         </p>
       </div>
       <div style="display:inline-block; float:right;" >
-        <img src="../../static/view2D/img/select.png" width="300" style="border: 1px solid lightgrey">
+        <img src="{% static 'view2D/img/select.png' %}" width="300" style="border: 1px solid lightgrey">
       </div><br>
-      <h3> Step 5 </h3><br>
+      <h3> Step 5 </h3>
       <div style="width:72%;display:inline-block;">
       <p class="well">
-    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        Just click the button and send the query!<br><br>The visualization needs a short while to compute depending on the complexity of your query.
       </p>
     </div>
     <div style="display:inline-block; float:right;" >
-      <img src="../../static/view2D/img/send.png" width="300" style="border: 1px solid lightgrey">
+      <img src="{% static 'view2D/img/send.png' %}" width="300" style="border: 1px solid lightgrey">
     </div><br>
 
-    </div><!-- /.container -->
+    <h3> Changing the model </h3>
+    <div style="width:72%;display:inline-block;">
+    <p class="well">
+    There are different models available which compute the word relations in different ways. Here you can specify another model. Choose it from the dropdown list and click the button.<br><br>Note that changing the model can take few minutes.
+    </p>
+  </div>
+  <div style="display:inline-block; float:right;" >
+    <img src="{% static 'view2D/img/model.png' %}" width="300" style="border: 1px solid lightgrey">
+  </div><br>
 
+    </div><!-- /.container -->
+<br>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
