@@ -7,6 +7,7 @@ from django.template import RequestContext, loader
 
 from models import SemanticRole
 from dataProcess import *
+from errorCodeJSON import errorCodeJSON as ecj
 
 def index(request):
     template = loader.get_template('view2D/index.html')
@@ -57,3 +58,6 @@ def query(request):
             result = process(verb, noun, role, group)
 
     return JsonResponse(result)
+
+def errorCodeJSON(request):
+    return JsonResponse(ecj, safe = False)
