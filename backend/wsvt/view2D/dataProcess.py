@@ -2,14 +2,10 @@
 @Author: 
     Tony Hong
 @Environment:
-    export LD_LIBRARY_PATH=~/ROOT/wsvt/workspace/wsvt/hdf5/1.8.16/lib/
-    export PYTHONPATH=$PYTHONPATH:~/ROOT/wsvt/workspace/wsvt/Rollenverteilung/src/lib
-    export PYTHONPATH=$PYTHONPATH:~/ROOT/wsvt/workspace/wsvt/view2D/
-
-    for 
-        ~/ROOT/wsvt/workspace/
-    need to be modified to the real absolute path of the project folder
-    (base directory of git repository)
+    export LD_LIBRARY_PATH=hdf5/1.8.16/lib
+    export PYTHONPATH=$PYTHONPATH:Rollenverteilung/src/lib
+    export PYTHONPATH=$PYTHONPATH:view2D
+    
 '''
 
 import os
@@ -20,6 +16,7 @@ import pandas as pd
 
 from rv.structure.Tensor import Matricisation
 from rv.similarity.Similarity import cosine_sim
+import errorCode
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -42,6 +39,7 @@ def process(verb, noun, semanticRole, group):
     print 'process start...'
 
     double = False
+    result = {}
     if group == 'noun':
         if noun:
             query0 = noun + '-n'
@@ -52,6 +50,8 @@ def process(verb, noun, semanticRole, group):
         else:
             # EXCEPTION
             print 'case: noun is empty'
+            result['errCode'] = errorCode.NOUN_EMPTY
+            return result
     elif group == 'verb':
         if verb:
             query0 = verb + '-v'
@@ -61,6 +61,8 @@ def process(verb, noun, semanticRole, group):
         else:
             # EXCEPTION
             print 'case: verb is empty'
+            result['errCode'] = errorCode.VERB_EMPTY
+            return result            
     else:
         print 'internal error!'
  
