@@ -1,17 +1,64 @@
+#-*- coding:utf-8 -*-
+
+import json
+
 from django.core.urlresolvers import resolve
 from django.test import TestCase
-from view2D.views import *
+from django.http import HttpRequest
+
+from view2D.views import index, query
 from view2D.dataProcess import process
-import view2D.errorCode 
+import view2D.errorCode as errorCode
 
 class IndexTest(TestCase):
     def test_view2D_URL_ResolvesTo_IndexView(self):
         found = resolve('/view2D/')
         self.assertEqual(found.func, index)
+
     # TODO add other test
 
-class DataProcessorTest(TestCase):
+class QueryTest(TestCase):
+    def test_VERB_FORMAT_ERROR(self):
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST['verb'] = '你好'.decode('utf8')
+        request.POST['role'] = 'A0'
+        request.POST['noun'] = 'apple'
+        request.POST['group1'] = 'verb'
+        response = query(request)
+        realResult = response.content
 
+        result = '{"errCode": ' + str(errorCode.VERB_FORMAT_ERROR) + '}'
+        self.assertEqual(result, realResult)
+
+    def test_NOUN_FORMAT_ERROR(self):
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST['verb'] = 'eat'
+        request.POST['role'] = 'A0'
+        request.POST['noun'] = '你好'.decode('utf8')
+        request.POST['group1'] = 'verb'
+        response = query(request)
+        realResult = response.content
+
+        result = '{"errCode": ' + str(errorCode.NOUN_FORMAT_ERROR) + '}'
+        self.assertEqual(result, realResult)
+        
+    def test_group_notExist(self):
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST['verb'] = '你好'.decode('utf8')
+        request.POST['role'] = 'A0'
+        request.POST['noun'] = 'apple'
+        request.POST['group1'] = 'asdf'
+        response = query(request)
+        realResult = response.content
+
+        result = '{"errCode": ' + str(errorCode.INTERNAL_ERROR) + '}'
+        self.assertEqual(result, realResult)
+
+
+class DataProcessorTest(TestCase):
     def test_process(self):
         realResult = process('eat', 'apple', 'A0', 'verb')
         queryDict = {
