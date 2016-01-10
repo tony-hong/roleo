@@ -5,7 +5,7 @@
     export LD_LIBRARY_PATH=hdf5/1.8.16/lib
     export PYTHONPATH=$PYTHONPATH:Rollenverteilung/src/lib
     export PYTHONPATH=$PYTHONPATH:view2D
-    
+
 '''
 
 import os
@@ -34,12 +34,17 @@ matrix = Matricisation({
     'word1' : os.path.join(BASE_DIR, 'wackylmi-malt-v2-36K.word1.h5') 
 })
 
+# matrix = Matricisation({
+#     'word0' : 'view2D/wackylmi-malt-v2-36K.word0.h5',
+#     'word1' : 'view2D/wackylmi-malt-v2-36K.word1.h5'
+# })
 
 def process(verb, noun, semanticRole, group):
     print 'process start...'
 
     double = False
     result = {}
+
     if group == 'noun':
         if noun:
             query0 = noun + '-n'
@@ -49,8 +54,8 @@ def process(verb, noun, semanticRole, group):
                 double = True
         else:
             # EXCEPTION
-            print 'case: noun is empty'
-            result['errCode'] = errorCode.NOUN_EMPTY
+            print 'exception: noun is empty'
+            result = {'errCode' : errorCode.NOUN_EMPTY}
             return result
     elif group == 'verb':
         if verb:
@@ -60,27 +65,31 @@ def process(verb, noun, semanticRole, group):
                 double = True
         else:
             # EXCEPTION
-            print 'case: verb is empty'
-            result['errCode'] = errorCode.VERB_EMPTY
+            print 'exception: verb is empty'
+            result = {'errCode' : errorCode.VERB_EMPTY}
             return result            
-    else:
-        print 'internal error!'
- 
+    else:        
+        print 'exception: internal error!'
+        result = {'errCode' : errorCode.INTERNAL_ERROR}
+        return result
+
     # members[0]: vectors
     # members[1]: list of words
-    memberVectors, wordList = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, 20)
+    temp = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, 20)
 
-    # if query.isnull().all():
-    #     print 'verb is empty' 
-    # else:
-    #     memberVectors, wordList = temp
+    if type(temp) != type(tuple()):
+        print 'exception: memberVectors is empty' 
+        result = {'errCode' : errorCode.MBR_VEC_EMPTY}
+        return result
+    else:
+        memberVectors, wordList = temp
 
     print 'getMemberVectors finished...'
     print wordList
 
     resultList = []
     queryFraction = 0
-    queryCosine = 0    
+    queryCosine = 0
     maxCount = 0
 
     # ISSUE: double call of getMemberVectors, need improvement
@@ -96,18 +105,23 @@ def process(verb, noun, semanticRole, group):
         print 'getting query finished'
 
         if query.isnull().all():
-            # TODO: raise exception
-            print 'case: query is empty'
-        elif query.ix[semanticRole].get(query0, 0) == 0:
-            queryCosine = cosine_sim(centroid, query)
-            # TODO: raise exception
-            print 'case: query.ix[semanticRole].ix[query0] is empty'
-        else:
-            # ISSUE: add the self-count to the denominator
-            count = query.ix[semanticRole].ix[query0] 
-            queryFraction = float(count) / (countOfCentroid + count)
-            # queryFraction = query.ix[semanticRole].ix[query0] / (countOfCentroid )
-            queryCosine = cosine_sim(centroid, query)
+            print 'exception: query is empty'
+            result = {'errCode' : errorCode.QUERY_EMPTY}
+            return result
+        try:
+            vector = query.ix[semanticRole]
+            if vector.get(query0, 0) == 0:
+                queryCosine = cosine_sim(centroid, query)
+                print 'exception: query.ix[semanticRole].ix[query0] is empty'
+            else:
+                # ISSUE: add the self-count to the denominator
+                count = vector.ix[query0] 
+                queryFraction = float(count) / (countOfCentroid)
+                queryCosine = cosine_sim(centroid, query)
+        except KeyError:
+            print 'exception: query.ix[semanticRole] is empty'
+            result = {'errCode' : errorCode.SMT_ROLE_EMPTY}
+            return result
 
         # TODO: Find a better mapping
         q_x, q_y = mapping2(queryFraction, queryCosine)
