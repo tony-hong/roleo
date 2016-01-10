@@ -1,5 +1,5 @@
 { 
-	"errMsg" : "msg here"
+	"errCode" : -1
 	"queried" : 
 	{
 		"word" : "apple",

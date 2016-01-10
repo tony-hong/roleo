@@ -38,6 +38,8 @@ var selectedNode;      // The current node get focused(mouse is over)
 var isInProcessing = false;  // Boolean tells current post request is still in processing not returned yet
                              // Works only under async-request
 
+var errCode = null;
+							 
 var debugCnt = 0;
 
 /* Default values */
@@ -76,6 +78,11 @@ function init(canvas2) {
 function createNodesFromJSON(responseJSON_Object) {
 	var set = responseJSON_Object;
 	if (set == null) alert("parseJSON object returns null");
+	var errCode = set.errCode;
+	// if error when query simply return null
+	if (errCode) {
+		return null;
+	}
 	var nodes = [];
 	var centeroid = new Node(new Point2D(), "centroid", 1);
 	nodes.push(centeroid); // [0]
@@ -101,7 +108,13 @@ function createNodesFromJSON(responseJSON_Object) {
 }
 
 function updateQuerySet(nodes) {
-	if (!nodes) alert("nodes is null");
+	// if error when query, show message correspond to the errCode and validate the canvas then return
+	// TODO
+	if (!nodes) {
+		alert("(PlaceHolder)Error Code:" + errCode);
+		validate();
+		return;
+	}
 	init(document.getElementById("myCanvas"));
 	querySet.nodes = nodes;
 	// scale from [-1,1] to [-0.5*WIDTH, 0.5*WIDTH] or HEIGHT
