@@ -35,8 +35,9 @@
         window.onload = function() {
 			loadView2D(); // view2D.js
 			loadInputTextFilter(); // inputTextFilter.js
+			// load error_code.json into frontend
 			$.ajax({
-				url:      '/errorCodeJSON',
+				url:      'errorCodeJSON/',
 				type:     'POST',
 				data:     null,
 				async:    true,

@@ -78,11 +78,12 @@ function init(canvas2) {
 
 function loadErrCodeJSON(errCodeJSON_Object) {
 	errCodeJSON = errCodeJSON_Object;
+	if (errCodeJSON == null) alert("errCodeJSON_Object is null");
 }
 
 function createNodesFromJSON(responseJSON_Object) {
 	var set = responseJSON_Object;
-	if (set == null) alert("parseJSON object returns null");
+	if (set == null) alert("responseJSON_Object is null");
 	errCode = set.errCode;
 	// if error when query simply return null
 	if (errCode != null) {
