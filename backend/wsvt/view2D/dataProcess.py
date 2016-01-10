@@ -27,6 +27,7 @@ topWords = dict()
 simularities = dict()
 counts = dict()
 fractions = dict()
+result = dict()
 
 # ISSUE can be controlled form the front end
 power = 10
@@ -62,17 +63,23 @@ def process(verb, noun, semanticRole, group):
             print 'case: verb is empty'
     else:
         print 'internal error!'
-
+ 
     # members[0]: vectors
     # members[1]: list of words
-    memberVectors, wordList = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, 20)
+    memberVectors, wordList = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, 300)
+
+    # if query.isnull().all():
+    #     print 'verb is empty' 
+    # else:
+    #     memberVectors, wordList = temp
 
     print 'getMemberVectors finished...'
     print wordList
 
     resultList = []
     queryFraction = 0
-    queryCosine = 0
+    queryCosine = 0    
+    maxCount = 0
 
     # ISSUE: double call of getMemberVectors, need improvement
     # centroid = matrix.getCentroid(query0, 'word1', 'word0', {'link':[semanticRole]})
@@ -103,23 +110,25 @@ def process(verb, noun, semanticRole, group):
         # TODO: Find a better mapping
         q_x, q_y = mapping2(queryFraction, queryCosine)
 
-
     for w in wordList:
-        if double and w == query1:
-            continue
         row = matrix.getRow('word0', w)
         topWords[w] = row
-        wordCosine = cosine_sim(centroid, row)
 
         count = row.ix[semanticRole].ix[query0]
+        counts[w] = count
 
-        fraction = float(count) / countOfCentroid
+        if count > maxCount:
+            maxCount = count
 
+    for w in wordList:
+        row = matrix.getRow('word0', w)
+        fraction = float(counts[w]) / maxCount
+
+        wordCosine = cosine_sim(centroid, row)
         # TODO: Find a better mapping
         x, y = mapping2(fraction, wordCosine)
 
         simularities[w] = wordCosine
-        counts[w] = count        
         fractions[w] = fraction
 
         resultList.append({
@@ -158,15 +167,14 @@ def mapping1(fraction, cosine):
 def mapping2(fraction, cosine):
     y = math.pow(fraction, 0.4)
     x = math.pow(cosine, 0.8)
-    r = float(math.sqrt((math.pow(1 - x, 2) + math.pow(1 - y, 2)) / 2))
+    r = math.sqrt((math.pow(1-x, 2) + math.pow(1-y, 2)) / 2)
     if x == 0:
         rad = math.pi / 2
     else:
-        rad = math.atan(y / x) * 4   
+        rad = math.atan(y / x) * 4
     x = r * math.cos(rad)
     y = r * math.sin(rad)
     return x, y
-
 
 def mapping3(fraction, cosine):
     f = fraction * 2 * math.pi % math.pi
