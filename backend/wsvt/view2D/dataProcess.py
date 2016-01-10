@@ -2,14 +2,21 @@
 @Author: 
     Tony Hong
 @Environment:
+    Already implemented in this file, so no need to export again
+    These paths are only for reference 
+
     export LD_LIBRARY_PATH=hdf5/1.8.16/lib
     export PYTHONPATH=$PYTHONPATH:Rollenverteilung/src/lib
     export PYTHONPATH=$PYTHONPATH:view2D
-
 '''
 
 import os
 import math
+import sys
+
+sys.path.append('Rollenverteilung/src/lib')
+sys.path.append('view2D')
+os.system('export LD_LIBRARY_PATH=hdf5/1.8.16/lib')
 
 import matplotlib.pyplot as plt
 import pandas as pd
