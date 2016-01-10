@@ -35,6 +35,15 @@
         window.onload = function() {
 			loadView2D(); // view2D.js
 			loadInputTextFilter(); // inputTextFilter.js
+			$.ajax({
+				url:      '/errorCodeJSON',
+				type:     'POST',
+				data:     null,
+				async:    true,
+				success:  function(response){
+				  loadErrCodeJSON(response);
+				}
+            });
 		}
         function buttonClicked(){
 			setIsInProcessing(true);

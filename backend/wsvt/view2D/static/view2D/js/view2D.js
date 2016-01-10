@@ -39,6 +39,7 @@ var isInProcessing = false;  // Boolean tells current post request is still in p
                              // Works only under async-request
 
 var errCode = null;
+var errCodeJSON = null;
 							 
 var debugCnt = 0;
 
@@ -75,12 +76,16 @@ function init(canvas2) {
 	mouseWheelCnt = 0;
 }
 
+function loadErrCodeJSON(errCodeJSON_Object) {
+	errCodeJSON = errCodeJSON_Object;
+}
+
 function createNodesFromJSON(responseJSON_Object) {
 	var set = responseJSON_Object;
 	if (set == null) alert("parseJSON object returns null");
-	var errCode = set.errCode;
+	errCode = set.errCode;
 	// if error when query simply return null
-	if (errCode) {
+	if (errCode != null) {
 		return null;
 	}
 	var nodes = [];
@@ -108,24 +113,19 @@ function createNodesFromJSON(responseJSON_Object) {
 }
 
 function updateQuerySet(nodes) {
-	// if error when query, show message correspond to the errCode and validate the canvas then return
-	// TODO
-	if (!nodes) {
-		alert("(PlaceHolder)Error Code:" + errCode);
-		validate();
-		return;
-	}
 	init(document.getElementById("myCanvas"));
-	querySet.nodes = nodes;
-	// scale from [-1,1] to [-0.5*WIDTH, 0.5*WIDTH] or HEIGHT
-	for (i=0; i<nodes.length; ++i) {
-		nodes[i].pos.x *= 0.5*WIDTH;
-		nodes[i].pos.y *= 0.5*HEIGHT;
+	if(nodes) {
+		querySet.nodes = nodes;
+		// scale from [-1,1] to [-0.5*WIDTH, 0.5*WIDTH] or HEIGHT
+		for (i=0; i<nodes.length; ++i) {
+			nodes[i].pos.x *= 0.5*WIDTH;
+			nodes[i].pos.y *= 0.5*HEIGHT;
+		}
+		//
+		view.update();
+		//
+		invalidate();
 	}
-	//
-	view.update();
-	//
-	invalidate();
 }
 
 function draw() {
@@ -136,17 +136,29 @@ function draw() {
 	// After processing, visualize results
 	else if (!isValid) {
 		clear();
-		// recompute bboxes
-		for (i=0; i<view.nodeElements.length; ++i) {
-			view.nodeElements[i].bbox = view.nodeElements[i].computeBBox();
+		// if errCode != null, display err msg
+		if (errCode != null) {
+			TRANSFORMATION.resetTransform();
+			ctx.font = "30px Comic Sans MS";
+			ctx.textAlign = "center";
+			ctx.fillStyle = "red";
+			ctx.fillText(errCodeJSON[errCode], 0.5*WIDTH, 0.5*HEIGHT);
+			TRANSFORMATION.updateTransform();
 		}
-		// recheck grids
-		// TODO check scale first, only checkGrids if scale changed
-		//      with setInterval 30 for draw(), do not need addtional check, won't influence performance
-		view.checkGrids(isZoomIn);
-		//
-		TRANSFORMATION.updateTransform();
-		view.draw(ctx);
+		// else
+		else {
+			// recompute bboxes
+			for (i=0; i<view.nodeElements.length; ++i) {
+				view.nodeElements[i].bbox = view.nodeElements[i].computeBBox();
+			}
+			// recheck grids
+			// TODO check scale first, only checkGrids if scale changed
+			//      with setInterval 30 for draw(), do not need addtional check, won't influence performance
+			view.checkGrids(isZoomIn);
+			//
+			TRANSFORMATION.updateTransform();
+			view.draw(ctx);
+		}
 		validate();
 	}
 }
