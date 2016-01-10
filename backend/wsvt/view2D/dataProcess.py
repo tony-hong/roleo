@@ -27,9 +27,9 @@ import errorCode
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-topWords = dict()
+wordVectors = dict()
 simularities = dict()
-counts = dict()
+wordCounts = dict()
 fractions = dict()
 result = dict()
 
@@ -105,6 +105,16 @@ def process(verb, noun, semanticRole, group):
     # TODO
     countOfCentroid = centroid.ix[semanticRole].ix[query0]
 
+    for w in wordList:
+        row = matrix.getRow('word0', w)
+        wordVectors[w] = row
+
+        count = row.ix[semanticRole].ix[query0]
+        wordCounts[w] = count
+
+        if count > maxCount:
+            maxCount = count
+
     if double:
         # process query
         query = matrix.getRow('word0', query1)
@@ -121,9 +131,8 @@ def process(verb, noun, semanticRole, group):
                 queryCosine = cosine_sim(centroid, query)
                 print 'exception: query.ix[semanticRole].ix[query0] is empty'
             else:
-                # ISSUE: add the self-count to the denominator
                 count = vector.ix[query0] 
-                queryFraction = float(count) / (countOfCentroid)
+                queryFraction = float(count) / maxCount
                 queryCosine = cosine_sim(centroid, query)
         except KeyError:
             print 'exception: query.ix[semanticRole] is empty'
@@ -132,22 +141,13 @@ def process(verb, noun, semanticRole, group):
 
         # TODO: Find a better mapping
         q_x, q_y = mapping2(queryFraction, queryCosine)
+        # if query1 in wordList:
+        #     wordList.remove(query1)
 
     for w in wordList:
-        row = matrix.getRow('word0', w)
-        topWords[w] = row
+        fraction = float(wordCounts[w]) / maxCount
 
-        count = row.ix[semanticRole].ix[query0]
-        counts[w] = count
-
-        if count > maxCount:
-            maxCount = count
-
-    for w in wordList:
-        row = matrix.getRow('word0', w)
-        fraction = float(counts[w]) / maxCount
-
-        wordCosine = cosine_sim(centroid, row)
+        wordCosine = cosine_sim(centroid, wordVectors[w])
         # TODO: Find a better mapping
         x, y = mapping2(fraction, wordCosine)
 
