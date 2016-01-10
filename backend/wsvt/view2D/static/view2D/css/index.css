@@ -42,3 +42,9 @@ div.visualization {
     margin-bottom: -99999px;
     padding-bottom: 99999px;
 }
+
+/** Custom Style for the label which shows error messages for both input text fields **/
+label#label_msg_noun, label#label_msg_verb {
+	color: red;
+	font-size: 10px; 
+}
