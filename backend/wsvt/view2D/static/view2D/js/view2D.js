@@ -140,7 +140,7 @@ function draw() {
 		// if errCode != null, display err msg
 		if (errCode != null) {
 			TRANSFORMATION.resetTransform();
-			ctx.font = "30px Comic Sans MS";
+			ctx.font = "15px Comic Sans MS";
 			ctx.textAlign = "center";
 			ctx.fillStyle = "red";
 			ctx.fillText(errCodeJSON[errCode], 0.5*WIDTH, 0.5*HEIGHT);
