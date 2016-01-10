@@ -172,6 +172,14 @@ function validate() {
 
 function setIsInProcessing(b) {
 	isInProcessing = b;
+	var submitBtn = document.getElementById("submitBtn");
+	if (!submitBtn) alert("getElementById \"submitBtn\" failed");
+	if (b) submitBtn.disabled = true;
+	else submitBtn.disabled = false;
+}
+
+function ifInProcessing() {
+	return isInProcessing;
 }
 
 // add to window.onload

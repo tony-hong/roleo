@@ -36,6 +36,9 @@ function loadInputTextFilter() {
 }
 
 function main() {
+	// no check during processing query
+	if (ifInProcessing()) return; // view2D.js
+	
 	/** reset state **/
 	labelMsgNoun.innerHTML="";
 	labelMsgVerb.innerHTML="";
