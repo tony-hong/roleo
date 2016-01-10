@@ -1,4 +1,5 @@
 import json
+import re
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
@@ -32,9 +33,9 @@ def impressum(request):
     return HttpResponse(template.render())
 
 def query(request):
-    verb = request.POST['verb']
+    verb = request.POST['verb'].strip().lower()
     role = request.POST['role']
-    noun = request.POST['noun']
+    noun = request.POST['noun'].strip().lower()
     group = request.POST['group1']
     result = {}
 
@@ -43,10 +44,16 @@ def query(request):
     print 'n: ' + noun
     print 'group: ' + group
 
-    if not (verb or noun):
-        # EXCEPTION
-        print 'case: both words is empty'
-
-    result = process(verb, noun, role, group)
+    if group not in ['noun', 'verb']:
+        result = {'errCode' : errorCode.INTERNAL_ERROR}
+    else:
+        nre = re.match(r'^[a-z]+$', noun)
+        vre = re.match(r'^[a-z]+$', verb)
+        if not nre:
+            result = {'errCode' : errorCode.NOUN_FORMAT_ERROR}
+        elif not vre:
+            result = {'errCode' : errorCode.VERB_FORMAT_ERROR}
+        else:
+            result = process(verb, noun, role, group)
 
     return JsonResponse(result)
