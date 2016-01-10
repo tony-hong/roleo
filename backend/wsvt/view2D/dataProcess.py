@@ -66,7 +66,7 @@ def process(verb, noun, semanticRole, group):
  
     # members[0]: vectors
     # members[1]: list of words
-    memberVectors, wordList = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, 300)
+    memberVectors, wordList = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, 20)
 
     # if query.isnull().all():
     #     print 'verb is empty' 
