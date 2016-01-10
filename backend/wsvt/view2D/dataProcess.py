@@ -141,8 +141,8 @@ def process(verb, noun, semanticRole, group):
 
         # TODO: Find a better mapping
         q_x, q_y = mapping2(queryFraction, queryCosine)
-        # if query1 in wordList:
-        #     wordList.remove(query1)
+        if query1 in wordList:
+            wordList.remove(query1)
 
     for w in wordList:
         fraction = float(wordCounts[w]) / maxCount
