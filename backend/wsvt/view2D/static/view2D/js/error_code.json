@@ -1,0 +1,8 @@
+{
+    "101" : "exception: noun is empty",
+    "102" : "exception: verb is empty",
+    "201" : "exception: memberVectors is empty, main query word / semantic role does not exist",
+    "202" : "exception: query is empty, query word does not exist",
+    "203" : "exception: internal error",
+    "501" : "exception: internal error"
+}
