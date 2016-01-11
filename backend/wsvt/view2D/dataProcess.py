@@ -2,31 +2,36 @@
 @Author: 
     Tony Hong
 @Environment:
-    export LD_LIBRARY_PATH=~/ROOT/wsvt/workspace/wsvt/hdf5/1.8.16/lib/
-    export PYTHONPATH=$PYTHONPATH:~/ROOT/wsvt/workspace/wsvt/Rollenverteilung/src/lib
-    export PYTHONPATH=$PYTHONPATH:~/ROOT/wsvt/workspace/wsvt/view2D/
+    Already implemented in this file, so no need to export again
+    These paths are only for reference 
 
-    for 
-        ~/ROOT/wsvt/workspace/
-    need to be modified to the real absolute path of the project folder
-    (base directory of git repository)
+    export LD_LIBRARY_PATH=hdf5/1.8.16/lib
+    export PYTHONPATH=$PYTHONPATH:Rollenverteilung/src/lib
+    export PYTHONPATH=$PYTHONPATH:view2D
 '''
 
 import os
 import math
+import sys
+
+sys.path.append('Rollenverteilung/src/lib')
+sys.path.append('view2D')
+os.system('export LD_LIBRARY_PATH=hdf5/1.8.16/lib')
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
 from rv.structure.Tensor import Matricisation
 from rv.similarity.Similarity import cosine_sim
+import errorCode
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-topWords = dict()
+wordVectors = dict()
 simularities = dict()
-counts = dict()
+wordCounts = dict()
 fractions = dict()
+result = dict()
 
 # ISSUE can be controlled form the front end
 power = 10
@@ -36,11 +41,17 @@ matrix = Matricisation({
     'word1' : os.path.join(BASE_DIR, 'wackylmi-malt-v2-36K.word1.h5') 
 })
 
+# matrix = Matricisation({
+#     'word0' : 'view2D/wackylmi-malt-v2-36K.word0.h5',
+#     'word1' : 'view2D/wackylmi-malt-v2-36K.word1.h5'
+# })
 
 def process(verb, noun, semanticRole, group):
     print 'process start...'
 
     double = False
+    result = {}
+
     if group == 'noun':
         if noun:
             query0 = noun + '-n'
@@ -50,7 +61,9 @@ def process(verb, noun, semanticRole, group):
                 double = True
         else:
             # EXCEPTION
-            print 'case: noun is empty'
+            print 'exception: noun is empty'
+            result = {'errCode' : errorCode.NOUN_EMPTY}
+            return result
     elif group == 'verb':
         if verb:
             query0 = verb + '-v'
@@ -59,13 +72,24 @@ def process(verb, noun, semanticRole, group):
                 double = True
         else:
             # EXCEPTION
-            print 'case: verb is empty'
-    else:
-        print 'internal error!'
+            print 'exception: verb is empty'
+            result = {'errCode' : errorCode.VERB_EMPTY}
+            return result            
+    else:        
+        print 'exception: internal error!'
+        result = {'errCode' : errorCode.INTERNAL_ERROR}
+        return result
 
     # members[0]: vectors
     # members[1]: list of words
-    memberVectors, wordList = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, 20)
+    temp = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, 20)
+
+    if type(temp) != type(tuple()):
+        print 'exception: memberVectors is empty' 
+        result = {'errCode' : errorCode.MBR_VEC_EMPTY}
+        return result
+    else:
+        memberVectors, wordList = temp
 
     print 'getMemberVectors finished...'
     print wordList
@@ -73,12 +97,23 @@ def process(verb, noun, semanticRole, group):
     resultList = []
     queryFraction = 0
     queryCosine = 0
+    maxCount = 0
 
     # ISSUE: double call of getMemberVectors, need improvement
     # centroid = matrix.getCentroid(query0, 'word1', 'word0', {'link':[semanticRole]})
     centroid = pd.concat(memberVectors).sum(level=[0,1])
     # TODO
     countOfCentroid = centroid.ix[semanticRole].ix[query0]
+
+    for w in wordList:
+        row = matrix.getRow('word0', w)
+        wordVectors[w] = row
+
+        count = row.ix[semanticRole].ix[query0]
+        wordCounts[w] = count
+
+        if count > maxCount:
+            maxCount = count
 
     if double:
         # process query
@@ -87,39 +122,36 @@ def process(verb, noun, semanticRole, group):
         print 'getting query finished'
 
         if query.isnull().all():
-            # TODO: raise exception
-            print 'case: query is empty'
-        elif query.ix[semanticRole].get(query0, 0) == 0:
-            queryCosine = cosine_sim(centroid, query)
-            # TODO: raise exception
-            print 'case: query.ix[semanticRole].ix[query0] is empty'
-        else:
-            # ISSUE: add the self-count to the denominator
-            count = query.ix[semanticRole].ix[query0] 
-            queryFraction = float(count) / (countOfCentroid + count)
-            # queryFraction = query.ix[semanticRole].ix[query0] / (countOfCentroid )
-            queryCosine = cosine_sim(centroid, query)
+            print 'exception: query is empty'
+            result = {'errCode' : errorCode.QUERY_EMPTY}
+            return result
+        try:
+            vector = query.ix[semanticRole]
+            if vector.get(query0, 0) == 0:
+                queryCosine = cosine_sim(centroid, query)
+                print 'exception: query.ix[semanticRole].ix[query0] is empty'
+            else:
+                count = vector.ix[query0] 
+                queryFraction = float(count) / maxCount
+                queryCosine = cosine_sim(centroid, query)
+        except KeyError:
+            print 'exception: query.ix[semanticRole] is empty'
+            result = {'errCode' : errorCode.SMT_ROLE_EMPTY}
+            return result
 
         # TODO: Find a better mapping
         q_x, q_y = mapping2(queryFraction, queryCosine)
-
+        if query1 in wordList:
+            wordList.remove(query1)
 
     for w in wordList:
-        if double and w == query1:
-            continue
-        row = matrix.getRow('word0', w)
-        topWords[w] = row
-        wordCosine = cosine_sim(centroid, row)
+        fraction = float(wordCounts[w]) / maxCount
 
-        count = row.ix[semanticRole].ix[query0]
-
-        fraction = float(count) / countOfCentroid
-
+        wordCosine = cosine_sim(centroid, wordVectors[w])
         # TODO: Find a better mapping
         x, y = mapping2(fraction, wordCosine)
 
         simularities[w] = wordCosine
-        counts[w] = count        
         fractions[w] = fraction
 
         resultList.append({
@@ -158,15 +190,14 @@ def mapping1(fraction, cosine):
 def mapping2(fraction, cosine):
     y = math.pow(fraction, 0.4)
     x = math.pow(cosine, 0.8)
-    r = float(math.sqrt((math.pow(1 - x, 2) + math.pow(1 - y, 2)) / 2))
+    r = math.sqrt((math.pow(1-x, 2) + math.pow(1-y, 2)) / 2)
     if x == 0:
         rad = math.pi / 2
     else:
-        rad = math.atan(y / x) * 4   
+        rad = math.atan(y / x) * 4
     x = r * math.cos(rad)
     y = r * math.sin(rad)
     return x, y
-
 
 def mapping3(fraction, cosine):
     f = fraction * 2 * math.pi % math.pi

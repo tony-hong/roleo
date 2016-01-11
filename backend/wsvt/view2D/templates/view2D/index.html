@@ -35,6 +35,16 @@
         window.onload = function() {
 			loadView2D(); // view2D.js
 			loadInputTextFilter(); // inputTextFilter.js
+			// load error_code.json into frontend
+			$.ajax({
+				url:      'errorCodeJSON/',
+				type:     'GET',
+				data:     null,
+				async:    true,
+				success:  function(response){
+				  loadErrCodeJSON(response);
+				}
+            });
 		}
         function buttonClicked(){
 			setIsInProcessing(true);
@@ -85,8 +95,10 @@
           <form id="myDiv">
             <div class="inline_elements input_word">
               <span class="left_align">Noun:</span>
-              <input id="input_noun" type="text" name="noun" class="form-control"  placeholder="apple" data-toggle="tooltip_noun" title="Enter a noun here!">
-              <div class="inline_elements input_word radio">
+              <input id="input_noun" type="text" name="noun" class="form-control"  placeholder="e.g. apple" data-toggle="tooltip_noun" title="Enter a noun here!">
+              <!-- label show related error message for the input -->
+			  <label id="label_msg_noun"></label>
+			  <div class="inline_elements input_word radio">
                 <label class="left_align">
                   <input type="radio" name="group1" value="noun">Noun selects verb
                 </label>
@@ -106,7 +118,9 @@
             </div><br><br>
             <div class="inline_elements input_word">
               <span class="left_align">Verb:</span>
-              <input id="input_verb" type="text" name="verb" class="form-control"  placeholder="eat" data-toggle="tooltip" title="Enter a verb!">
+              <input id="input_verb" type="text" name="verb" class="form-control"  placeholder="e.g. eat" data-toggle="tooltip" title="Enter a verb!">
+			  <!-- label show related error message for the input -->
+			  <label id="label_msg_verb"></label>
               <div class="inline_elements input_word radio">
                 <label class="left_align">
                   <input type="radio" name="group1" value="verb" checked="checked">Verb selects noun

@@ -38,6 +38,9 @@ var selectedNode;      // The current node get focused(mouse is over)
 var isInProcessing = false;  // Boolean tells current post request is still in processing not returned yet
                              // Works only under async-request
 
+var errCode = null;
+var errCodeJSON = null;
+							 
 var debugCnt = 0;
 
 /* Default values */
@@ -73,9 +76,19 @@ function init(canvas2) {
 	mouseWheelCnt = 0;
 }
 
+function loadErrCodeJSON(errCodeJSON_Object) {
+	errCodeJSON = errCodeJSON_Object;
+	if (errCodeJSON == null) alert("errCodeJSON_Object is null");
+}
+
 function createNodesFromJSON(responseJSON_Object) {
 	var set = responseJSON_Object;
-	if (set == null) alert("parseJSON object returns null");
+	if (set == null) alert("responseJSON_Object is null");
+	errCode = set.errCode;
+	// if error when query simply return null
+	if (errCode != null) {
+		return null;
+	}
 	var nodes = [];
 	var centeroid = new Node(new Point2D(), "centroid", 1);
 	nodes.push(centeroid); // [0]
@@ -101,18 +114,19 @@ function createNodesFromJSON(responseJSON_Object) {
 }
 
 function updateQuerySet(nodes) {
-	if (!nodes) alert("nodes is null");
 	init(document.getElementById("myCanvas"));
-	querySet.nodes = nodes;
-	// scale from [-1,1] to [-0.5*WIDTH, 0.5*WIDTH] or HEIGHT
-	for (i=0; i<nodes.length; ++i) {
-		nodes[i].pos.x *= 0.5*WIDTH;
-		nodes[i].pos.y *= 0.5*HEIGHT;
+	if(nodes) {
+		querySet.nodes = nodes;
+		// scale from [-1,1] to [-0.5*WIDTH, 0.5*WIDTH] or HEIGHT
+		for (i=0; i<nodes.length; ++i) {
+			nodes[i].pos.x *= 0.5*WIDTH;
+			nodes[i].pos.y *= 0.5*HEIGHT;
+		}
+		//
+		view.update();
+		//
+		invalidate();
 	}
-	//
-	view.update();
-	//
-	invalidate();
 }
 
 function draw() {
@@ -123,17 +137,29 @@ function draw() {
 	// After processing, visualize results
 	else if (!isValid) {
 		clear();
-		// recompute bboxes
-		for (i=0; i<view.nodeElements.length; ++i) {
-			view.nodeElements[i].bbox = view.nodeElements[i].computeBBox();
+		// if errCode != null, display err msg
+		if (errCode != null) {
+			TRANSFORMATION.resetTransform();
+			ctx.font = "15px Comic Sans MS";
+			ctx.textAlign = "center";
+			ctx.fillStyle = "red";
+			ctx.fillText(errCodeJSON[errCode], 0.5*WIDTH, 0.5*HEIGHT);
+			TRANSFORMATION.updateTransform();
 		}
-		// recheck grids
-		// TODO check scale first, only checkGrids if scale changed
-		//      with setInterval 30 for draw(), do not need addtional check, won't influence performance
-		view.checkGrids(isZoomIn);
-		//
-		TRANSFORMATION.updateTransform();
-		view.draw(ctx);
+		// else
+		else {
+			// recompute bboxes
+			for (i=0; i<view.nodeElements.length; ++i) {
+				view.nodeElements[i].bbox = view.nodeElements[i].computeBBox();
+			}
+			// recheck grids
+			// TODO check scale first, only checkGrids if scale changed
+			//      with setInterval 30 for draw(), do not need addtional check, won't influence performance
+			view.checkGrids(isZoomIn);
+			//
+			TRANSFORMATION.updateTransform();
+			view.draw(ctx);
+		}
 		validate();
 	}
 }
@@ -172,6 +198,14 @@ function validate() {
 
 function setIsInProcessing(b) {
 	isInProcessing = b;
+	var submitBtn = document.getElementById("submitBtn");
+	if (!submitBtn) alert("getElementById \"submitBtn\" failed");
+	if (b) submitBtn.disabled = true;
+	else submitBtn.disabled = false;
+}
+
+function ifInProcessing() {
+	return isInProcessing;
 }
 
 // add to window.onload
