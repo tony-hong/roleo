@@ -1,6 +1,3 @@
-import json
-import re
-
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.template import RequestContext, loader
@@ -45,17 +42,7 @@ def query(request):
     print 'n: ' + noun
     print 'group: ' + group
 
-    if group not in ['noun', 'verb']:
-        result = {'errCode' : errorCode.INTERNAL_ERROR}
-    else:
-        nre = re.match(r'^[a-z]+$', noun)
-        vre = re.match(r'^[a-z]+$', verb)
-        if not nre:
-            result = {'errCode' : errorCode.NOUN_FORMAT_ERROR}
-        elif not vre:
-            result = {'errCode' : errorCode.VERB_FORMAT_ERROR}
-        else:
-            result = process(verb, noun, role, group)
+    result = process(verb, noun, role, group)
 
     return JsonResponse(result)
 

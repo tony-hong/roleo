@@ -13,6 +13,7 @@
 import os
 import math
 import sys
+import re
 
 sys.path.append('Rollenverteilung/src/lib')
 sys.path.append('view2D')
@@ -54,9 +55,17 @@ def process(verb, noun, semanticRole, group):
 
     if group == 'noun':
         if noun:
+            nre = re.match(r'^[a-z]+$', noun)
+            if not nre:
+                result = {'errCode' : errorCode.NOUN_FORMAT_ERROR}
+                return result
             query0 = noun + '-n'
             semanticRole = semanticRole + '-1'
             if verb:
+                vre = re.match(r'^[a-z]+$', verb)
+                if not vre:
+                    result = {'errCode' : errorCode.VERB_FORMAT_ERROR}
+                    return result
                 query1 = verb + '-v'
                 double = True
         else:
@@ -66,8 +75,16 @@ def process(verb, noun, semanticRole, group):
             return result
     elif group == 'verb':
         if verb:
+            vre = re.match(r'^[a-z]+$', verb)
+            if not vre:
+                result = {'errCode' : errorCode.VERB_FORMAT_ERROR}
+                return result
             query0 = verb + '-v'
             if noun:
+                nre = re.match(r'^[a-z]+$', noun)
+                if not nre:
+                    result = {'errCode' : errorCode.NOUN_FORMAT_ERROR}
+                    return result
                 query1 = noun + '-n'
                 double = True
         else:
