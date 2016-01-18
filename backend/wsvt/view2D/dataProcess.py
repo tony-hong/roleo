@@ -1,13 +1,17 @@
 '''
-@Author: 
-    Tony Hong
-@Environment:
-    Already implemented in this file, so no need to export again
-    These paths are only for reference 
+    This module provide query processing for the 
+    rv.structure.Tensor object which are stored in hdf5 format.
 
-    export LD_LIBRARY_PATH=hdf5/1.8.16/lib
-    export PYTHONPATH=$PYTHONPATH:Rollenverteilung/src/lib
-    export PYTHONPATH=$PYTHONPATH:view2D
+    @Author: 
+        Tony Hong
+
+    @Environment:
+        Already implemented in this file, so no need to export again
+        These paths are only for reference 
+
+        export LD_LIBRARY_PATH=hdf5/1.8.16/lib
+        export PYTHONPATH=$PYTHONPATH:Rollenverteilung/src/lib
+        export PYTHONPATH=$PYTHONPATH:view2D
 '''
 
 import os
@@ -15,8 +19,8 @@ import math
 import sys
 import re
 
+# Configuration of environment
 sys.path.append('Rollenverteilung/src/lib')
-sys.path.append('view2D')
 os.system('export LD_LIBRARY_PATH=hdf5/1.8.16/lib')
 
 import matplotlib.pyplot as plt
@@ -24,13 +28,14 @@ import pandas as pd
 
 from rv.structure.Tensor import Matricisation
 from rv.similarity.Similarity import cosine_sim
+
 import errorCode
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 wordVectors = dict()
 simularities = dict()
-wordCounts = dict()
+wordSupports = dict()
 fractions = dict()
 result = dict()
 
@@ -42,16 +47,16 @@ matrix = Matricisation({
     'word1' : os.path.join(BASE_DIR, 'wackylmi-malt-v2-36K.word1.h5') 
 })
 
-# matrix = Matricisation({
-#     'word0' : 'view2D/wackylmi-malt-v2-36K.word0.h5',
-#     'word1' : 'view2D/wackylmi-malt-v2-36K.word1.h5'
-# })
 
+'''
+    Processing function for the query for the client
+
+    @return: result = dict()
+'''
 def process(verb, noun, semanticRole, group):
     print 'process start...'
 
     double = False
-    result = {}
 
     if group == 'noun':
         if noun:
@@ -114,23 +119,21 @@ def process(verb, noun, semanticRole, group):
     resultList = []
     queryFraction = 0
     queryCosine = 0
-    maxCount = 0
+    maxmaxSupport = 0
 
     # ISSUE: double call of getMemberVectors, need improvement
     # centroid = matrix.getCentroid(query0, 'word1', 'word0', {'link':[semanticRole]})
     centroid = pd.concat(memberVectors).sum(level=[0,1])
-    # TODO
-    countOfCentroid = centroid.ix[semanticRole].ix[query0]
 
     for w in wordList:
         row = matrix.getRow('word0', w)
         wordVectors[w] = row
 
-        count = row.ix[semanticRole].ix[query0]
-        wordCounts[w] = count
+        support = row.ix[semanticRole].ix[query0]
+        wordSupports[w] = support
 
-        if count > maxCount:
-            maxCount = count
+        if support > maxmaxSupport:
+            maxmaxSupport = support
 
     if double:
         # process query
@@ -148,25 +151,26 @@ def process(verb, noun, semanticRole, group):
                 queryCosine = cosine_sim(centroid, query)
                 print 'exception: query.ix[semanticRole].ix[query0] is empty'
             else:
-                count = vector.ix[query0] 
-                queryFraction = float(count) / maxCount
+                support = vector.ix[query0] 
+                queryFraction = float(support) / maxmaxSupport
                 queryCosine = cosine_sim(centroid, query)
         except KeyError:
             print 'exception: query.ix[semanticRole] is empty'
             result = {'errCode' : errorCode.SMT_ROLE_EMPTY}
             return result
 
-        # TODO: Find a better mapping
-        q_x, q_y = mapping2(queryFraction, queryCosine)
+        # Apply mapping to query
+        q_x, q_y = mapping(queryFraction, queryCosine)
         if query1 in wordList:
             wordList.remove(query1)
 
     for w in wordList:
-        fraction = float(wordCounts[w]) / maxCount
+        fraction = float(wordSupports[w]) / maxmaxSupport
 
         wordCosine = cosine_sim(centroid, wordVectors[w])
-        # TODO: Find a better mapping
-        x, y = mapping2(fraction, wordCosine)
+
+        # Apply mapping to each word
+        x, y = mapping(fraction, wordCosine)
 
         simularities[w] = wordCosine
         fractions[w] = fraction
@@ -196,15 +200,12 @@ def process(verb, noun, semanticRole, group):
 
     return result
 
+'''
+    Mapping from fraction, and cosine to the x, y coordinate
 
-def mapping1(fraction, cosine):
-    rad = math.acos(cosine) * 4
-    r = pow((1 - fraction), power)
-    x = r * math.cos(rad)
-    y = r * math.sin(rad)    
-    return x, y
-
-def mapping2(fraction, cosine):
+    @return: (x, y) = tuple()
+'''
+def mapping(fraction, cosine):
     y = math.pow(fraction, 0.4)
     x = math.pow(cosine, 0.8)
     r = math.sqrt((math.pow(1-x, 2) + math.pow(1-y, 2)) / 2)
@@ -215,36 +216,3 @@ def mapping2(fraction, cosine):
     x = r * math.cos(rad)
     y = r * math.sin(rad)
     return x, y
-
-def mapping3(fraction, cosine):
-    f = fraction * 2 * math.pi % math.pi
-    r = math.pow(1 - cosine, 10)
-    rad = f
-    x = r * math.cos(rad)
-    y = r * math.sin(rad)
-    return x, y
-
-def printCoordinates():
-    X = []
-    Y = []
-    for w in wordList:
-        sub = 20
-        s = str.ljust(w, sub)
-        rad = math.acos(simularities[w]) * 4
-        r = pow((1 - fractions[w]), power)
-        x = r * math.cos(rad)
-        y = r * math.sin(rad)
-        X.append(x)
-        Y.append(y)
-        print 'word: %s x:\t %f \t y:\t %f \t r:\t %f \t rad:\t %f' % (s, x, y, r, rad)
-
-    print X
-    print Y
-    print 'query1: \t' + query1 + '\t cosine_sim: \t' + str(queryCosine) + '\tx: \t' + str(q_x) + '\ty: \t' + str(q_y)
-
-def plotG():
-    plt.plot(0, 0, 'ro')
-    plt.plot(X, Y, 'bo')
-    plt.plot(q_x, q_y, 'go')
-    plt.savefig('fig.png')
-    plt.show
