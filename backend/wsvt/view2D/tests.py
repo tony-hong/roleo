@@ -16,19 +16,6 @@ class IndexTest(TestCase):
     # TODO add other test
 
 class QueryTest(TestCase):
-    def test_VERB_FORMAT_ERROR(self):
-        request = HttpRequest()
-        request.method = 'POST'
-        request.POST['verb'] = '你好'.decode('utf8')
-        request.POST['role'] = 'A0'
-        request.POST['noun'] = 'apple'
-        request.POST['group1'] = 'verb'
-        response = query(request)
-        realResult = response.content
-
-        result = '{"errCode": ' + str(errorCode.VERB_FORMAT_ERROR) + '}'
-        self.assertEqual(result, realResult)
-
     def test_NOUN_FORMAT_ERROR(self):
         request = HttpRequest()
         request.method = 'POST'
@@ -41,7 +28,20 @@ class QueryTest(TestCase):
 
         result = '{"errCode": ' + str(errorCode.NOUN_FORMAT_ERROR) + '}'
         self.assertEqual(result, realResult)
-        
+    
+    def test_VERB_FORMAT_ERROR(self):
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST['verb'] = '你好'.decode('utf8')
+        request.POST['role'] = 'A0'
+        request.POST['noun'] = 'apple'
+        request.POST['group1'] = 'verb'
+        response = query(request)
+        realResult = response.content
+
+        result = '{"errCode": ' + str(errorCode.VERB_FORMAT_ERROR) + '}'
+        self.assertEqual(result, realResult)
+    
     def test_group_notExist(self):
         request = HttpRequest()
         request.method = 'POST'
@@ -68,9 +68,12 @@ class DataProcessorTest(TestCase):
         wordList = ['announce-v', 'release-v', 'launch-v', 'unveil-v', 'have-v', 'make-v', 'say-v', 'introduce-v', 'sell-v', 'add-v', 'do-v', 'recommend-v', 'admit-v', 'claim-v', 'listen-v', 'offer-v', 'recall-v', 'dominate-v', 'slice-v', 'decide-v']
         self.assertEqual('apple-n', realResult['queried']['word'])
 
-    def test_process_exception_INTERNAL_ERROR(self):
-        result = {'errCode' : errorCode.INTERNAL_ERROR}
-        self.assertEqual(result, process('', '', '', 'error'))
+        wordAppeared = True
+        nodes = realResult['nodes']
+        for w in wordList:
+            if w in nodes:
+                wordAppeared = False
+        self.assertEqual(True, wordAppeared)
 
     def test_process_exception_NOUN_EMPTY(self):
         result = {'errCode' : errorCode.NOUN_EMPTY}
@@ -92,4 +95,7 @@ class DataProcessorTest(TestCase):
         result = {'errCode' : errorCode.SMT_ROLE_EMPTY}
         self.assertEqual(result, process('eat', 'apple', 'AM-MOD', 'verb'))
 
+    def test_process_exception_INTERNAL_ERROR(self):
+        result = {'errCode' : errorCode.INTERNAL_ERROR}
+        self.assertEqual(result, process('', '', '', 'error'))
 # TODO add other test
