@@ -5,6 +5,10 @@ NOUN_FORMAT_ERROR   = 301
 # "exception: verb is empty"
 VERB_FORMAT_ERROR   = 302
 
+# "exception: non english word is temporarily not supported"
+# Reserved
+NON_ENGLISH         = 303
+
 # "exception: noun is empty"
 NOUN_EMPTY          = 401
 
@@ -23,5 +27,3 @@ SMT_ROLE_EMPTY      = 405
 # "exception: internal error!"
 INTERNAL_ERROR      = 501
 
-# "exception: non english word is temporarily not supported"
-NON_ENGLISH         = 502
