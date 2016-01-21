@@ -33,8 +33,21 @@ div.fill_display_with_padding{
 }
 
 @media only screen and (min-width: 768px) {
-  div.fill_display_with_padding{
-    padding-bottom:100px;
+  div.parent_row {
+      overflow: hidden;
+  }
+  div.content_columns {
+      vertical-align: top;
+      display: inline;
+      zoom:1;
+      padding-bottom: 9999px;
+      margin-bottom: -9999px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  div.content_columns {
+      padding-bottom: 20px;
   }
 }
 
