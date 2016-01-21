@@ -53,24 +53,28 @@ matrix = Matricisation({
 
     @return: result = dict()
 '''
-def process(verb, noun, semanticRole, group):
+def process(verb, noun, semanticRole, group, topN = 20):
     print 'process start...'
 
     double = False
 
+    if noun:
+        nre = re.match(r'^[a-z]+$', noun)
+        if not nre:
+            result = {'errCode' : errorCode.NOUN_FORMAT_ERROR}
+            return result
+
+    if verb:
+        vre = re.match(r'^[a-z]+$', verb)
+        if not vre:
+            result = {'errCode' : errorCode.VERB_FORMAT_ERROR}
+            return result
+
     if group == 'noun':
         if noun:
-            nre = re.match(r'^[a-z]+$', noun)
-            if not nre:
-                result = {'errCode' : errorCode.NOUN_FORMAT_ERROR}
-                return result
             query0 = noun + '-n'
             semanticRole = semanticRole + '-1'
             if verb:
-                vre = re.match(r'^[a-z]+$', verb)
-                if not vre:
-                    result = {'errCode' : errorCode.VERB_FORMAT_ERROR}
-                    return result
                 query1 = verb + '-v'
                 double = True
         else:
@@ -80,16 +84,8 @@ def process(verb, noun, semanticRole, group):
             return result
     elif group == 'verb':
         if verb:
-            vre = re.match(r'^[a-z]+$', verb)
-            if not vre:
-                result = {'errCode' : errorCode.VERB_FORMAT_ERROR}
-                return result
             query0 = verb + '-v'
             if noun:
-                nre = re.match(r'^[a-z]+$', noun)
-                if not nre:
-                    result = {'errCode' : errorCode.NOUN_FORMAT_ERROR}
-                    return result
                 query1 = noun + '-n'
                 double = True
         else:
@@ -104,7 +100,7 @@ def process(verb, noun, semanticRole, group):
 
     # members[0]: vectors
     # members[1]: list of words
-    temp = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, 20)
+    temp = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, topN)
 
     if type(temp) != type(tuple()):
         print 'exception: memberVectors is empty' 
