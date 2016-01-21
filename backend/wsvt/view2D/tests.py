@@ -45,7 +45,7 @@ class QueryTest(TestCase):
     def test_group_notExist(self):
         request = HttpRequest()
         request.method = 'POST'
-        request.POST['verb'] = '你好'.decode('utf8')
+        request.POST['verb'] = 'eat'
         request.POST['role'] = 'A0'
         request.POST['noun'] = 'apple'
         request.POST['group1'] = 'asdf'
