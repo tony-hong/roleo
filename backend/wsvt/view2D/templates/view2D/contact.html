@@ -13,8 +13,10 @@
     <title>Web-based semantic visualization tool</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="../../static/view2D/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="{% static 'view2D/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- js files -->
+    <script src="{% static 'view2D/js/jquery.min.js' %}"></script>
+    <script src="{% static 'view2D/bootstrap/js/bootstrap.min.js' %}"></script>
     <!-- Custom styles for this template -->
     <link href="{% static 'view2D/css/contact.css' %}" rel="stylesheet">
   </head>
@@ -45,7 +47,11 @@
 
     <div class="container padding_top_menu">
       <h2> Contact </h2>
-      <div style="width:72%;display:inline-block; float:left;">
+      <div class="person">
+        <div class="right" >
+          <img src="../../static/view2D/img/SFB-251-top.jpg" width="300" style="border: 1px solid lightgrey">
+        </div>
+      <div class="left">
       <p class="well">
 
       Vera Demberg<br><br>
@@ -62,11 +68,13 @@
       phone: +49 (0)681 302 70024<br>
       </p>
     </div>
-    <div style="display:inline-block; float:right;" >
-      <img src="../../static/view2D/img/SFB-251-top.jpg" width="300" style="border: 1px solid lightgrey">
     </div>
     <br>
-        <div style="width:72%; display:inline-block;">
+    <div class="person">
+    <div class="right">
+          <img src="../../static/view2D/img/twitterprofile_400x400.jpg" height="300" width="300" style="border: 1px solid lightgrey">
+        </div>
+        <div class="left">
         <p class="well">
 
         Asad Sayeed<br><br>
@@ -83,17 +91,7 @@
         phone: TBF<br>
         </p>
       </div>
-      <div style="display:inline-block; float:right;">
-            <img src="../../static/view2D/img/twitterprofile_400x400.jpg" height="300" width="300" style="border: 1px solid lightgrey">
-          </div>
+</div>
     </div><!-- /.container -->
-
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="js/index.js"></script>
   </body>
 </html>

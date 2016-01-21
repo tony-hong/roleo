@@ -13,23 +13,21 @@
     <title>Web-based semantic visualization tool</title>
 
     <!-- Bootstrap core CSS -->
-	<link href="{% static 'view2D/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+	  <link href="{% static 'view2D/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 
 
     <!-- Custom styles for this template -->
     <link href="{% static 'view2D/css/index.css' %}" rel="stylesheet">
 
-	<!-- TODO  a local version of jquery.min.js -->
-	<script src="{% static 'view2D/js/jquery.min.js' %}"></script>
+    <!-- TODO  a local version of jquery.min.js -->
+  	<script src="{% static 'view2D/js/jquery.min.js' %}"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<script src="{% static 'view2D/bootstrap/js/bootstrap.min.js' %}"></script>
+  	<script src="{% static 'view2D/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
-    <script src="{% static 'view2D/js/index.js' %}"></script>
-
     <script src="{% static 'view2D/js/view2D.js' %}"></script>
-	<script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
-	   <!-- <script src="{% static 'view2D/js/xmlHttpRequest.js' %}"></script> -->
+  	<script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
+	  <!-- <script src="{% static 'view2D/js/xmlHttpRequest.js' %}"></script> -->
     <script type="text/javascript">
 		// window.onload can only be defined at here
         window.onload = function() {
@@ -68,7 +66,7 @@
 
   <body>
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-inverse navbar-fixed-top no-margin-bottom">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -91,24 +89,24 @@
     </nav>
     <div class="container-fluid">
       <div class="row">
-      <div class="col-sm-2" style="background-color:lavender; height:100%;">
+      <div class="col-sm-3 left_column fill_display_with_padding">
       <div id="query_form">
           <h1>WSVT</h1>
 
           <form id="myDiv">
-            <div class="inline_elements input_word">
+            <div class="input_element">
               <span class="left_align">Noun:</span>
-              <input id="input_noun" type="text" name="noun" class="form-control" placeholder="e.g. apple" data-toggle="tooltip_noun" title="Enter a noun here!">
+              <input id="input_noun" type="text" name="noun" class="form-control"  placeholder="e.g. apple" data-toggle="tooltip_noun" title="Enter a noun here!">
               <!-- label show related error message for the input -->
-			  <label id="label_msg_noun"></label>
-			  <div class="inline_elements input_word radio">
+			        <label id="label_msg_noun"></label>
+              <div class="input_element radio">
                 <label class="left_align">
                   <input type="radio" name="group1" value="noun">Noun selects verb
                 </label>
               </div>
             </div><br><br>
-            <div class="inline_elements" data-toggle="tooltip" title="Specify the role of the noun!">
-              <span class="left_align">Role:</span>
+            <div class="input_element" data-toggle="tooltip" title="Specify the role of the noun!">
+              <span class="left_align">Role:</span><br>
               <select id="select_role" class="form-control select_elements" name='role'>
                 {% if role_list %}
                   {% for r in role_list %}
@@ -118,25 +116,26 @@
                   <p>No roles are available.</p>
                 {% endif %}
               </select>
-            </div><br><br>
-            <div class="inline_elements input_word">
+            </div><br>
+            <div class="input_element">
               <span class="left_align">Verb:</span>
-              <input id="input_verb" type="text" name="verb" class="form-control" placeholder="e.g eat" data-toggle="tooltip" title="Enter a verb!">
-			  <!-- label show related error message for the input -->
-			  <label id="label_msg_verb"></label>
-              <div class="inline_elements input_word radio">
+              <input id="input_verb" type="text" name="verb" class="form-control"  placeholder="e.g. eat" data-toggle="tooltip" title="Enter a verb!">
+              <!-- label show related error message for the input -->
+      			  <label id="label_msg_verb"></label>
+              <div class="input_element radio">
+
                 <label class="left_align">
                   <input type="radio" name="group1" value="verb" checked="checked">Verb selects noun
                 </label>
             </div></div><br><br>
-            <div class="inline_elements layout_div" data-toggle="tooltip_button" title="Send the query!">
+            <div class="input_element" data-toggle="tooltip_button" title="Send the query!">
               <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:buttonClicked()>Submit Query</button>
               <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            </div><br><br>
 
-            </div><br><br><br>
             <div class="select_elements">
                 Model:
-                <div class="inline_elements layout_div" data-toggle="tooltip_button" title="Choose another model!">
+                <div class="input_element" data-toggle="tooltip_button" title="Choose another model!">
                 <select class="form-control" name='model'>
                   <option value="model1">Model 1</option>
                   <option value="model2">Model 2</option>
@@ -144,21 +143,21 @@
                 </select>
               </div>
             </div><br>
-              <div class="inline_elements layout_div" data-toggle="tooltip_button" title="Start the change of the model!">
+              <div class="input_element" data-toggle="tooltip_button" title="Start the change of the model!">
                 <button id="changeModelBtn" type='button' class="btn btn-primary" onclick=javascript:changeModel()>Change Model</button>
               </div>
             </div>
-          </form>
-
+          </form><br><br>
+          <!-- Add a dropdown menu let user specify image format -->
+          <span class="left_align">Image:</span><br>
+              <button id="downloadBtn" class="btn btn-primary">Download Result</button>
+      		<a href="#" id="downloadA" download></a>
           </div>
-      <div class="col-sm-10">
+      <div class="col-sm-9">
       <div class="visualization" id="visualization_result">
         <canvas id="myCanvas" width="600" height="600" style="border:1px solid #000000;">
     			This text is displayed if your browser does not support HTML5 Canvas.
     		</canvas><br><br>
-		<!-- Add a dropdown menu let user specify image format -->
-        <button id="downloadBtn" class="btn btn-primary">Download Result</button>
-		<a href="#" id="downloadA" download></a>
       </div></div>
     </div><!-- /.container -->
 
