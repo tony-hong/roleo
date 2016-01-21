@@ -4,3 +4,17 @@ body {
 div.padding_top_menu {
   padding-top: 25px;
 }
+
+div.step {
+    overflow:hidden;
+}
+
+div.right {
+    float: right;
+    width: 300px;
+}
+
+div.left{
+  overflow: hidden;
+  padding-right: 10px;
+}

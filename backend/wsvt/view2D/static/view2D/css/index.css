@@ -1,31 +1,24 @@
 body {
   padding-top: 50px;
 }
+
 div.query {
   padding-top: 25px;
   text-align: center
 }
 
 .select_elements {
-  width: 150px;
+  min-width: 150px;
 }
 
-.input_word {
-  width: 150px;
+.input_element {
+  min-width: 150px;
+  width: 70%;
   margin:0 !important;
-}
-
-div.layout_div {
-  width: 110px;
 }
 
 .left_align {
   float: left;
-}
-
-div.inline_elements {
-  display:inline-block;
-  vertical-align: top;
 }
 
 div.visualization {
@@ -34,11 +27,22 @@ div.visualization {
   padding-bottom: 25px;
 }
 
-.row{
-    overflow: hidden;
+div.fill_display_with_padding{
+  padding-bottom:20px;
 }
 
-[class*="col-"]{
-    margin-bottom: -99999px;
-    padding-bottom: 99999px;
+@media only screen and (min-width: 768px) {
+  div.fill_display_with_padding{
+    padding-bottom:100px;
+  }
+}
+
+div.left_column {
+  padding-top:10px;
+  background-color:lavender;
+  height:100%;
+}
+
+div.no-margin-bottom {
+  margin-bottom: 0px !important;
 }
