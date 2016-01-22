@@ -35,7 +35,7 @@ def query(request):
     role = request.POST['role']
     noun = request.POST['noun'].strip().lower()
     group = request.POST['group1']
-    # topN = int(request.POST['topn'])
+    topN = int(request.POST['top_results'])
 
     result = {}
 
@@ -43,9 +43,10 @@ def query(request):
     print 'r: ' + role
     print 'n: ' + noun
     print 'group: ' + group
+    print 'top_results: ' + str(topN)
 
-    result = process(verb, noun, role, group)
-    # result = process(verb, noun, role, group, topN)
+    # result = process(verb, noun, role, group)
+    result = process(verb, noun, role, group, topN)
 
     return JsonResponse(result)
 
