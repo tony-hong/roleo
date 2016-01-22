@@ -67,13 +67,18 @@ function init(canvas2) {
 	TRANSFORMATION.translationY += GLOBAL_OFFSET_Y;
 	//
 	view = new CanvasView();
-	//
+	// init state vars
+	initStateVariables();
+}
+
+/* Factorize initiating all state related variables out */
+function initStateVariables() {
 	selectedNode = null;
 	isValid = false;
 	isDragging = false;
 	isOverlap = false;
 	isZoomIn = true;
-	mouseWheelCnt = 0;
+	mouseWheelCnt = 0;	
 }
 
 function loadErrCodeJSON(errCodeJSON_Object) {
@@ -696,7 +701,8 @@ function resetView() {
 	centralize(centroid);
 	// reset grids to show all text
 	view.resetGrids();
-	isZoomIn = true; // this is necessary for checkGrids(isZoomIn) to draw all text properly
+	// reset state vars
+	initStateVariables();
 	//
 	invalidate();
 }
