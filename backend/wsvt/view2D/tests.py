@@ -23,6 +23,7 @@ class QueryTest(TestCase):
         request.POST['role'] = 'A0'
         request.POST['noun'] = '你好'.decode('utf8')
         request.POST['group1'] = 'verb'
+        request.POST['top_results'] = 20
         response = query(request)
         realResult = response.content
 
@@ -36,6 +37,7 @@ class QueryTest(TestCase):
         request.POST['role'] = 'A0'
         request.POST['noun'] = 'apple'
         request.POST['group1'] = 'verb'
+        request.POST['top_results'] = 20
         response = query(request)
         realResult = response.content
 
@@ -49,6 +51,7 @@ class QueryTest(TestCase):
         request.POST['role'] = 'A0'
         request.POST['noun'] = 'apple'
         request.POST['group1'] = 'asdf'
+        request.POST['top_results'] = 20
         response = query(request)
         realResult = response.content
 
