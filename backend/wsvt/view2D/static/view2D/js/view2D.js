@@ -303,6 +303,20 @@ BBox2D.prototype.contains = function(point2D) {
 /** Controls **/
 /** Controls **/
 function addEventListners(canvas) {
+	// TOUCH EVENTS adapter
+	canvas.addEventListener('touchstart', function(e) {
+		alert("touchstart NOT IMPLEMENTED");
+	});
+	
+	canvas.addEventListener('touchmove', function(e) {
+		alert("touchmove NOT IMPLEMENTED");
+	});
+	
+	canvas.addEventListener('touchend', function(e) {
+		alert("touchend NOT IMPLEMENTED");
+	});
+	
+	// MOUSE EVENTS handler
 	canvas.addEventListener('mousedown', function(e) {
 		isDragging = true;
 		preMousePos = getMouse(e);
