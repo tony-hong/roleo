@@ -345,11 +345,7 @@ function addEventListners(canvas) {
 	canvas.addEventListener('dblclick', function(e) {
 		var nodeElements = getSelectedNode(getMouse(e));
 		if (nodeElements.length != 0) {
-			// translation move the current node to the center of the canvas
-			var offsetX = (0.5*WIDTH)  - (nodeElements[0].bbox.pos.x + nodeElements[0].bbox.w*0.5);
-			var offsetY = (0.5*HEIGHT) - (nodeElements[0].bbox.pos.y + nodeElements[0].bbox.h*0.5);
-			TRANSFORMATION.translationX += offsetX;
-			TRANSFORMATION.translationY += offsetY;
+			centralize(nodeElements[0]);
 			invalidate();
 		}
 	});
@@ -554,6 +550,11 @@ CanvasView.prototype.update = function() {
 		this.nodeElements.push(new NodeElement(querySet.nodes[i]));
 	}
 }
+CanvasView.prototype.resetGrids = function() {
+	for (i=0; i<this.nodeElements.length; ++i) {
+		this.nodeElements[i].ifDrawText = true;
+	}
+}
 CanvasView.prototype.checkGrids = function(isZoomIn) {
 	// default grid size when scale is 1
 	// can be tuned for practical performance
@@ -675,6 +676,29 @@ Transformation.prototype.resetTransform = function() {
 Transformation.prototype.transform = function(point2D) {
 	return new Point2D(point2D.x * this.dataScaleX * this.scale + this.translationX,
 					   point2D.y * this.dataScaleY * this.scale * (-1) + this.translationY);
+}
+
+/* Move a node to center of the canvas */
+function centralize(nodeElement) {
+	// translation move the current node to the center of the canvas
+	var offsetX = (0.5*WIDTH)  - (nodeElement.bbox.pos.x + nodeElement.bbox.w*0.5);
+	var offsetY = (0.5*HEIGHT) - (nodeElement.bbox.pos.y + nodeElement.bbox.h*0.5);
+	TRANSFORMATION.translationX += offsetX;
+	TRANSFORMATION.translationY += offsetY;
+}
+
+/* Reset the view and move centroid to the centre */
+function resetView() {
+	var centroid = view.nodeElements[0];
+	if (centroid == null) return;
+	// rescale then centralize
+	TRANSFORMATION.scale = 1;
+	centralize(centroid);
+	// reset grids to show all text
+	view.resetGrids();
+	isZoomIn = true; // this is necessary for checkGrids(isZoomIn) to draw all text properly
+	//
+	invalidate();
 }
 
 /* Utility to convert rgba value to a string */
