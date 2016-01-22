@@ -433,14 +433,17 @@ function normalizeWheelSpeed(event) {
     var normalized;
     if (event.wheelDelta) {
         normalized = (event.wheelDelta % 120 - 0) == -0 ? event.wheelDelta / 120 : event.wheelDelta / 12;
-    } else { // since 2016.1.22 firefox update
+    } else { 
         var rawAmmount = event.deltaY ? event.deltaY : event.detail;
-		// 2016.1.22 works that this:
 		normalized = -rawAmmount;
-		// 2016.1.22 not works anymore:
-        //normalized = -(rawAmmount % 3 ? rawAmmount * 10 : rawAmmount / 3);
+        normalized = -(rawAmmount % 3 ? rawAmmount * 10 : rawAmmount / 3);
     }
-    return normalized;
+	// 2016.1.22 
+	// due to different internal implementations for different browsers as well as different platforms
+	// below is the unified return value
+    if (normalized > 0) return 1;
+	else if (normalized < 0) return -1;
+	else return 0;
 }
 
 /** Views **/
