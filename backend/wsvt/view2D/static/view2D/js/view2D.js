@@ -31,9 +31,10 @@ var isDragging;        // Boolean tells whether the mouse is under dragging cond
 var isMouseDown;       // Boolean tells whether mouse button is currently down
 var isOverlap;         // Boolean tells whether mouse position is over overlap zone multiple nodes
 var isZoomIn;          // Boolean tells whether previous zoom event is in or out
-var prevMousePos;      // Position stores mouse position of previous tick
 var mouseWheelCnt;     // Scalar stores mouse wheel value similar as delta value
 var selectedNode;      // The current node get focused(mouse is over)
+var prevMousePos;      // Position stores mouse position of previous tick
+var startFingerDist = -1;
 
 
 var isInProcessing = false;  // Boolean tells current post request is still in processing not returned yet
@@ -327,10 +328,27 @@ function addEventListners(canvas) {
 		var touches = e.touches;
 		//
 		if (touches.length == 1) {
-			// drag
+			// dragging
 			var mouseMoveEvent = new MouseEvent('mousemove', {clientX:touches.item(0).clientX, clientY:touches.item(0).clientY});
 			canvas.dispatchEvent(mouseMoveEvent);
 			//
+		}
+		else if (touches.length == 2) {
+			//
+			if (startFingerDist == -1) {
+				startFingerDist = distance(touches.item(0), touches.item(1));
+			}
+			// zooming
+			var curDist = distance(touches.item(0), touches.item(1));
+			isZoomIn = (startFingerDist < curDist) ? true : false;
+			var delta = 0;
+			if (startFingerDist < curDist) delta = 1;
+			else if (startFingerDist > curDist) delta = -1;
+			// still use mouseWheelCnt to compute the scaling factor
+			// same as for mouse wheel interaction
+			mouseWheelCnt = Math.min(MAX_MOUSE_WHEEL_CNT, Math.max(MIN_MOUSE_WHEEL_CNT, mouseWheelCnt + delta));
+			TRANSFORMATION.scale = Math.pow(1.05, mouseWheelCnt);
+			invalidate();	
 		}
 	});
 	
@@ -346,10 +364,7 @@ function addEventListners(canvas) {
 	canvas.addEventListener('mousedown', function(e) {
 		isMouseDown = true;
 		preMousePos = getMouse(e);
-		// codes below for the touch interaction
-		// clear previous state
-		//if (selectedNode) selectedNode.isMouseOver = false;
-		//
+		// codes below are dedicated for the touch interaction(node selection)
 		selectedNodes = getSelectedNode(getMouse(e));
 		if (selectedNodes.length != 0) {
 			if (selectedNode) selectedNode.isMouseOver = false;
@@ -395,11 +410,13 @@ function addEventListners(canvas) {
 	canvas.addEventListener('mouseup', function(e) {
 		isMouseDown = false;
 		isDragging = false;
+		startFingerDist = -1;
 	});
 	
 	canvas.addEventListener('mouseout', function(e) {
 		isMouseDown = false;
 		isDragging = false;
+		startFingerDist = -1;
 	});
 	
 	canvas.addEventListener('dblclick', function(e) {
@@ -770,4 +787,11 @@ function rgbaToString(r, g, b, a) {
 	var g2 = Math.round(g * 255.0);
 	var b2 = Math.round(b * 255.0);
 	return "rgba(" + r2.toString() + "," + g2.toString() + "," + b2.toString() + "," + a.toString() + ")";
+}
+
+/* Utility to calculate distance of two touch points */
+function distance(touch1, touch2) {
+	var deltaX = touch1.screenX - touch2.screenX;
+	var deltaY = touch1.screenY - touch2.screenY;
+	return Math.sqrt(deltaX*deltaX + deltaY*deltaY);
 }
