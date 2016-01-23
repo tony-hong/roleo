@@ -27,7 +27,8 @@ var ctx;               // 2D Context object in Canvas
 var querySet;          // Container stores all nodes(words) returned from a single query
 var view;              // Container stores all node views responsible for draw
 var isValid;           // Boolean tells should canvas redraw or not 
-var isDragging;        // Boolean tells whether the mouse is under dragging condition
+var isDragging;        // Boolean tells whether the mouse is under dragging condition (down+move)
+var isMouseDown;       // Boolean tells whether mouse button is currently down
 var isOverlap;         // Boolean tells whether mouse position is over overlap zone multiple nodes
 var isZoomIn;          // Boolean tells whether previous zoom event is in or out
 var prevMousePos;      // Position stores mouse position of previous tick
@@ -76,6 +77,7 @@ function initStateVariables() {
 	selectedNode = null;
 	isValid = false;
 	isDragging = false;
+	isMouseDown = false;
 	isOverlap = false;
 	isZoomIn = true;
 	mouseWheelCnt = 0;	
@@ -304,26 +306,62 @@ BBox2D.prototype.contains = function(point2D) {
 /** Controls **/
 function addEventListners(canvas) {
 	// TOUCH EVENTS adapter
+	// adapter should block everything and fire proper new mouse events
 	canvas.addEventListener('touchstart', function(e) {
-		alert("touchstart NOT IMPLEMENTED");
+		//alert("touchstart NOT IMPLEMENTED");
+		e.preventDefault();
+		//
+		var touches = e.touches;
+		//
+		if (touches.length == 1) {
+			// node selection
+			var mouseDownEvent = new MouseEvent('mousedown', {clientX:touches.item(0).clientX, clientY:touches.item(0).clientY});
+			canvas.dispatchEvent(mouseDownEvent);
+		}
 	});
 	
 	canvas.addEventListener('touchmove', function(e) {
-		alert("touchmove NOT IMPLEMENTED");
+		//alert("touchmove NOT IMPLEMENTED");
+		e.preventDefault();
+		//
+		var touches = e.touches;
+		//
+		if (touches.length == 1) {
+			// drag
+			var mouseMoveEvent = new MouseEvent('mousemove', {clientX:touches.item(0).clientX, clientY:touches.item(0).clientY});
+			canvas.dispatchEvent(mouseMoveEvent);
+			//
+		}
 	});
 	
 	canvas.addEventListener('touchend', function(e) {
-		alert("touchend NOT IMPLEMENTED");
+		//alert("touchend NOT IMPLEMENTED");
+		e.preventDefault();
+		//
+		var mouseUpEvent = new MouseEvent('mouseup');
+		canvas.dispatchEvent(mouseUpEvent);
 	});
 	
 	// MOUSE EVENTS handler
 	canvas.addEventListener('mousedown', function(e) {
-		isDragging = true;
+		isMouseDown = true;
 		preMousePos = getMouse(e);
+		// codes below for the touch interaction
+		// clear previous state
+		//if (selectedNode) selectedNode.isMouseOver = false;
+		//
+		selectedNodes = getSelectedNode(getMouse(e));
+		if (selectedNodes.length != 0) {
+			if (selectedNode) selectedNode.isMouseOver = false;
+			selectedNode = selectedNodes[0];
+			selectedNode.isMouseOver = true;
+		}
+		invalidate();
 	});
 	
 	canvas.addEventListener('mousemove', function(e) {
-		if (isDragging) {
+		if (isMouseDown) {
+			isDragging = true;
 			var curMousePos = getMouse(e);
 			TRANSFORMATION.translationX += curMousePos.x - preMousePos.x;
 			TRANSFORMATION.translationY += curMousePos.y - preMousePos.y;
@@ -331,6 +369,7 @@ function addEventListners(canvas) {
 			invalidate();
 		}
 		else {
+			isDragging = false;
 			// clear previous state
 			if (selectedNode) selectedNode.isMouseOver = false;
 			//
@@ -354,10 +393,12 @@ function addEventListners(canvas) {
 	});
 	
 	canvas.addEventListener('mouseup', function(e) {
+		isMouseDown = false;
 		isDragging = false;
 	});
 	
 	canvas.addEventListener('mouseout', function(e) {
+		isMouseDown = false;
 		isDragging = false;
 	});
 	
@@ -418,8 +459,8 @@ function addEventListners(canvas) {
 	dlBtn.addEventListener('click', function(e) {
 		var dlA = document.getElementById("downloadA");
 		if (!dlA) alert("getElementById(\"downloadA\") failed!");
-		// TODO change suffix using a dropdown menu
 		dlA.href = canvas.toDataURL('image/jpeg');
+		// TODO change name dynamically
 		dlA.download = "WSVT_Result.jpeg" ;
 		dlA.click();
 	});;
@@ -715,6 +756,8 @@ function resetView() {
 	centralize(centroid);
 	// reset grids to show all text
 	view.resetGrids();
+	// reset selectedNode
+	if(selectedNode) selectedNode.isMouseOver = false;
 	// reset state vars
 	initStateVariables();
 	//
