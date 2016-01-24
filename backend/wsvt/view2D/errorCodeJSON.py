@@ -1,11 +1,13 @@
+import errorCode
+
 errorCodeJSON = {
-    "301" : "exception: noun format error",
-    "302" : "exception: verb format error",
-    "401" : "exception: noun is empty",
-    "402" : "exception: verb is empty",
-    "403" : "exception: memberVectors is empty, main query word / semantic role does not exist",
-    "404" : "exception: query is empty, query word does not exist",
-    "405" : "exception: query.ix[semanticRole] is empty, semantic role of query word does not exist",
-    "501" : "exception: internal error",
-    "502" : "exception: non english word is temporarily not supported"
+    errorCode.NOUN_FORMAT_ERROR : "exception: noun format error",
+    errorCode.VERB_FORMAT_ERROR : "exception: verb format error",
+    errorCode.NOUN_EMPTY        : "exception: noun is empty",
+    errorCode.VERB_EMPTY        : "exception: verb is empty",
+    errorCode.MBR_VEC_EMPTY     : "exception: memberVectors is empty, main query word / semantic role does not exist",
+    errorCode.QUERY_EMPTY       : "exception: query is empty, query word does not exist",
+    errorCode.SMT_ROLE_EMPTY    : "exception: query.ix[semanticRole] is empty, / semantic role of query word does not exist",
+    errorCode.INTERNAL_ERROR    : "exception: internal error",
+    errorCode.NON_ENGLISH       : "exception: non english word is temporarily not supported"
 }
