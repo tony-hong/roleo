@@ -29,7 +29,6 @@ from rv.structure.Tensor import Matricisation
 from rv.similarity.Similarity import cosine_sim
 
 import errorCode
-from validator import validate
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -51,35 +50,17 @@ matrix = Matricisation({
 '''
     Processing function for the query for the client
 
+    @parameters: 
+        query0 = str()  # with -v/-n suffix
+        query1 = str()  # with -v/-n suffix
+        semanticRole = str() # with -1 suffix if noun selects noun
+        double = bool() # True when query1 is not empty
+        topN   = int()  # Number of top vectors which will be returned
+
     @return: result = dict()
 '''
-def process(verb, noun, semanticRole, group, topN = 20):
+def process(query0, query1, semanticRole, double, topN = 20):
     print 'process start...'
-
-    double = True
-    if not noun or not verb:
-        double = False
-
-    result = validate(verb, noun, group)
-
-    if result[0]:
-        pass
-    else:
-        return result[1]
-
-    if group == 'noun':
-        query0 = noun + '-n'
-        semanticRole = semanticRole + '-1'
-        if double:
-            query1 = verb + '-v'
-    elif group == 'verb':
-        query0 = verb + '-v'
-        if double:
-            query1 = noun + '-n'
-    else:        
-        print 'exception: internal error!'
-        errorMessage = {'errCode' : errorCode.INTERNAL_ERROR}
-        return errorMessage
 
     # members[0]: vectors
     # members[1]: list of words

@@ -6,7 +6,9 @@ from django.http import HttpRequest
 
 from view2D.views import index, query
 from view2D.dataProcess import process
+
 import view2D.errorCode as errorCode
+
 
 class IndexTest(TestCase):
     def test_view2D_URL_ResolvesTo_IndexView(self):
@@ -58,10 +60,38 @@ class QueryTest(TestCase):
         result = '{"errCode": ' + str(errorCode.INTERNAL_ERROR) + '}'
         self.assertEqual(result, realResult)
 
+    def test_NOUN_EMPTY(self):
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST['verb'] = 'eat'
+        request.POST['role'] = 'A0'
+        request.POST['noun'] = ''
+        request.POST['group1'] = 'noun'
+        request.POST['top_results'] = 20
+        response = query(request)
+        realResult = response.content
+
+        result = '{"errCode": ' + str(errorCode.NOUN_EMPTY) + '}'
+        self.assertEqual(result, realResult)
+
+    def test_VERB_EMPTY(self):
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST['verb'] = ''
+        request.POST['role'] = 'A0'
+        request.POST['noun'] = 'apple'
+        request.POST['group1'] = 'verb'
+        request.POST['top_results'] = 20
+        response = query(request)
+        realResult = response.content
+
+        result = '{"errCode": ' + str(errorCode.VERB_EMPTY) + '}'
+        self.assertEqual(result, realResult)
+
 
 class DataProcessorTest(TestCase):
     def test_process(self):
-        realResult = process('eat', 'apple', 'A0', 'verb')
+        realResult = process('eat-v', 'apple-n', 'A0', True, 20)
         queryDict = {
             'y': 0.7788627028935319, 
             'x': 0.45877782991981186, 
@@ -78,27 +108,16 @@ class DataProcessorTest(TestCase):
                 wordAppeared = False
         self.assertEqual(True, wordAppeared)
 
-    def test_process_exception_NOUN_EMPTY(self):
-        result = {'errCode' : errorCode.NOUN_EMPTY}
-        self.assertEqual(result, process('eat', '', 'A0', 'noun'))
-    
-    def test_process_exception_VERB_EMPTY(self):
-        result = {'errCode' : errorCode.VERB_EMPTY}
-        self.assertEqual(result, process('', 'apple', 'A0', 'verb'))
-
     def test_process_exception_MBR_VEC_EMPTY(self):
         result = {'errCode' : errorCode.MBR_VEC_EMPTY}
-        self.assertEqual(result, process('asdf', 'apple', 'A0', 'verb'))
+        self.assertEqual(result, process('asdf', 'apple-n', 'A0', True, 20))
 
     def test_process_exception_QUERY_EMPTY(self):
         result = {'errCode' : errorCode.QUERY_EMPTY}
-        self.assertEqual(result, process('eat', 'asdf', 'A0', 'verb'))
+        self.assertEqual(result, process('eat-v', 'asdf', 'A0', True, 20))
 
     def test_process_exception_SMT_ROLE_EMPTY(self):
         result = {'errCode' : errorCode.SMT_ROLE_EMPTY}
-        self.assertEqual(result, process('eat', 'apple', 'AM-MOD', 'verb'))
+        self.assertEqual(result, process('eat-v', 'apple-n', 'AM-MOD', True, 20))
 
-    def test_process_exception_INTERNAL_ERROR(self):
-        result = {'errCode' : errorCode.INTERNAL_ERROR}
-        self.assertEqual(result, process('', '', '', 'error'))
 # TODO add other test
