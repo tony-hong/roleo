@@ -17,7 +17,6 @@
 import os
 import math
 import sys
-import re
 
 # Configuration of environment
 sys.path.append('Rollenverteilung/src/lib')
@@ -30,6 +29,7 @@ from rv.structure.Tensor import Matricisation
 from rv.similarity.Similarity import cosine_sim
 
 import errorCode
+from validator import validate
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -56,47 +56,30 @@ matrix = Matricisation({
 def process(verb, noun, semanticRole, group, topN = 20):
     print 'process start...'
 
-    double = False
+    double = True
+    if not noun or not verb:
+        double = False
 
-    if noun:
-        nre = re.match(r'^[a-z]+$', noun)
-        if not nre:
-            result = {'errCode' : errorCode.NOUN_FORMAT_ERROR}
-            return result
+    result = validate(verb, noun, group)
 
-    if verb:
-        vre = re.match(r'^[a-z]+$', verb)
-        if not vre:
-            result = {'errCode' : errorCode.VERB_FORMAT_ERROR}
-            return result
+    if result[0]:
+        pass
+    else:
+        return result[1]
 
     if group == 'noun':
-        if noun:
-            query0 = noun + '-n'
-            semanticRole = semanticRole + '-1'
-            if verb:
-                query1 = verb + '-v'
-                double = True
-        else:
-            # EXCEPTION
-            print 'exception: noun is empty'
-            result = {'errCode' : errorCode.NOUN_EMPTY}
-            return result
+        query0 = noun + '-n'
+        semanticRole = semanticRole + '-1'
+        if double:
+            query1 = verb + '-v'
     elif group == 'verb':
-        if verb:
-            query0 = verb + '-v'
-            if noun:
-                query1 = noun + '-n'
-                double = True
-        else:
-            # EXCEPTION
-            print 'exception: verb is empty'
-            result = {'errCode' : errorCode.VERB_EMPTY}
-            return result            
+        query0 = verb + '-v'
+        if double:
+            query1 = noun + '-n'
     else:        
         print 'exception: internal error!'
-        result = {'errCode' : errorCode.INTERNAL_ERROR}
-        return result
+        errorMessage = {'errCode' : errorCode.INTERNAL_ERROR}
+        return errorMessage
 
     # members[0]: vectors
     # members[1]: list of words
@@ -195,6 +178,8 @@ def process(verb, noun, semanticRole, group, topN = 20):
     print 'result creating is prepared'
 
     return result
+
+
 
 '''
     Mapping from fraction, and cosine to the x, y coordinate
