@@ -11,7 +11,7 @@
  *
  *         Centroid should by default at (0, 0)
  *         Input data X and Y coordinate value should be in the interval [-1, 1]
- *         
+ *
  *         Invoke updateQuerySet(nodeArray) then everything should work as expected
  *
  */
@@ -26,7 +26,7 @@ var canvas;            // Canvas object in index.html
 var ctx;               // 2D Context object in Canvas
 var querySet;          // Container stores all nodes(words) returned from a single query
 var view;              // Container stores all node views responsible for draw
-var isValid;           // Boolean tells should canvas redraw or not 
+var isValid;           // Boolean tells should canvas redraw or not
 var isDragging;        // Boolean tells whether the mouse is under dragging condition (down+move)
 var isMouseDown;       // Boolean tells whether mouse button is currently down
 var isOverlap;         // Boolean tells whether mouse position is over overlap zone multiple nodes
@@ -42,7 +42,7 @@ var isInProcessing = false;  // Boolean tells current post request is still in p
 
 var errCode = null;
 var errCodeJSON = null;
-							 
+
 var debugCnt = 0;
 
 /* Default values */
@@ -81,7 +81,7 @@ function initStateVariables() {
 	isMouseDown = false;
 	isOverlap = false;
 	isZoomIn = true;
-	mouseWheelCnt = 0;	
+	mouseWheelCnt = 0;
 }
 
 function loadErrCodeJSON(errCodeJSON_Object) {
@@ -238,7 +238,7 @@ function loadView2D() {
 /** For Test Purpose **/
 function dummyUpdate() {
 	var centeroid = new Node(new Point2D(), "centroid", 1);
-	var queried = new Node(new Point2D(0.515128023024, -0.853062236398), "teenager", 1, true); 
+	var queried = new Node(new Point2D(0.515128023024, -0.853062236398), "teenager", 1, true);
 	var n1 = new Node(new Point2D(0.002124, 0.011698), "i", 1);
 	var n2 = new Node(new Point2D(-0.172109, -0.081946), "he", 1);
 	var n3 = new Node(new Point2D(-0.330853, -0.061861), "people", 1);
@@ -298,7 +298,7 @@ BBox2D.prototype.contains = function(point2D) {
 	var xMax = this.pos.x + this.w;
 	var yMin = this.pos.y;
 	var yMax = this.pos.y + this.h;
-	return xMin <= point2D.x && point2D.x <= xMax && 
+	return xMin <= point2D.x && point2D.x <= xMax &&
 	       yMin <= point2D.y && point2D.y <= yMax;
 }
 
@@ -320,7 +320,7 @@ function addEventListners(canvas) {
 			canvas.dispatchEvent(mouseDownEvent);
 		}
 	});
-	
+
 	canvas.addEventListener('touchmove', function(e) {
 		//alert("touchmove NOT IMPLEMENTED");
 		e.preventDefault();
@@ -348,10 +348,10 @@ function addEventListners(canvas) {
 			// same as for mouse wheel interaction
 			mouseWheelCnt = Math.min(MAX_MOUSE_WHEEL_CNT, Math.max(MIN_MOUSE_WHEEL_CNT, mouseWheelCnt + delta));
 			TRANSFORMATION.scale = Math.pow(1.05, mouseWheelCnt);
-			invalidate();	
+			invalidate();
 		}
 	});
-	
+
 	canvas.addEventListener('touchend', function(e) {
 		//alert("touchend NOT IMPLEMENTED");
 		e.preventDefault();
@@ -359,7 +359,7 @@ function addEventListners(canvas) {
 		var mouseUpEvent = new MouseEvent('mouseup');
 		canvas.dispatchEvent(mouseUpEvent);
 	});
-	
+
 	// MOUSE EVENTS handler
 	canvas.addEventListener('mousedown', function(e) {
 		isMouseDown = true;
@@ -373,7 +373,7 @@ function addEventListners(canvas) {
 		}
 		invalidate();
 	});
-	
+
 	canvas.addEventListener('mousemove', function(e) {
 		if (isMouseDown) {
 			isDragging = true;
@@ -406,19 +406,19 @@ function addEventListners(canvas) {
 			invalidate();
 		}
 	});
-	
+
 	canvas.addEventListener('mouseup', function(e) {
 		isMouseDown = false;
 		isDragging = false;
 		startFingerDist = -1;
 	});
-	
+
 	canvas.addEventListener('mouseout', function(e) {
 		isMouseDown = false;
 		isDragging = false;
 		startFingerDist = -1;
 	});
-	
+
 	canvas.addEventListener('dblclick', function(e) {
 		var nodeElements = getSelectedNode(getMouse(e));
 		if (nodeElements.length != 0) {
@@ -426,7 +426,7 @@ function addEventListners(canvas) {
 			invalidate();
 		}
 	});
-	
+
 	canvas.addEventListener('wheel', function(e) {
 		e.preventDefault(); // prevent browser get scrolled
 		var delta = normalizeWheelSpeed(e);
@@ -466,10 +466,10 @@ function addEventListners(canvas) {
 		}
 		invalidate();
 	});
-	
+
     // fixes a problem where double clicking causes text to get selected on the canvas
     canvas.addEventListener('selectstart', function(e) { e.preventDefault(); return false; }, false);
-	
+
 	// add image downloader listener
 	var dlBtn = document.getElementById("downloadBtn");
 	if (!dlBtn) alert("getElementById(\"downloadBtn\") failed!");
@@ -506,12 +506,12 @@ function normalizeWheelSpeed(event) {
     var normalized;
     if (event.wheelDelta) {
         normalized = (event.wheelDelta % 120 - 0) == -0 ? event.wheelDelta / 120 : event.wheelDelta / 12;
-    } else { 
+    } else {
         var rawAmmount = event.deltaY ? event.deltaY : event.detail;
 		normalized = -rawAmmount;
         normalized = -(rawAmmount % 3 ? rawAmmount * 10 : rawAmmount / 3);
     }
-	// 2016.1.22 
+	// 2016.1.22
 	// due to different internal implementations for different browsers as well as different platforms
 	// below is the unified return value
     if (normalized > 0) return 1;
@@ -540,7 +540,7 @@ NodeElement.prototype.computeBBox = function() {
 }
 NodeElement.prototype.computeRGBA = function() {
 	if (querySet.nodes.length == 0) alert("querySet is empty");
-	var centeroid = querySet.nodes[0]; 
+	var centeroid = querySet.nodes[0];
 	var deltaX = this.node.pos.x - centeroid.pos.x;
 	var deltaY = this.node.pos.y - centeroid.pos.y;
 	if (deltaX == 0 && deltaY == 0) {
@@ -568,7 +568,7 @@ NodeElement.prototype.computeRGBA = function() {
 			else /*(deltaX > 0 && deltaY < 0)*/ {
 				H = (1.5*Math.PI + Math.atan(deltaX/-deltaY)) / Math.PI * 180.0;
 			}
-			// mapping H to RGB, assume 
+			// mapping H to RGB, assume
 			var H2 = H / 60.0;
 			var X  = C * ( 1.0 - Math.abs(H2 % 2 - 1) );
 			if (H2 < 1) { this.r = C; this.g = X; this.b = 0.0; }
@@ -590,7 +590,7 @@ NodeElement.prototype.draw = function(ctx) {
 	ctx.arc(this.node.pos.x, this.node.pos.y, DEFAULT_NODE_RADIUS, 0*Math.PI, 2*Math.PI);
 	ctx.closePath();
 	ctx.fill();
-	
+
 	// draw text
 	if (this.ifDrawText || this.isMouseOver) { // not draw text for nodes being in same virtual grid to avoid heavy overlapping
 		TRANSFORMATION.resetTransform();
@@ -604,7 +604,7 @@ NodeElement.prototype.draw = function(ctx) {
 		ctx.fillText(this.node.word, this.bbox.pos.x + this.bbox.w*0.5, this.bbox.pos.y - DEFAULT_NODE_RADIUS);
 		TRANSFORMATION.updateTransform();
 	}
-	
+
 	// DEBUG BBOX
 	/*
 	if (this.isMouseOver) {
@@ -711,7 +711,7 @@ CanvasView.prototype.draw = function(ctx) {
 		var text = selectedNode.node.word + " : cos = " + selectedNode.node.cos;
 		ctx.fillText(text, WIDTH, HEIGHT);
 	}
-	// always draw the info for the queried word 
+	// always draw the info for the queried word
 	// if it exist
 	var queriedElementNode = this.nodeElements[1];
 	if (!queriedElementNode) alert("No queried word find in array[1]");
@@ -735,12 +735,12 @@ function Transformation() {
 	this.translationX = 0;  // compute based on moveEvent
 	this.translationY = 0;  // compute based on moveEvent
 }
-/* canvas.setTransform(a,b,e,d,e,f) 
- * 
+/* canvas.setTransform(a,b,e,d,e,f)
+ *
  *  a  b  e
  *  c  d  f
  *  0  0  1
- *  
+ *
  *  Y axis get inverted
  */
 Transformation.prototype.updateTransform = function() {

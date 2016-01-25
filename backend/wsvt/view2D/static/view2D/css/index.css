@@ -11,6 +11,19 @@ div.query {
   min-width: 150px;
 }
 
+.end_presentation_mode {
+  display:none;
+}
+
+div.right_menu_column {
+  padding-top: 25px;
+}
+
+canvas.canvas_style {
+  float:right;
+  border:1px solid #000000;
+}
+
 .input_element {
   width: 80%;
   min-width: 150px;
