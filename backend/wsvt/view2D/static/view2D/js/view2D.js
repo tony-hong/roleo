@@ -46,7 +46,7 @@ var errCodeJSON = null;
 var debugCnt = 0;
 
 /* Default values */
-var DEFAULT_NODE_RADIUS = 15;
+var DEFAULT_NODE_RADIUS = 10;
 // TODO Bellow two vars should be inited dynamically according to the data set
 var MAX_MOUSE_WHEEL_CNT = 30;
 var MIN_MOUSE_WHEEL_CNT = -20;
@@ -55,8 +55,34 @@ var MIN_MOUSE_WHEEL_CNT = -20;
 /** APIs **/
 /** APIs **/
 
-function resizeCanvas(){
-	var canvas = document.getElementById('myCanvas');
+window.onresize = function() {
+	reloadView();
+}
+
+function reloadView(){
+	init(canvas);
+	loadLastSession();
+}	
+
+function init(canvas2) {
+	if (!canvas2) alert("canvas is null");
+	canvas = canvas2;
+	setCanvasDimensions();
+	ctx    = canvas.getContext('2d');
+	querySet = new QuerySet();
+	// move origin from upper-left corner to center of the canvas
+	GLOBAL_OFFSET_X = WIDTH   * 0.5;
+	GLOBAL_OFFSET_Y = HEIGHT  * 0.5;
+	TRANSFORMATION = new Transformation();
+	TRANSFORMATION.translationX += GLOBAL_OFFSET_X;
+	TRANSFORMATION.translationY += GLOBAL_OFFSET_Y;
+	//
+	view = new CanvasView();
+	// init state vars
+	initStateVariables();
+}
+
+function setCanvasDimensions(){
 	querybarwidth = document.getElementById("left_menu_bar").offsetWidth
 	rightmenuwidth = document.getElementById("right_menu_column").offsetWidth
     	var innerWidth = window.innerWidth;
@@ -72,33 +98,6 @@ function resizeCanvas(){
 	canvas.height = h;
 	WIDTH = w;
 	HEIGHT = h;
-	GLOBAL_OFFSET_X = WIDTH   * 0.5;
-	GLOBAL_OFFSET_Y = HEIGHT  * 0.5;
-}
-
-window.onresize = function() {
-    	resizeCanvas();
-	resetView();
-	}	
-
-function init(canvas2) {
-	if (!canvas2) alert("canvas is null");
-	canvas = canvas2;
-	resizeCanvas();
-	WIDTH  = canvas.width;
-	HEIGHT = canvas.height;
-	ctx    = canvas.getContext('2d');
-	querySet = new QuerySet();
-	// move origin from upper-left corner to center of the canvas
-	GLOBAL_OFFSET_X = WIDTH   * 0.5;
-	GLOBAL_OFFSET_Y = HEIGHT  * 0.5;
-	TRANSFORMATION = new Transformation();
-	TRANSFORMATION.translationX += GLOBAL_OFFSET_X;
-	TRANSFORMATION.translationY += GLOBAL_OFFSET_Y;
-	//
-	view = new CanvasView();
-	// init state vars
-	initStateVariables();
 }
 
 /* Factorize initiating all state related variables out */
@@ -247,7 +246,12 @@ function ifInProcessing() {
 // add to window.onload
 function loadView2D() {
 	init(document.getElementById("myCanvas"));
+	loadLastSession();
 	addEventListners(canvas);
+	setInterval(draw, 30);
+}
+
+function loadLastSession(){
 	// load last query JSON string from session storage
 	if(typeof(Storage) !== "undefined") {
 		if (sessionStorage.prevQuery) {
@@ -259,8 +263,7 @@ function loadView2D() {
 	} else {
 		dummyUpdate();
 	}
-	//
-	setInterval(draw, 30);
+	//	
 }
 
 /** For Test Purpose **/
