@@ -26,13 +26,14 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
     <script src="{% static 'view2D/js/view2D.js' %}"></script>
+    <script src="{% static 'view2D/js/index.js' %}"></script>
   	<script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
 	  <!-- <script src="{% static 'view2D/js/xmlHttpRequest.js' %}"></script> -->
     <script type="text/javascript">
 		// window.onload can only be defined at here
         window.onload = function() {
 			console.log("string");
-			loadView2D(); // view2D.js
+			loadView2D(false); // view2D.js
 			loadInputTextFilter(); // inputTextFilter.js
 			// load error_code.json into frontend
 			$('#input_noun').val("apple");
@@ -66,7 +67,7 @@
 
   <body>
 
-    <nav class="navbar navbar-inverse navbar-fixed-top no-margin-bottom">
+    <nav class="navbar navbar-inverse navbar-fixed-top no-margin-bottom" id="navigation_bar">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -89,22 +90,22 @@
     </nav>
     <div class="container-fluid">
       <div class="row parent_row">
-      <div class="col-md-2 col-sm-3 col-xs-12 left_column content_columns">
+      <div class="col-md-2 col-sm-3 col-xs-12 col-ld-3 left_column content_columns" id="left_menu_bar">
       <div id="query_form">
-          <h1>WSVT</h1>
+        <h1>WSVT</h1>
 
           <form id="myDiv">
             <div class="input_element">
               <span class="left_align">Noun:</span>
               <input id="input_noun" type="text" name="noun" class="form-control"  placeholder="e.g. apple" data-toggle="tooltip_noun" title="Enter a noun here!">
-              <!-- label show related error message for the input -->
-			        <label id="label_msg_noun"></label>
               <div class="input_element radio">
                 <label class="left_align">
                   <input type="radio" name="group1" value="noun">Noun selects verb
                 </label>
               </div>
-            </div><br><br>
+              <!-- label show related error message for the input -->
+              <label id="label_msg_noun"></label>
+            </div><br>
             <div class="input_element" data-toggle="tooltip" title="Specify the role of the noun!">
               <span class="left_align">Role:</span><br>
               <select id="select_role" class="form-control" name='role'>
@@ -120,18 +121,16 @@
             <div class="input_element">
               <span class="left_align">Verb:</span>
               <input id="input_verb" type="text" name="verb" class="form-control"  placeholder="e.g. eat" data-toggle="tooltip" title="Enter a verb!">
-              <!-- label show related error message for the input -->
-      			  <label id="label_msg_verb"></label>
               <div class="input_element radio">
-
                 <label class="left_align">
                   <input type="radio" name="group1" value="verb" checked="checked">Verb selects noun
                 </label>
-            </div></div><br><br>
-            <div class="select_elements" data-toggle="tooltip_button" title="Send the query!">
+                </div>
+                <!-- label show related error message for the input -->
+              <label id="label_msg_verb"></label>
+            </div><br>
               <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:buttonClicked()>Submit Query</button>
-              <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-            </div><br><br>
+              <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"><br><br><br>
 
             <div class="input_element">
                 Top N results:
@@ -154,23 +153,34 @@
                 </select>
               </div>
             </div><br>
-              <div class="select_elements" data-toggle="tooltip_button" title="Start the change of the model!">
                 <button id="changeModelBtn" type='button' class="btn btn-primary" onclick=javascript:changeModel()>Change Model</button>
-              </div>
             </div>
           </form><br>
-          <!-- Add a dropdown menu let user specify image format -->
-          <span class="left_align">Image:</span><br>
-              <button id="downloadBtn" class="btn btn-primary">Download Result</button>
-      		<a href="#" id="downloadA" download></a>
           </div>
-      <div class="col-md-10 col-sm-9 col-xs-12">
+      <div class="col-md-7 col-sm-6 col-xs-12 col-ld-6" id="canvas_column">
       <div class="visualization" id="visualization_result">
-	    <button id="resetViewBtn" type='button' class="btn btn-primary" onclick=javascript:resetView()>Reset View</button>
-        <canvas id="myCanvas" width="670" height="670" style="border:1px solid #000000;">
+
+        <canvas id="myCanvas" width="670" height="670" class="canvas_style">
     			This text is displayed if your browser does not support HTML5 Canvas.
-    		</canvas><br>
-      </div></div>
+    		</canvas>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-12 col-ld-3" id="right_menu_column">
+        <div class="right_menu_column">
+          Query Information:<br><br>
+          Noun:<br>
+          Verb:<br>
+          Model:<br><br>
+
+        <!-- Add a dropdown menu let user specify image format -->
+        <button id="start_presentation_mode" type='button' class="btn btn-primary" onclick=javascript:start_presentation_mode()>Start Presentation Mode</button>
+        <button id="end_presentation_mode" type='button' class="btn btn-primary end_presentation_mode" onclick=javascript:end_presentation_mode()>End Presentation Mode</button>
+        <br><br>
+            <button id="downloadBtn" class="btn btn-primary">Download Result As Image</button>
+        <a href="#" id="downloadA" download></a><br><br>
+        <button id="resetViewBtn" type='button' class="btn btn-primary" onclick=javascript:resetView()>Reset View</button>
+    </div></div>
+    </div>
     </div><!-- /.container -->
 
     <!-- Bootstrap core JavaScript
