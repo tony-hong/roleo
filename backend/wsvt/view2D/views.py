@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.template import RequestContext, loader
 
@@ -45,11 +44,11 @@ def query(request):
     semanticRole = role
     result = {}
 
-    print 'v: ' + verb
-    print 'r: ' + role
-    print 'n: ' + noun
-    print 'group: ' + group
-    print 'top_results: ' + str(topN)
+    # print 'v: ' + verb
+    # print 'r: ' + role
+    # print 'n: ' + noun
+    # print 'group: ' + group
+    # print 'top_results: ' + str(topN)
 
     double = True
     if not noun or not verb:
@@ -66,17 +65,22 @@ def query(request):
     if group == 'noun':
         query0 = noun + '-n'
         semanticRole = semanticRole + '-1'
-        if not verb:
+        if verb:
             query1 = verb + '-v'
     elif group == 'verb':
         query0 = verb + '-v'
-        if not noun:
+        if noun:
             query1 = noun + '-n'
     else:        
         print 'exception: internal error!'
         result = {'errCode' : errorCode.INTERNAL_ERROR}
         return JsonResponse(result)
 
+    print 'query0: ' + query0
+    print 'query1: ' + query1
+    print 'semanticRole: ' + semanticRole
+    print 'double: ' + str(double)
+    print 'topN: ' + str(topN)
     
     result = process(query0, query1, semanticRole, double, topN)
     return JsonResponse(result)

@@ -51,11 +51,11 @@ matrix = Matricisation({
     Processing function for the query for the client
 
     @parameters: 
-        query0 = str()  # with -v/-n suffix
-        query1 = str()  # with -v/-n suffix
-        semanticRole = str() # with -1 suffix if noun selects noun
-        double = bool() # True when query1 is not empty
-        topN   = int()  # Number of top vectors which will be returned
+        query0 = str  # with -v/-n suffix
+        query1 = str  # with -v/-n suffix
+        semanticRole = str # with -1 suffix if noun selects noun
+        double = bool # True when query1 is not empty
+        topN   = int  # Number of top vectors which will be returned
 
     @return: result = dict()
 '''
@@ -165,7 +165,7 @@ def process(query0, query1, semanticRole, double, topN = 20):
 '''
     Mapping from fraction, and cosine to the x, y coordinate
 
-    @return: (x, y) = tuple()
+    @return: (x, y) = tuple
 '''
 def mapping(fraction, cosine):
     y = math.pow(fraction, 0.4)
