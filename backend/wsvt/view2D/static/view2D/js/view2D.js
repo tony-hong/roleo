@@ -62,7 +62,7 @@ function resizeCanvas(){
     	var innerWidth = window.innerWidth;
 	var innerHeight = window.innerHeight;
 	var scaleW = 0.95;
-	if(innerWidth <= 765){
+	if(innerWidth <= 767){
 		querybarwidth = 0;
 		rightmenuwidth = 0;
 	}
@@ -70,6 +70,10 @@ function resizeCanvas(){
 	var h = window.innerHeight * 0.9;
 	canvas.width = w;
 	canvas.height = h;
+	WIDTH = w;
+	HEIGHT = h;
+	GLOBAL_OFFSET_X = WIDTH   * 0.5;
+	GLOBAL_OFFSET_Y = HEIGHT  * 0.5;
 }
 
 window.onresize = function() {
@@ -80,7 +84,7 @@ window.onresize = function() {
 function init(canvas2) {
 	if (!canvas2) alert("canvas is null");
 	canvas = canvas2;
-	resizeCanvas(); // <----responsive canvas called here,same as for window.onresize
+	resizeCanvas();
 	WIDTH  = canvas.width;
 	HEIGHT = canvas.height;
 	ctx    = canvas.getContext('2d');
