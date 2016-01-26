@@ -46,7 +46,7 @@ var errCodeJSON = null;
 var debugCnt = 0;
 
 /* Default values */
-var DEFAULT_NODE_RADIUS = 5;
+var DEFAULT_NODE_RADIUS = 15;
 // TODO Bellow two vars should be inited dynamically according to the data set
 var MAX_MOUSE_WHEEL_CNT = 30;
 var MIN_MOUSE_WHEEL_CNT = -20;
@@ -54,9 +54,33 @@ var MIN_MOUSE_WHEEL_CNT = -20;
 /** APIs **/
 /** APIs **/
 /** APIs **/
+
+function resizeCanvas(){
+	var canvas = document.getElementById('myCanvas');
+	querybarwidth = document.getElementById("left_menu_bar").offsetWidth
+	rightmenuwidth = document.getElementById("right_menu_column").offsetWidth
+    	var innerWidth = window.innerWidth;
+	var innerHeight = window.innerHeight;
+	var scaleW = 0.95;
+	if(innerWidth <= 765){
+		querybarwidth = 0;
+		rightmenuwidth = 0;
+	}
+	var w = (window.innerWidth - querybarwidth - rightmenuwidth) * scaleW;
+	var h = window.innerHeight * 0.9;
+	canvas.width = w;
+	canvas.height = h;
+}
+
+window.onresize = function() {
+    	resizeCanvas();
+	resetView();
+	}	
+
 function init(canvas2) {
 	if (!canvas2) alert("canvas is null");
 	canvas = canvas2;
+	resizeCanvas(); // <----responsive canvas called here,same as for window.onresize
 	WIDTH  = canvas.width;
 	HEIGHT = canvas.height;
 	ctx    = canvas.getContext('2d');

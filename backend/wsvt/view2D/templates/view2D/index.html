@@ -30,9 +30,8 @@
   	<script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
 	  <!-- <script src="{% static 'view2D/js/xmlHttpRequest.js' %}"></script> -->
     <script type="text/javascript">
-		// window.onload can only be defined at here
-        window.onload = function() {
-			console.log("string");
+	// window.onload can only be defined at here
+       	window.onload = function() {
 			loadView2D(false); // view2D.js
 			loadInputTextFilter(); // inputTextFilter.js
 			// load error_code.json into frontend
@@ -48,6 +47,8 @@
 				}
             });
 		}
+	
+	
         function buttonClicked(){
 			setIsInProcessing(true);
           $.ajax({
@@ -160,7 +161,7 @@
       <div class="col-md-7 col-sm-6 col-xs-12 col-ld-6" id="canvas_column">
       <div class="visualization" id="visualization_result">
 
-        <canvas id="myCanvas" width="670" height="670" class="canvas_style">
+        <canvas id="myCanvas" class="canvas_style">
     			This text is displayed if your browser does not support HTML5 Canvas.
     		</canvas>
         </div>
