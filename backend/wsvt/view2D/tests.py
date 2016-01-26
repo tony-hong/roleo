@@ -4,7 +4,7 @@ from django.core.urlresolvers import resolve
 from django.test import TestCase
 from django.http import HttpRequest
 
-from view2D.views import index, query
+from view2D.views import index, query, help, contact, impressum
 from view2D.dataProcess import process
 
 import view2D.errorCode as errorCode
@@ -15,7 +15,21 @@ class IndexTest(TestCase):
         found = resolve('/view2D/')
         self.assertEqual(found.func, index)
 
-    # TODO add other test
+class helpTest(TestCase):
+    def test_help_URL_ResolvesTo_HelpView(self):
+        found = resolve('/view2D/help/')
+        self.assertEqual(found.func, help)
+
+class ContactTest(TestCase):
+    def test_contact_URL_ResolvesTO_ContactView(self):
+        found = resolve('/view2D/contact/')
+        self.assertEqual(found.func, contact)
+
+class ImpressumTest(TestCase):
+    def test_Impressum_URL_ResolvesTo_ImpressumView(self):
+       found = resolve('/view2D/impressum/')
+       self.assertEqual(found.func, impressum)
+        
 
 class QueryTest(TestCase):
     def test_NOUN_FORMAT_ERROR(self):
