@@ -102,6 +102,7 @@ class QueryTest(TestCase):
         result = '{"errCode": ' + str(errorCode.VERB_EMPTY) + '}'
         self.assertEqual(result, realResult)
 
+																												
 
 class DataProcessorTest(TestCase):
     def test_process(self):
@@ -121,6 +122,33 @@ class DataProcessorTest(TestCase):
             if w in nodes:
                 wordAppeared = False
         self.assertEqual(True, wordAppeared)
+
+    def test_processTop100(self):
+	realResult = process('study-v', 'adult-n', 'A0', True, 100)
+        wordList = ['he-n', 'i-n', 'researcher-n', 'pupil-n', 'scientist-n', 'class-n', 'university-n', 'group-n', 'project-n', 'scholarship-n', 'team-n', 'astronomer-n', 'candidate-n', 'psychologist-n', 'paper-n', 'scholar-n', 'anthropologist-n', 'author-n', 'learner-n', 'fellowship-n', 'historian-n', 'david-n', 'andrew-n', 'module-n', 'child-n', 'biologist-n', 'film-n', 'undergraduate-n', 'sociologist-n', 'research-n', 'london-n', 'john-n', 'archaeologist-n', 'uk-n', 'objective-n', 'participant-n', 'science-n', 'spectroscopy-n', 'us-n', 'microscopy-n', 'chemist-n', 'laboratory-n', 'jonathan-n', 'tourism-n', 'williams-n', 'investigator-n', 'expert-n', 'helen-n', 'james-n', 'people-n', 'geologist-n', 'subject-n', 'case-n', 'simon-n', 'cambridge-n', 'peter-n', 'graduate-n', 'newton-n', 'mathematician-n', 'college-n', 'diffraction-n', 'commission-n', 'linguist-n', 'nick-n', 'rachel-n', 'martin-n', 'sarah-n', 'physicist-n', 'spectrometry-n', 'leeds-n', 'catherine-n', 'unit-n', 'zoologist-n', 'michael-n', 'applicant-n', 'thomas-n', 'geographer-n', 'course-n', 'girl-n', 'committee-n', 'matt-n', 'canada-n', 'lee-n', 'oxford-n', 'klein-n', 'trainee-n', 'matthew-n', 'york-n', 'majority-n', 'bruce-n', 'physiologist-n', 'evans-n', 'christopher-n', 'ben-n', 'institute-n', 'cooper-n', 'philosopher-n', 'paul-n', 'boy-n']
+
+        self.assertEqual('adult-n', realResult['queried']['word'])
+	wordNotAppeared = True
+	nodes = realResult['nodes']
+	for w in wordList:
+	    if w in nodes:
+		wordNotAppeared = False
+        self.assertEqual(True, wordNotAppeared)
+
+    def test_processModelA1(self):
+	realResult = process('invest-v','money-n', 'A1', True, 20)
+	wordList = ['time-n', 'sum-n', 'fund-n', 'resource-n', 'amount-n', 'capital-n', 'million-n', 'lot-n', 'saving-n', 'cash-n', 'energy-n', 'billion-n', 'pound-n', 'effort-n', 'share-n', 'dollar-n', 'deal-n', 'asset-n', 'technology-n']
+	
+	self.assertEqual('money-n', realResult['queried']['word'])
+	wordNotAppeared = True
+	nodes = realResult ['nodes']
+	for w in wordList:
+	    if w in nodes:
+	        wordNotApeared = False
+	self.assertEqual(True, wordNotAppeared)
+	
+
+ 
 
     def test_process_exception_MBR_VEC_EMPTY(self):
         result = {'errCode' : errorCode.MBR_VEC_EMPTY}
