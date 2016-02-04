@@ -82,7 +82,12 @@ class NewVisitorTest(unittest.TestCase):
         current_url = self.browser.current_url
         self.assertEqual(current_url, 'http://localhost:8000/view2D/impressum/')
 
-        # The user goes to the 
+        # The user goes back to the home_page
+        home_page = self.browser.find_element_by_id('query_page')
+        home_page.click()
+
+        current_url = self.browser.current_url
+        self.assertEqual(current_url, 'http://localhost:8000/view2D/')
 
         
 
