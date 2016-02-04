@@ -58,9 +58,33 @@ class NewVisitorTest(unittest.TestCase):
 
 
         # The user clicks the submit button
+        # time.sleep(39)
         self.browser.find_element_by_id("submitBtn").click()
-        time.sleep(30)
+        
+        # The user goes to the help page
+        help_page = self.browser.find_element_by_id('help_page')
+        help_page.click()
+        
+        current_url = self.browser.current_url
+        self.assertEqual(current_url, 'http://localhost:8000/view2D/help/')
 
+        # The user goes to the contact page
+        contact_page = self.browser.find_element_by_id('contact_page')
+        contact_page.click()
+
+        current_url = self.browser.current_url
+        self.assertEqual(current_url, 'http://localhost:8000/view2D/contact/')
+
+        # The user goes to the impressum page
+        impressum_page = self.browser.find_element_by_id('impressum_page')
+        impressum_page.click()
+
+        current_url = self.browser.current_url
+        self.assertEqual(current_url, 'http://localhost:8000/view2D/impressum/')
+
+        # The user goes to the 
+
+        
 
         self.fail('Finish the test!')
     # TODO: define more tests
