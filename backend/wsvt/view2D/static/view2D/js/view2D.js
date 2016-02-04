@@ -141,6 +141,14 @@ function createNodesFromJSON(responseJSON_Object) {
 	// store JSON string into session storage
 	if(typeof(Storage) !== "undefined") {
 		sessionStorage.prevQuery = JSON.stringify(responseJSON_Object);
+		document.getElementById("input_noun").value = sessionStorage.prevNoun;
+		document.getElementById("input_verb").value = sessionStorage.prevVerb;
+		document.getElementById("select_role").value = sessionStorage.prevRole;
+		document.getElementById("select_model").value = sessionStorage.prevModel;
+		document.getElementById("lbl_noun_info").textContent = sessionStorage.prevNoun;
+		document.getElementById("lbl_verb_info").textContent = sessionStorage.prevVerb;
+		document.getElementById("lbl_role_info").textContent = sessionStorage.prevRole;
+		document.getElementById("lbl_model_info").textContent = sessionStorage.prevModel;
 	} else {
 		// Sorry! No Web Storage support..
 	}

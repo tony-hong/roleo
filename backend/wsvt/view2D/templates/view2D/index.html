@@ -45,8 +45,6 @@
 			loadView2D(false); // view2D.js
 			loadInputTextFilter(); // inputTextFilter.js
 			// load error_code.json into frontend
-			$('#input_noun').val("apple");
-			$('#input_verb').val("eat");
 			$.ajax({
 				url:      'errorCodeJSON/',
 				type:     'GET',
@@ -67,6 +65,10 @@
 	
         function buttonClicked(){
 			setIsInProcessing(true);
+			sessionStorage.prevNoun = document.getElementById("input_noun").value;
+			sessionStorage.prevVerb = document.getElementById("input_verb").value;
+			sessionStorage.prevRole = document.getElementById("select_role").value;
+			sessionStorage.prevModel = document.getElementById("select_model").value;
           $.ajax({
             url:      'query/',
             type:     'POST',
@@ -114,7 +116,7 @@
           <form id="myDiv">
             <div class="input_element">
               <span class="left_align">Noun:</span>
-              <input id="input_noun" type="text" name="noun" class="form-control"  placeholder="e.g. apple" data-toggle="tooltip_noun" title="Enter a noun here!">
+              <input id="input_noun" type="text" name="noun" value="apple" class="form-control"  placeholder="e.g. apple" data-toggle="tooltip_noun" title="Enter a noun here!">
               <div class="input_element radio">
                 <label class="left_align">
                   <input type="radio" name="group1" value="noun">Noun selects verb
@@ -137,7 +139,7 @@
             </div><br>
             <div class="input_element">
               <span class="left_align">Verb:</span>
-              <input id="input_verb" type="text" name="verb" class="form-control"  placeholder="e.g. eat" data-toggle="tooltip" title="Enter a verb!">
+              <input id="input_verb" type="text" name="verb" value ="eat" class="form-control"  placeholder="e.g. eat" data-toggle="tooltip" title="Enter a verb!">
               <div class="input_element radio">
                 <label class="left_align">
                   <input type="radio" name="group1" value="verb" checked="checked">Verb selects noun
@@ -165,7 +167,7 @@
             <div class="input_element">
                 Model:
                 <div data-toggle="tooltip_button" title="Choose another model!">
-                <select class="form-control" name='model'>
+                <select id="select_model" class="form-control" name='model'>
                   <option value="model1">Model 1</option>
                   <option value="model2">Model 2</option>
                   <option value="model3">Model 3</option>
@@ -187,9 +189,10 @@
       <div class="col-md-3 col-sm-3 col-xs-12 col-ld-3" id="right_menu_column">
         <div class="right_menu_column">
           Query Information:<br><br>
-          Noun:<br>
-          Verb:<br>
-          Model:<br><br>
+          Noun:&nbsp <label id="lbl_noun_info"></label><br>
+		  Role:&nbsp <label id="lbl_role_info"></label><br>
+          Verb:&nbsp <label  id="lbl_verb_info"></label><br>
+          Model:&nbsp <label  id="lbl_model_info"></label><br><br>
 
         <!-- Add a dropdown menu let user specify image format -->
         <button id="start_presentation_mode" type='button' class="btn btn-primary" onclick=javascript:start_presentation_mode();javascript:reloadView()>Start Presentation Mode</button>
