@@ -46,6 +46,34 @@ class NewVisitorTest(unittest.TestCase):
         )
 
 
+        
+
+        
+
+    #self.fail('Finish the test!')
+    # TODO: define more tests
+    # 
+
+    def tearDown(self):
+        self.browser.quit()
+
+
+
+class TravelAround(unittest.TestCase):
+    
+    def setUp(self):
+        self.browser = webdriver.Firefox()
+
+    def test_travel_around_and_then_go_back_to_the_homepage(self):
+        # Open the browser and visit the tool
+        self.browser.get('http://localhost:8000/view2D')
+        # Wait for 3 secs
+        self.browser.implicitly_wait(3)
+
+        #get the input boxes
+        inputbox_noun = self.browser.find_element_by_id('input_noun')
+        inputbox_verb = self.browser.find_element_by_id('input_verb')
+
         # The user inputs a noun "book"
         inputbox_noun.clear()
         inputbox_noun.send_keys('book')
@@ -58,8 +86,16 @@ class NewVisitorTest(unittest.TestCase):
 
 
         # The user clicks the submit button
-        # time.sleep(39)
+
+        print("************************************************************")
+       
+        
+        time.sleep(1)
+
         self.browser.find_element_by_id("submitBtn").click()
+
+        # The user waits 5 seconds for the results
+        time.sleep(5)
         
         # The user goes to the help page
         help_page = self.browser.find_element_by_id('help_page')
@@ -89,15 +125,26 @@ class NewVisitorTest(unittest.TestCase):
         current_url = self.browser.current_url
         self.assertEqual(current_url, 'http://localhost:8000/view2D/')
 
+        # Since the user has input the noun "book", the inputbox_nound should has the value book
+        inputbox_noun = self.browser.find_element_by_id('input_noun')
+        self.assertEqual(
+                inputbox_noun.get_attribute('value'),
+                'book'
+        )
+
+        #Since the user has input the verb "read", the inputbox_nound should has the value read
+        inputbox_verb = self.browser.find_element_by_id('input_verb')
+        self.assertEqual(
+                inputbox_verb.get_attribute('value'),
+                'read'
+        )
         
-
-        self.fail('Finish the test!')
-    # TODO: define more tests
-    # 
-
 
     def tearDown(self):
         self.browser.quit()
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
