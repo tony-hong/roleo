@@ -14,6 +14,8 @@
 
     <!-- Bootstrap core CSS -->
 	  <link href="{% static 'view2D/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href=" https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.0.13/css/bootstrap-slider.css" rel="stylesheet">
+   
 
 
     <!-- Custom styles for this template -->
@@ -24,14 +26,22 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   	<script src="{% static 'view2D/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.0.13/bootstrap-slider.min.js"></script>
+
+    
 
     <script src="{% static 'view2D/js/view2D.js' %}"></script>
     <script src="{% static 'view2D/js/index.js' %}"></script>
   	<script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
 	  <!-- <script src="{% static 'view2D/js/xmlHttpRequest.js' %}"></script> -->
     <script type="text/javascript">
+
+
+
 	// window.onload can only be defined at here
-       	window.onload = function() {
+    window.onload = function() {
+
+
 			loadView2D(false); // view2D.js
 			loadInputTextFilter(); // inputTextFilter.js
 			// load error_code.json into frontend
@@ -45,7 +55,13 @@
 				success:  function(response){
 				  loadErrCodeJSON(response);
 				}
-            });
+      });
+
+      $('#ex1').slider({
+        formatter: function(value) {
+          return 'Top ' + value;
+        }
+      });
 		}
 	
 	
@@ -130,19 +146,21 @@
                 <!-- label show related error message for the input -->
               <label id="label_msg_verb"></label>
             </div><br>
-              <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:buttonClicked()>Submit Query</button>
-              <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"><br><br><br>
 
             <div class="input_element">
                 Top N results:
                 <div data-toggle="tooltip_button" title="How many result words do you want?">
-                <select class="form-control" name='top_results'>
-                  <option value="20">20</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                </select>
+                <input id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="10" data-slider-max="100" data-slider-step="10" data-slider-value="10" name='top_results'>
               </div>
             </div><br>
+
+
+              <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:buttonClicked()>Submit Query</button>
+              <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"><br><br><br>
+
+
+            
+
 
             <div class="input_element">
                 Model:
