@@ -208,6 +208,7 @@ function draw() {
 }
 
 function drawProgressBar() {
+	// Originla Version: Draw error message in canvas, but drawText do not support multiple line
 	clear();
 	var date = new Date();
 	var i = Math.round(2*(date.getSeconds() + date.getMilliseconds() / 1000)) % 4;
@@ -220,6 +221,7 @@ function drawProgressBar() {
 	ctx.fillStyle = "grey";
 	ctx.fillText(str, 0.5*WIDTH, 0.5*HEIGHT);
 	TRANSFORMATION.updateTransform();
+	// New Version: Show error message using other element out side of the canvas
 }
 
 function clear(bbox2D) {
@@ -266,10 +268,10 @@ function loadLastSession(){
 			updateQuerySet(createNodesFromJSON(JSON.parse(sessionStorage.prevQuery)));
 		}
 		else {
-			dummyUpdate();
+			//dummyUpdate();
 		}
 	} else {
-		dummyUpdate();
+		//dummyUpdate();
 	}
 	//	
 }
