@@ -182,28 +182,23 @@ function draw() {
 	else if (!isValid) {
 		clear();
 		// if errCode != null, display err msg
-		if (errCode != null) {
-			showErrorMsg()
+		showErrorMsg(errCode);
+		// recompute bboxes
+		for (i=0; i<view.nodeElements.length; ++i) {
+			view.nodeElements[i].bbox = view.nodeElements[i].computeBBox();
 		}
-		// else
-		else {
-			// recompute bboxes
-			for (i=0; i<view.nodeElements.length; ++i) {
-				view.nodeElements[i].bbox = view.nodeElements[i].computeBBox();
-			}
-			// recheck grids
-			// TODO check scale first, only checkGrids if scale changed
-			//      with setInterval 30 for draw(), do not need addtional check, won't influence performance
-			view.checkGrids(isZoomIn);
-			//
-			TRANSFORMATION.updateTransform();
-			view.draw(ctx);
-		}
+		// recheck grids
+		// TODO check scale first, only checkGrids if scale changed
+		//      with setInterval 30 for draw(), do not need addtional check, won't influence performance
+		view.checkGrids(isZoomIn);
+		//
+		TRANSFORMATION.updateTransform();
+		view.draw(ctx);
 		validate();
 	}
 }
 
-function showErrorMsg() {
+function showErrorMsg(json_errCode) {
 	// Originla Version: Draw error message in canvas, but drawText do not support multiple line
 /*
 	TRANSFORMATION.resetTransform();
@@ -214,18 +209,23 @@ function showErrorMsg() {
 	TRANSFORMATION.updateTransform();
 */
 	// New Version: Show error message using other element out side of the canvas
-	// Draw some message on canvas
-	var canvasMsg = "Oops ! A void space returned."
-	TRANSFORMATION.resetTransform();
-	ctx.font = "15px Comic Sans MS";
-	ctx.textAlign = "center";
-	ctx.fillStyle = "red";
-	ctx.fillText(canvasMsg, 0.5*WIDTH, 0.5*HEIGHT);
-	TRANSFORMATION.updateTransform();
-	// Show detailed error information in a label
 	var lbl_msg_query_error = document.getElementById("label_msg_query_error");
 	if (lbl_msg_query_error == null) alert("getElementById(\"label_msg_query_error\") failed");
-	lbl_msg_query_error.textContent = errCodeJSON[errCode];
+	// Draw some message on canvas
+	if (json_errCode != null) {
+		var canvasMsg = "Oops ! A void space returned."
+		TRANSFORMATION.resetTransform();
+		ctx.font = "15px Comic Sans MS";
+		ctx.textAlign = "center";
+		ctx.fillStyle = "red";
+		ctx.fillText(canvasMsg, 0.5*WIDTH, 0.5*HEIGHT);
+		TRANSFORMATION.updateTransform();
+		// Show detailed error information in a label
+		lbl_msg_query_error.textContent = errCodeJSON[json_errCode];
+	}
+	else {
+		lbl_msg_query_error.textContent = "";
+	}
 }
 
 function drawProgressBar() {
