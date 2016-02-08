@@ -194,6 +194,7 @@ function draw() {
 		// if errCode != null, display err msg
 		showErrorMsg(errCode);
 		// recompute bboxes
+		DEFAULT_NODE_RADIUS = 10/TRANSFORMATION.scale; // keep node radius irrelevant to the scale
 		for (i=0; i<view.nodeElements.length; ++i) {
 			view.nodeElements[i].bbox = view.nodeElements[i].computeBBox();
 		}
@@ -675,7 +676,7 @@ NodeElement.prototype.draw = function(ctx) {
 		//      but how to distinguish queried node then???
 		ctx.fillStyle = this.node.needHighlight ? "red" : rgbaToString(this.r, this.g, this.b, a);
 		ctx.textAlign = "center";
-		ctx.fillText(this.node.word, this.bbox.pos.x + this.bbox.w*0.5, this.bbox.pos.y - DEFAULT_NODE_RADIUS);
+		ctx.fillText(this.node.word, this.bbox.pos.x + this.bbox.w*0.5, this.bbox.pos.y - DEFAULT_NODE_RADIUS*TRANSFORMATION.scale);
 		TRANSFORMATION.updateTransform();
 	}
 
