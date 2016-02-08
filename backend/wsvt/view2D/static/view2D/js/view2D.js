@@ -211,7 +211,7 @@ function drawProgressBar() {
 	clear();
 	var date = new Date();
 	var i = Math.round(2*(date.getSeconds() + date.getMilliseconds() / 1000)) % 4;
-	var str = "Is Querying";
+	var str = "Querying";
 	for (ii=0; ii<i; ++ii) str += ".";
 	for (ii=0; ii<(3-i); ++i) str += " ";
 	TRANSFORMATION.resetTransform();
