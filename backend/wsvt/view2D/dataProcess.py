@@ -28,7 +28,7 @@ import pandas as pd
 from rv.structure.Tensor import Matricisation
 from rv.similarity.Similarity import cosine_sim
 
-import errorCode
+import view2D.errorCode as errorCode
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -51,27 +51,31 @@ matrix = Matricisation({
     Processing function for the query for the client
 
     @parameters: 
-        query0 = str  # with -v/-n suffix
-        query1 = str  # with -v/-n suffix
-        semanticRole = str # with -1 suffix if noun selects noun
-        double = bool # True when query1 is not empty
-        topN   = int  # Number of top vectors which will be returned
+        query0 : str  # with '-v/-n' suffix
+        query1 : str  # with '-v/-n' suffix
+        semanticRole : str # with '-1' suffix if noun selects noun
+        double : bool # True when query1 is not empty
+        topN   : int  # Number of top vectors which will be returned
 
     @return: result = dict()
 '''
 def process(query0, query1, semanticRole, double, topN = 20):
     print 'process start...'
+    memberIndex = dict()
 
     # members[0]: vectors
     # members[1]: list of words
-    temp = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, topN)
+    memberVectors = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, topN)
 
-    if type(temp) != type(tuple()):
+    if type(memberVectors) != type(tuple()):
         print 'exception: memberVectors is empty' 
         result = {'errCode' : errorCode.MBR_VEC_EMPTY}
         return result
     else:
-        memberVectors, wordList = temp
+        vectorList, wordList = memberVectors
+
+    for w, v in wordList, vectorList:
+        memberIndex[w] = v
 
     print 'getMemberVectors finished...'
     print wordList
@@ -83,13 +87,12 @@ def process(query0, query1, semanticRole, double, topN = 20):
 
     # ISSUE: double call of getMemberVectors, need improvement
     # centroid = matrix.getCentroid(query0, 'word1', 'word0', {'link':[semanticRole]})
-    centroid = pd.concat(memberVectors).sum(level=[0,1])
+    centroid = pd.concat(vectorList).sum(level=[0,1])
 
-    for w in wordList:
-        row = matrix.getRow('word0', w)
-        wordVectors[w] = row
+    for w, v in wordList, vectorList:
+        wordVectors[w] = v
 
-        support = row.ix[semanticRole].ix[query0]
+        support = v.ix[semanticRole].ix[query0]
         wordSupports[w] = support
 
         if support > maxmaxSupport:
@@ -165,6 +168,9 @@ def process(query0, query1, semanticRole, double, topN = 20):
 '''
     Mapping from fraction, and cosine to the x, y coordinate
 
+    @parameters:
+        fraction = 
+        cosine   = 
     @return: (x, y) = tuple
 '''
 def mapping(fraction, cosine):
