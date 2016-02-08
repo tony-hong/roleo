@@ -15,7 +15,7 @@
     <!-- Bootstrap core CSS -->
 	  <link href="{% static 'view2D/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href=" https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.0.13/css/bootstrap-slider.css" rel="stylesheet">
-   
+
 
 
     <!-- Custom styles for this template -->
@@ -28,7 +28,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.0.13/bootstrap-slider.min.js"></script>
 
-    
+
 
     <script src="{% static 'view2D/js/view2D.js' %}"></script>
     <script src="{% static 'view2D/js/index.js' %}"></script>
@@ -61,8 +61,8 @@
         }
       });
 		}
-	
-	
+
+
         function buttonClicked(){
 			setIsInProcessing(true);
           $.ajax({
@@ -119,16 +119,17 @@
 
           <form id="myDiv">
             <div class="input_element">
-              <span class="left_align">Noun:</span>
-              <input id="input_noun" type="text" name="noun" value="apple" class="form-control"  placeholder="e.g. apple" data-toggle="tooltip_noun" title="Enter a noun here!">
+              <span class="left_align">Verb:</span>
+              <input id="input_verb" type="text" name="verb" value ="eat" class="form-control"  placeholder="e.g. eat" data-toggle="tooltip" title="Enter a verb!">
               <div class="input_element radio">
                 <label class="left_align">
-                  <input type="radio" name="group1" value="noun">Noun selects verb
+                  <input type="radio" name="group1" value="verb" checked="checked">Verb selects noun
                 </label>
-              </div>
-              <!-- label show related error message for the input -->
-              <label id="label_msg_noun"></label>
-            </div><br>
+                </div>
+                <!-- label show related error message for the input -->
+              <label id="label_msg_verb"></label>
+            </div>
+            <br>
             <div class="input_element" data-toggle="tooltip" title="Specify the role of the noun!">
               <span class="left_align">Role:</span><br>
               <select id="select_role" class="form-control" name='role'>
@@ -142,31 +143,25 @@
               </select>
             </div><br>
             <div class="input_element">
-              <span class="left_align">Verb:</span>
-              <input id="input_verb" type="text" name="verb" value ="eat" class="form-control"  placeholder="e.g. eat" data-toggle="tooltip" title="Enter a verb!">
+              <span class="left_align">Noun:</span>
+              <input id="input_noun" type="text" name="noun" value="apple" class="form-control"  placeholder="e.g. apple" data-toggle="tooltip_noun" title="Enter a noun here!">
               <div class="input_element radio">
                 <label class="left_align">
-                  <input type="radio" name="group1" value="verb" checked="checked">Verb selects noun
+                  <input type="radio" name="group1" value="noun">Noun selects verb
                 </label>
-                </div>
-                <!-- label show related error message for the input -->
-              <label id="label_msg_verb"></label>
+              </div>
+              <!-- label show related error message for the input -->
+              <label id="label_msg_noun"></label>
             </div><br>
 
             <div class="input_element">
                 Top N results:
                 <div data-toggle="tooltip_button" title="How many result words do you want?">
-                <input id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="10" data-slider-max="100" data-slider-step="10" data-slider-value="10" name='top_results'>
+                <input id="ex1" style="width:100%;" data-slider-id='ex1Slider' type="text" data-slider-min="10" data-slider-max="100" data-slider-step="10" data-slider-value="10" name='top_results'>
               </div>
             </div><br>
-
-
               <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:buttonClicked()>Submit Query</button>
               <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"><br><br><br>
-
-
-            
-
 
             <div class="input_element">
                 Model:
@@ -181,8 +176,9 @@
                 <button id="changeModelBtn" type='button' class="btn btn-primary" onclick=javascript:changeModel()>Change Model</button>
             </div>
           </form><br>
+          <div class="hide_information_when_small"> ! Visualization below !</div>
           </div>
-      <div class="col-md-7 col-sm-6 col-xs-12 col-ld-6" id="canvas_column">
+      <div class="col-md-7 col-sm-7 col-xs-12 col-ld-6" id="canvas_column">
         <div class="visualization" id="visualization_result">
 		  <!-- Label show query errors passed from backend -->
 		  <label id="label_msg_query_error"></label>
@@ -191,7 +187,7 @@
     	  </canvas>
         </div>
       </div>
-      <div class="col-md-3 col-sm-3 col-xs-12 col-ld-3" id="right_menu_column">
+      <div class="col-md-3 col-sm-2 col-xs-12 col-ld-3" id="right_menu_column">
         <div class="right_menu_column">
           Query Information:<br><br>
           Noun:&nbsp <label id="lbl_noun_info"></label><br>
@@ -200,10 +196,10 @@
           Model:&nbsp <label  id="lbl_model_info"></label><br><br>
 
         <!-- Add a dropdown menu let user specify image format -->
-        <button id="start_presentation_mode" type='button' class="btn btn-primary" onclick=javascript:start_presentation_mode();javascript:reloadView()>Start Presentation Mode</button>
-        <button id="end_presentation_mode" type='button' class="btn btn-primary end_presentation_mode" onclick=javascript:end_presentation_mode();javascript:reloadView()>End Presentation Mode</button>
+        <button id="start_presentation_mode" type='button' class="btn btn-primary" onclick=javascript:start_presentation_mode();javascript:reloadView()>Presentation Mode</button>
+        <button id="end_presentation_mode" type='button' class="btn btn-primary end_presentation_mode" onclick=javascript:end_presentation_mode();javascript:reloadView()>Default Mode</button>
         <br><br>
-            <button id="downloadBtn" class="btn btn-primary">Download Result As Image</button>
+            <button id="downloadBtn" class="btn btn-primary">Download Image</button>
         <a href="#" id="downloadA" download></a><br><br>
         <button id="resetViewBtn" type='button' class="btn btn-primary" onclick=javascript:resetView()>Reset</button>
     </div></div>

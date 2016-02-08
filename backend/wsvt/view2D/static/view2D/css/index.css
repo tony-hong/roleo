@@ -56,11 +56,19 @@ div.fill_display_with_padding{
       padding-bottom: 9999px;
       margin-bottom: -9999px;
   }
+  div.hide_information_when_small {
+      display: none;
+      color:red;
+  }
 }
 
 @media only screen and (max-width: 768px) {
   div.content_columns {
       padding-bottom: 20px;
+  }
+  div.hide_information_when_small {
+      display: block;
+      color:red;
   }
 }
 
@@ -84,6 +92,3 @@ label#label_msg_query_error {
 	color: red;
 	font-size: 15px;
 }
-
-
-
