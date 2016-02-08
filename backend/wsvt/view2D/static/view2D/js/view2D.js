@@ -117,12 +117,22 @@ function loadErrCodeJSON(errCodeJSON_Object) {
 }
 
 function createNodesFromJSON(responseJSON_Object) {
+	var btn_start_presentation_mode = document.getElementById("start_presentation_mode");
+	var btn_download = document.getElementById("downloadBtn");
+	if (btn_start_presentation_mode == null) alert("getElementById(\"start_presentation_mode\") failed");
+	if (btn_download == null) alert("getElementById(\"downloadBtn\") failed");
 	var set = responseJSON_Object;
 	if (set == null) alert("responseJSON_Object is null");
 	errCode = set.errCode;
 	// if error when query simply return null
 	if (errCode != null) {
+		btn_start_presentation_mode.disabled = true;
+		btn_download.disabled = true;
 		return null;
+	}
+	else {
+		btn_start_presentation_mode.disabled = false;
+		btn_download.disabled = false;
 	}
 	//
 	var nodes = [];
@@ -538,7 +548,11 @@ function addEventListners(canvas) {
 		if (!dlA) alert("getElementById(\"downloadA\") failed!");
 		dlA.href = canvas.toDataURL('image/jpeg');
 		// TODO change name dynamically
-		dlA.download = "WSVT_Result.jpeg" ;
+		var nounStr = sessionStorage.prevNoun;
+		var verbStr = sessionStorage.prevVerb;
+		var roleStr = sessionStorage.prevRole;
+		var modelStr = sessionStorage.prevModel;
+		dlA.download = verbStr + "_" + roleStr + "_" + nounStr + "_" + modelStr + ".jpeg" ;
 		dlA.click();
 	});;
 }
