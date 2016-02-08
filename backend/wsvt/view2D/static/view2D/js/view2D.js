@@ -547,13 +547,13 @@ function addEventListners(canvas) {
 	dlBtn.addEventListener('click', function(e) {
 		var dlA = document.getElementById("downloadA");
 		if (!dlA) alert("getElementById(\"downloadA\") failed!");
-		dlA.href = canvas.toDataURL('image/jpeg');
+		dlA.href = canvas.toDataURL('image/png');
 		// TODO change name dynamically
 		var nounStr = sessionStorage.prevNoun;
 		var verbStr = sessionStorage.prevVerb;
 		var roleStr = sessionStorage.prevRole;
 		var modelStr = sessionStorage.prevModel;
-		dlA.download = verbStr + "_" + roleStr + "_" + nounStr + "_" + modelStr + ".jpeg" ;
+		dlA.download = verbStr + "_" + roleStr + "_" + nounStr + "_" + modelStr + ".png" ;
 		dlA.click();
 	});;
 }
