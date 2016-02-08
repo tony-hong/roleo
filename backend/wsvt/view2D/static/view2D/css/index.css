@@ -79,3 +79,11 @@ label#label_msg_noun, label#label_msg_verb {
 	color: red;
 	font-size: 10px;
 }
+
+label#label_msg_query_error {
+	color: red;
+	font-size: 15px;
+}
+
+
+

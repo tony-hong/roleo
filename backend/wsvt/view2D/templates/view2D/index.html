@@ -65,16 +65,20 @@
 	
         function buttonClicked(){
 			setIsInProcessing(true);
-			sessionStorage.prevNoun = document.getElementById("input_noun").value;
-			sessionStorage.prevVerb = document.getElementById("input_verb").value;
-			sessionStorage.prevRole = document.getElementById("select_role").value;
-			sessionStorage.prevModel = document.getElementById("select_model").value;
           $.ajax({
             url:      'query/',
             type:     'POST',
             data:     $('#myDiv').serialize(),
             async:    true,
             success:  function(response){
+			  // only store query information if no error returned
+			  if (response.errCode == null) {
+			    sessionStorage.prevNoun = document.getElementById("input_noun").value;
+			    sessionStorage.prevVerb = document.getElementById("input_verb").value;
+				sessionStorage.prevRole = document.getElementById("select_role").value;
+				sessionStorage.prevModel = document.getElementById("select_model").value;
+			  }
+			  //
               updateQuerySet(createNodesFromJSON(response));
 			  setIsInProcessing(false);
             }
@@ -179,11 +183,12 @@
           </form><br>
           </div>
       <div class="col-md-7 col-sm-6 col-xs-12 col-ld-6" id="canvas_column">
-      <div class="visualization" id="visualization_result">
-
-        <canvas id="myCanvas" class="canvas_style">
+        <div class="visualization" id="visualization_result">
+		  <!-- Label show query errors passed from backend -->
+		  <label id="label_msg_query_error"></label>
+          <canvas id="myCanvas" class="canvas_style">
     			This text is displayed if your browser does not support HTML5 Canvas.
-    		</canvas>
+    	  </canvas>
         </div>
       </div>
       <div class="col-md-3 col-sm-3 col-xs-12 col-ld-3" id="right_menu_column">
