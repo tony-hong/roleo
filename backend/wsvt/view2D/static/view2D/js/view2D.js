@@ -46,7 +46,8 @@ var errCodeJSON = null;
 var debugCnt = 0;
 
 /* Default values */
-var DEFAULT_NODE_RADIUS = 10;
+var CONST_NODE_RADIUS = 8;
+var DEFAULT_NODE_RADIUS = CONST_NODE_RADIUS;
 // TODO Bellow two vars should be inited dynamically according to the data set
 var MAX_MOUSE_WHEEL_CNT = 30;
 var MIN_MOUSE_WHEEL_CNT = -20;
@@ -194,7 +195,7 @@ function draw() {
 		// if errCode != null, display err msg
 		showErrorMsg(errCode);
 		// recompute bboxes
-		DEFAULT_NODE_RADIUS = 10/TRANSFORMATION.scale; // keep node radius irrelevant to the scale
+		DEFAULT_NODE_RADIUS = CONST_NODE_RADIUS/TRANSFORMATION.scale; // keep node radius irrelevant to the scale
 		for (i=0; i<view.nodeElements.length; ++i) {
 			view.nodeElements[i].bbox = view.nodeElements[i].computeBBox();
 		}
