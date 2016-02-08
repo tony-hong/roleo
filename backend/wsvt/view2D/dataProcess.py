@@ -51,31 +51,65 @@ matrix = Matricisation({
     Processing function for the query for the client
 
     @parameters: 
-        query0 : str  # with '-v/-n' suffix
-        query1 : str  # with '-v/-n' suffix
-        semanticRole : str # with '-1' suffix if noun selects noun
-        double : bool # True when query1 is not empty
+        verb : str
+        noun : str
+        role : str 
+        group : str
         topN   : int  # Number of top vectors which will be returned
 
     @return: result = dict()
 '''
-def process(query0, query1, semanticRole, double, topN = 20):
-    print 'process start...'
+def process(verb, noun, role, group, topN = 20):
+    print 'process start...' 
     memberIndex = dict()
+    result = dict()
+    double = False
+
+    # query word 0 # with '-v/-n' suffix
+    query0 = ''
+    # query word 1 # with '-v/-n' suffix
+    query1 = ''
+    # with '-1' suffix if noun selects noun
+    semanticRole = ''
+
+    # Case of noun selects verb
+    if group == 'noun':
+        query0 = noun + '-n'
+        semanticRole = role + '-1'
+        if verb:
+            double = True
+            query1 = verb + '-v'
+    # Case of verb selects noun
+    elif group == 'verb':
+        query0 = verb + '-v'
+        semanticRole = role
+        if noun:
+            double = True
+            query1 = noun + '-n'
+    else:
+        print 'exception: internal error!'
+        result = {'errCode' : errorCode.INTERNAL_ERROR}
+        return result
+
+    # LOG
+    print 'query0: ' + query0
+    print 'query1: ' + query1
+    print 'semanticRole: ' + semanticRole
+    print 'double: ' + str(double)
+    print 'topN: ' + str(topN)
 
     # members[0]: vectors
     # members[1]: list of words
-    memberVectors = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, topN)
+    memberTuple = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, topN)
 
-    if type(memberVectors) != type(tuple()):
+    if type(memberTuple) != type(tuple()):
         print 'exception: memberVectors is empty' 
         result = {'errCode' : errorCode.MBR_VEC_EMPTY}
         return result
     else:
-        vectorList, wordList = memberVectors
+        vectorList, wordList = memberTuple
 
-    for w, v in wordList, vectorList:
-        memberIndex[w] = v
+    wordVectors = dict(zip(wordList, vectorList))
 
     print 'getMemberVectors finished...'
     print wordList
@@ -89,8 +123,8 @@ def process(query0, query1, semanticRole, double, topN = 20):
     # centroid = matrix.getCentroid(query0, 'word1', 'word0', {'link':[semanticRole]})
     centroid = pd.concat(vectorList).sum(level=[0,1])
 
-    for w, v in wordList, vectorList:
-        wordVectors[w] = v
+    for w in wordList:
+        v = wordVectors[w]
 
         support = v.ix[semanticRole].ix[query0]
         wordSupports[w] = support
@@ -169,8 +203,8 @@ def process(query0, query1, semanticRole, double, topN = 20):
     Mapping from fraction, and cosine to the x, y coordinate
 
     @parameters:
-        fraction = 
-        cosine   = 
+        fraction = support / maxmaxSupport
+        cosine   = cosine_sim(centroid, wordVector)
     @return: (x, y) = tuple
 '''
 def mapping(fraction, cosine):

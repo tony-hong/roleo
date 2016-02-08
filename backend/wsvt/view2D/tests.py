@@ -74,20 +74,7 @@ class QueryTest(TestCase):
         result = '{"errCode": ' + str(errorCode.INTERNAL_ERROR) + '}'
         self.assertEqual(result, realResult)
 
-    def test_NOUN_EMPTY_POS(self):
-        request = HttpRequest()
-        request.method = 'POST'
-        request.POST['verb'] = 'eat'
-        request.POST['role'] = 'A0'
-        request.POST['noun'] = ''
-        request.POST['group1'] = 'verb'
-        request.POST['top_results'] = 2
-        response = query(request)
-        realResult = response.content
-        result = '{"errCode": ' + str(errorCode.NOUN_EMPTY) + '}'
-        self.assertNotEqual(result, realResult)
-
-    def test_NOUN_EMPTY_NEG(self):
+    def test_NOUN_EMPTY(self):
         request = HttpRequest()
         request.method = 'POST'
         request.POST['verb'] = 'eat'
@@ -101,21 +88,7 @@ class QueryTest(TestCase):
         result = '{"errCode": ' + str(errorCode.NOUN_EMPTY) + '}'
         self.assertEqual(result, realResult)
 
-    def test_VERB_EMPTY_POS(self):
-        request = HttpRequest()
-        request.method = 'POST'
-        request.POST['verb'] = ''
-        request.POST['role'] = 'A0'
-        request.POST['noun'] = 'apple'
-        request.POST['group1'] = 'noun'
-        request.POST['top_results'] = 20
-        response = query(request)
-        realResult = response.content
-
-        result = '{"errCode": ' + str(errorCode.VERB_EMPTY) + '}'
-        self.assertNotEqual(result, realResult)
-
-    def test_VERB_EMPTY_NEG(self):
+    def test_VERB_EMPTY(self):
         request = HttpRequest()
         request.method = 'POST'
         request.POST['verb'] = ''
@@ -129,29 +102,10 @@ class QueryTest(TestCase):
         result = '{"errCode": ' + str(errorCode.VERB_EMPTY) + '}'
         self.assertEqual(result, realResult)
 
-    def test_GROUP_EMPTY(self):
-        request = HttpRequest()
-        request.method = 'POST'
-        request.POST['verb'] = 'eat'
-        request.POST['role'] = 'A0'
-        request.POST['noun'] = 'apple'
-        request.POST['group1'] = ''
-        request.POST['top_results'] = 20
-        response = query(request)
-        realResult = response.content
-
-        result = '{"errCode": ' + str(errorCode.INTERNAL_ERROR) + '}'
-        self.assertEqual(result, realResult)   
-
-
-
-
-
-                                                                                                                
 
 class DataProcessorTest(TestCase):
     def test_process(self):
-        realResult = process('eat-v', 'apple-n', 'A0', True, 20)
+        realResult = process('eat', 'apple', 'A0', 'verb', 20)
         queryDict = {
             'y': 0.7788627028935319, 
             'x': 0.45877782991981186, 
@@ -168,43 +122,16 @@ class DataProcessorTest(TestCase):
                 wordAppeared = False
         self.assertEqual(True, wordAppeared)
 
-    def test_processTop100(self):
-    realResult = process('study-v', 'adult-n', 'A0', True, 100)
-        wordList = ['he-n', 'i-n', 'researcher-n', 'pupil-n', 'scientist-n', 'class-n', 'university-n', 'group-n', 'project-n', 'scholarship-n', 'team-n', 'astronomer-n', 'candidate-n', 'psychologist-n', 'paper-n', 'scholar-n', 'anthropologist-n', 'author-n', 'learner-n', 'fellowship-n', 'historian-n', 'david-n', 'andrew-n', 'module-n', 'child-n', 'biologist-n', 'film-n', 'undergraduate-n', 'sociologist-n', 'research-n', 'london-n', 'john-n', 'archaeologist-n', 'uk-n', 'objective-n', 'participant-n', 'science-n', 'spectroscopy-n', 'us-n', 'microscopy-n', 'chemist-n', 'laboratory-n', 'jonathan-n', 'tourism-n', 'williams-n', 'investigator-n', 'expert-n', 'helen-n', 'james-n', 'people-n', 'geologist-n', 'subject-n', 'case-n', 'simon-n', 'cambridge-n', 'peter-n', 'graduate-n', 'newton-n', 'mathematician-n', 'college-n', 'diffraction-n', 'commission-n', 'linguist-n', 'nick-n', 'rachel-n', 'martin-n', 'sarah-n', 'physicist-n', 'spectrometry-n', 'leeds-n', 'catherine-n', 'unit-n', 'zoologist-n', 'michael-n', 'applicant-n', 'thomas-n', 'geographer-n', 'course-n', 'girl-n', 'committee-n', 'matt-n', 'canada-n', 'lee-n', 'oxford-n', 'klein-n', 'trainee-n', 'matthew-n', 'york-n', 'majority-n', 'bruce-n', 'physiologist-n', 'evans-n', 'christopher-n', 'ben-n', 'institute-n', 'cooper-n', 'philosopher-n', 'paul-n', 'boy-n']
-
-        self.assertEqual('adult-n', realResult['queried']['word'])
-    wordNotAppeared = True
-    nodes = realResult['nodes']
-    for w in wordList:
-        if w in nodes:
-        wordNotAppeared = False
-        self.assertEqual(True, wordNotAppeared)
-
-    def test_processModelA1(self):
-    realResult = process('invest-v','money-n', 'A1', True, 20)
-    wordList = ['time-n', 'sum-n', 'fund-n', 'resource-n', 'amount-n', 'capital-n', 'million-n', 'lot-n', 'saving-n', 'cash-n', 'energy-n', 'billion-n', 'pound-n', 'effort-n', 'share-n', 'dollar-n', 'deal-n', 'asset-n', 'technology-n']
-    
-    self.assertEqual('money-n', realResult['queried']['word'])
-    wordNotAppeared = True
-    nodes = realResult ['nodes']
-    for w in wordList:
-        if w in nodes:
-            wordNotApeared = False
-    self.assertEqual(True, wordNotAppeared)
-    
-
- 
-
     def test_process_exception_MBR_VEC_EMPTY(self):
         result = {'errCode' : errorCode.MBR_VEC_EMPTY}
-        self.assertEqual(result, process('asdf', 'apple-n', 'A0', True, 20))
+        self.assertEqual(result, process('asdf', 'apple', 'A0', 'verb', 20))
 
     def test_process_exception_QUERY_EMPTY(self):
         result = {'errCode' : errorCode.QUERY_EMPTY}
-        self.assertEqual(result, process('eat-v', 'asdf', 'A0', True, 20))
+        self.assertEqual(result, process('eat', 'asdf', 'A0', 'verb', 20))
 
     def test_process_exception_SMT_ROLE_EMPTY(self):
         result = {'errCode' : errorCode.SMT_ROLE_EMPTY}
-        self.assertEqual(result, process('eat-v', 'apple-n', 'AM-MOD', True, 20))
+        self.assertEqual(result, process('eat', 'apple', 'AM-MOD', 'verb', 20))
 
 # TODO add other test

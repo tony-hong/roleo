@@ -39,20 +39,15 @@ def query(request):
     group = request.POST['group1']
     topN = int(request.POST['top_results'])
 
-    query0 = ''
-    query1 = ''
     semanticRole = role
     result = {}
-
+    
+    # LOG
     # print 'v: ' + verb
     # print 'r: ' + role
     # print 'n: ' + noun
     # print 'group: ' + group
     # print 'top_results: ' + str(topN)
-
-    double = True
-    if not noun or not verb:
-        double = False
 
     isValid, errorMessage = validate(verb, noun, group)
 
@@ -60,29 +55,9 @@ def query(request):
         pass
     else:
         result = errorMessage
-        return JsonResponse(result)        
-
-    if group == 'noun':
-        query0 = noun + '-n'
-        semanticRole = semanticRole + '-1'
-        if verb:
-            query1 = verb + '-v'
-    elif group == 'verb':
-        query0 = verb + '-v'
-        if noun:
-            query1 = noun + '-n'
-    else:        
-        print 'exception: internal error!'
-        result = {'errCode' : errorCode.INTERNAL_ERROR}
         return JsonResponse(result)
-
-    print 'query0: ' + query0
-    print 'query1: ' + query1
-    print 'semanticRole: ' + semanticRole
-    print 'double: ' + str(double)
-    print 'topN: ' + str(topN)
     
-    result = process(query0, query1, semanticRole, double, topN)
+    result = process(verb, noun, semanticRole, group, topN)
     return JsonResponse(result)
 
 def errorCodeJSON(request):
