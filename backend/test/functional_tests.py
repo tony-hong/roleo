@@ -86,8 +86,6 @@ class TravelAround(unittest.TestCase):
 
 
         # The user clicks the submit button
-
-        print("************************************************************")
        
         
         time.sleep(1)
@@ -142,6 +140,37 @@ class TravelAround(unittest.TestCase):
 
     def tearDown(self):
         self.browser.quit()
+
+
+
+
+
+class simultaneousTest(unittest.TestCase):
+    
+
+    def setUp(self):
+        global driver
+        driver = webdriver.Firefox()
+
+    # TODO: fill in the name of the use case
+    def test_simultaneous_requests(self):
+        # Open the browser and visit the tool
+        driver.get("http://www.python.org")
+        # Wait for 3 secs
+        driver.implicitly_wait(3)
+        
+
+
+    def tearDown(self):
+        driver.quit()
+
+
+
+
+
+
+
+
 
 
 
