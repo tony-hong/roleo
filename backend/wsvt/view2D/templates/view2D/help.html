@@ -23,6 +23,7 @@
 
   <body>
 
+    <!-- navigation bar at the top, if the display has not enought pixels it becomes a dynamic navigation bar -->
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -32,10 +33,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
+
+          <!-- text, which is shown in the top left corner in the navigation bar -->
           <a class="navbar-brand" href="../">Web-based semantic visualization tool</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
+
+            <!-- links to the respective pages in the navigation bar -->
             <li id = "query_page" ><a href="../">Query</a></li>
             <li id = "help_page" class="active"><a href="../help">Help</a></li>
             <li id = "contact_page"><a href="../contact">Contact</a></li>
@@ -45,75 +50,125 @@
       </div>
     </nav>
 
+    <!-- content of the help page, which is below the navigation bar -->
     <div class="container padding_top_menu">
+
+      <!-- title -->
       <h2> How To Use </h2>
+
+      <!-- Step 1 -->
       <h3> Step 1 </h3>
       <div class="step">
         <div class="right">
+
+          <!-- image -->
           <img src="{% static 'view2D/img/noun.png' %}" width="300" style="border: 1px solid lightgrey">
         </div>
-      <div class="left">
-      <p class="well">
-        At first you have to enter a noun in the "Noun" input field. This field must be filled in order to send the query.<br><br> For example: apple
-      </p>
-    </div>
-    </div><br>
+        <div class="left">
+
+          <!-- description -->
+          <p class="well">
+            At first you have to enter a noun in the "Noun" input field. This field must be filled in order to send the query.<br><br> For example: apple
+          </p>
+        </div>
+      </div>
+      <br>
+
+
+      <!-- Step 2 -->
       <h3> Step 2 </h3>
       <div class="step">
         <div class="right">
+
+          <!-- image -->
           <img src="{% static 'view2D/img/role.png' %}" width="300" style="border: 1px solid lightgrey">
         </div>
-      <div class="left">
-      <p class="well">
-      There are different roles available to choose from. Different semantic roles lead to different results of the query.<br><br> For example: Do you mean an apple is eaten or the apple eats something?
-      </p>
-    </div></div>
+        <div class="left">
 
-          <h3> Step 3 </h3>
-          <div class="step">
-            <div class="right" >
-              <img src="{% static 'view2D/img/verb.png' %}" width="300" style="border: 1px solid lightgrey">
-            </div>
-          <div class="left">
+          <!-- description -->
           <p class="well">
-        Then you have to enter a verb in the "Verb" input field. This field must be filled in order to send the query.<br><br> For example: eat
-        </p>
+            There are different roles available to choose from. Different semantic roles lead to different results of the query.<br><br> For example: Do you mean an apple is eaten or the apple eats something?
+          </p>
         </div>
-        </div><br><br>
-        <h3> Step 4 </h3>
-        <div class="step">
-      <div class="right" >
-        <img src="{% static 'view2D/img/select.png' %}" width="300" style="border: 1px solid lightgrey">
       </div>
-      <div class="left">
-      <p class="well">
-      This option defines whether you are more interested in verbs, which are surrounding the entered noun or in nouns, which are surrounding the entered verb. This is why you have these two options to choose from:<br>
-      Noun selects verb<br>
-      Verb selects noun<br><br>
-      For example: Noun selects verb
-      </p>
-    </div></div><br>
+
+
+      <!-- Step 3 -->
+      <h3> Step 3 </h3>
+      <div class="step">
+        <div class="right" >
+
+          <!-- image -->
+          <img src="{% static 'view2D/img/verb.png' %}" width="300" style="border: 1px solid lightgrey">
+        </div>
+        <div class="left">
+
+          <!-- description -->
+          <p class="well">
+            Then you have to enter a verb in the "Verb" input field. This field must be filled in order to send the query.<br><br> For example: eat
+          </p>
+        </div>
+      </div>
+      <br><br>
+
+
+      <!-- Step 4 -->
+      <h3> Step 4 </h3>
+      <div class="step">
+        <div class="right" >
+
+          <!-- image -->
+          <img src="{% static 'view2D/img/select.png' %}" width="300" style="border: 1px solid lightgrey">
+        </div>
+        <div class="left">
+
+          <!-- description -->
+          <p class="well">
+            This option defines whether you are more interested in verbs, which are surrounding the entered noun or in nouns, which are surrounding the entered verb. This is why you have these two options to choose from:<br>
+            Noun selects verb<br>
+            Verb selects noun<br><br>
+            For example: Noun selects verb
+          </p>
+        </div>
+      </div>
+      <br>
+
+      <!-- Step 5 -->
       <h3> Step 5 </h3>
       <div class="step">
-    <div class="right" >
-      <img src="{% static 'view2D/img/send.png' %}" width="300" style="border: 1px solid lightgrey">
-    </div><div class="left">
-    <p class="well">
-      Just click the button and send the query!<br><br>The visualization needs a short while to compute depending on the complexity of your query.
-    </p>
-  </div></div><br>
+        <div class="right" >
 
-    <h3> Changing the model </h3>
-    <div class="step">
-  <div class="right" >
-    <img src="{% static 'view2D/img/model.png' %}" width="300" style="border: 1px solid lightgrey">
-  </div><div class="left">
-  <p class="well">
-  There are different models available which compute the word relations in different ways. Here you can specify another model. Choose it from the dropdown list and click the button.<br><br>Note that changing the model can take few minutes.
-  </p>
-</div></div><br>
+          <!-- image -->
+          <img src="{% static 'view2D/img/send.png' %}" width="300" style="border: 1px solid lightgrey">
+        </div>
+        <div class="left">
+
+          <!-- description -->
+          <p class="well">
+            Just click the button and send the query!<br><br>The visualization needs a short while to compute depending on the complexity of your query.
+          </p>
+        </div>
+      </div>
+      <br>
+
+      <h3> Changing the model </h3>
+      <div class="step">
+        <div class="right" >
+
+            <!-- image -->
+            <img src="{% static 'view2D/img/model.png' %}" width="300" style="border: 1px solid lightgrey">
+        </div>
+        <div class="left">
+
+          <!-- description -->
+          <p class="well">
+            There are different models available which compute the word relations in different ways. Here you can specify another model. Choose it from the dropdown list and click the button.<br><br>Note that changing the model can take few minutes.
+          </p>
+        </div>
+      </div>
+      <br>
 
     </div><!-- /.container -->
-<br>
+    <br>
   </body>
 </html>
