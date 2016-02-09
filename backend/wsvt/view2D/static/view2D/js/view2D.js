@@ -157,6 +157,11 @@ function createNodesFromJSON(responseJSON_Object) {
 		document.getElementById("input_verb").value = sessionStorage.prevVerb;
 		document.getElementById("select_role").value = sessionStorage.prevRole;
 		document.getElementById("select_model").value = sessionStorage.prevModel;
+
+		// TODO
+		radioId = 'radio_' + sessionStorage.prevGroup
+		document.getElementById(radioId).checked = true
+
 		document.getElementById("lbl_noun_info").textContent = sessionStorage.prevNoun;
 		document.getElementById("lbl_verb_info").textContent = sessionStorage.prevVerb;
 		document.getElementById("lbl_role_info").textContent = sessionStorage.prevRole;

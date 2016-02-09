@@ -23,12 +23,9 @@
 
     <!-- TODO  a local version of jquery.min.js -->
   	<script src="{% static 'view2D/js/jquery.min.js' %}"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   	<script src="{% static 'view2D/bootstrap/js/bootstrap.min.js' %}"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.0.13/bootstrap-slider.min.js"></script>
 
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.0.13/bootstrap-slider.min.js"></script>    
 
     <script src="{% static 'view2D/js/view2D.js' %}"></script>
     <script src="{% static 'view2D/js/index.js' %}"></script>
@@ -75,8 +72,10 @@
 			  if (response.errCode == null) {
 			    sessionStorage.prevNoun = document.getElementById("input_noun").value;
 			    sessionStorage.prevVerb = document.getElementById("input_verb").value;
-				sessionStorage.prevRole = document.getElementById("select_role").value;
-				sessionStorage.prevModel = document.getElementById("select_model").value;
+				  sessionStorage.prevRole = document.getElementById("select_role").value;
+          sessionStorage.prevModel = document.getElementById("select_model").value;
+          group = $('input:radio:checked').val()
+          sessionStorage.prevGroup = group
 			  }
 			  //
               updateQuerySet(createNodesFromJSON(response));
@@ -123,7 +122,7 @@
               <input id="input_verb" type="text" name="verb" value ="eat" class="form-control"  placeholder="e.g. eat" data-toggle="tooltip" title="Enter a verb!">
               <div class="input_element radio">
                 <label class="left_align">
-                  <input type="radio" name="group1" value="verb" checked="checked">Verb selects noun
+                  <input id="radio_verb" type="radio" name="group1" value="verb" checked="checked">Verb selects noun
                 </label>
                 </div>
                 <!-- label show related error message for the input -->
@@ -147,7 +146,7 @@
               <input id="input_noun" type="text" name="noun" value="apple" class="form-control"  placeholder="e.g. apple" data-toggle="tooltip_noun" title="Enter a noun here!">
               <div class="input_element radio">
                 <label class="left_align">
-                  <input type="radio" name="group1" value="noun">Noun selects verb
+                  <input id="radio_noun" type="radio" name="group1" value="noun">Noun selects verb
                 </label>
               </div>
               <!-- label show related error message for the input -->
@@ -190,9 +189,9 @@
       <div class="col-md-3 col-sm-2 col-xs-12 col-ld-3" id="right_menu_column">
         <div class="right_menu_column">
           Query Information:<br><br>
-          Noun:&nbsp <label id="lbl_noun_info"></label><br>
-		  Role:&nbsp <label id="lbl_role_info"></label><br>
           Verb:&nbsp <label  id="lbl_verb_info"></label><br>
+          Role:&nbsp <label id="lbl_role_info"></label><br>
+          Noun:&nbsp <label id="lbl_noun_info"></label><br>
           Model:&nbsp <label  id="lbl_model_info"></label><br><br>
 
         <!-- Add a dropdown menu let user specify image format -->
