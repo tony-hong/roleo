@@ -14,18 +14,18 @@
 
     <!-- Bootstrap core CSS -->
 	  <link href="{% static 'view2D/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Bootstrap core CSS slider -->
     <link href=" https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.0.13/css/bootstrap-slider.css" rel="stylesheet">
-
 
 
     <!-- Custom styles for this template -->
     <link href="{% static 'view2D/css/index.css' %}" rel="stylesheet">
 
-    <!-- TODO  a local version of jquery.min.js -->
+    <!-- jquery.min.js to use it in javascript -->
   	<script src="{% static 'view2D/js/jquery.min.js' %}"></script>
   	<script src="{% static 'view2D/bootstrap/js/bootstrap.min.js' %}"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.0.13/bootstrap-slider.min.js"></script>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.0.13/bootstrap-slider.min.js"></script>
 
     <script src="{% static 'view2D/js/view2D.js' %}"></script>
     <script src="{% static 'view2D/js/index.js' %}"></script>
@@ -89,6 +89,7 @@
 
   <body>
 
+    <!-- navigation bar at the top, if the display has not enought pixels it becomes a dynamic navigation bar -->
     <nav class="navbar navbar-inverse navbar-fixed-top no-margin-bottom" id="navigation_bar">
       <div class="container">
         <div class="navbar-header">
@@ -98,10 +99,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
+
+          <!-- text, which is shown in the top left corner in the navigation bar -->
           <a class="navbar-brand" href="">Web-based semantic visualization tool</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
+
+            <!-- links to the respective pages in the navigation bar -->
             <li id = "query_page" class="active"><a href="">Query</a></li>
             <li id = "help_page" ><a href="help">Help</a></li>
             <li id = "contact_page"><a href="contact">Contact</a></li>
@@ -110,105 +115,153 @@
         </div><!--/.nav-collapse -->
       </div>
     </nav>
+
+    <!-- part below the top navigation bar -->
+    <!-- containing 3 columns, which dynamically change their size depending on the display size (see bootstrap grid system)-->
     <div class="container-fluid">
       <div class="row parent_row">
-      <div class="col-md-2 col-sm-3 col-xs-12 col-ld-3 left_column content_columns" id="left_menu_bar">
-      <div id="query_form">
-        <h1>WSVT</h1>
 
-          <form id="myDiv">
-            <div class="input_element">
-              <span class="left_align">Verb:</span>
-              <input id="input_verb" type="text" name="verb" value ="eat" class="form-control"  placeholder="e.g. eat" data-toggle="tooltip" title="Enter a verb!">
-              <div class="input_element radio">
-                <label class="left_align">
-                  <input id="radio_verb" type="radio" name="group1" value="verb" checked="checked">Verb selects noun
-                </label>
+        <!-- first column, containing the input fields, where the user can enter a query -->
+        <div class="col-md-2 col-sm-3 col-xs-12 col-ld-3 left_column content_columns" id="left_menu_bar">
+          <div id="query_form">
+            <h1>WSVT</h1>
+
+            <!-- form element which collects the information from the user entered fields below -->
+            <form id="myDiv">
+
+              <!-- div containing the first "input element" which means, the "Verb:", the input field for the verb, "Verb selects Noun"-radio button, label for error messages -->
+              <div class="input_element">
+                <span class="left_align">Verb:</span>
+                <input id="input_verb" type="text" name="verb" value ="eat" class="form-control"  placeholder="e.g. eat" data-toggle="tooltip" title="Enter a verb!">
+                <div class="input_element radio">
+                  <label class="left_align">
+                    <input id="radio_verb" type="radio" name="group1" value="verb" checked="checked">Verb selects noun
+                  </label>
                 </div>
+
                 <!-- label show related error message for the input -->
-              <label id="label_msg_verb"></label>
-            </div>
-            <br>
-            <div class="input_element" data-toggle="tooltip" title="Specify the role of the noun!">
-              <span class="left_align">Role:</span><br>
-              <select id="select_role" class="form-control" name='role'>
-                {% if role_list %}
-                  {% for r in role_list %}
-                      <option value="{{r.name}}">{{r.name}} : {{r.description}}</option>
-                  {% endfor %}
-                {% else %}
-                  <p>No roles are available.</p>
-                {% endif %}
-              </select>
-            </div><br>
-            <div class="input_element">
-              <span class="left_align">Noun:</span>
-              <input id="input_noun" type="text" name="noun" value="apple" class="form-control"  placeholder="e.g. apple" data-toggle="tooltip_noun" title="Enter a noun here!">
-              <div class="input_element radio">
-                <label class="left_align">
-                  <input id="radio_noun" type="radio" name="group1" value="noun">Noun selects verb
-                </label>
+                <label id="label_msg_verb"></label>
               </div>
-              <!-- label show related error message for the input -->
-              <label id="label_msg_noun"></label>
-            </div><br>
+              <br>
 
-            <div class="input_element">
-                Top N results:
-                <div data-toggle="tooltip_button" title="How many result words do you want?">
-                <input id="ex1" style="width:100%;" data-slider-id='ex1Slider' type="text" data-slider-min="10" data-slider-max="100" data-slider-step="10" data-slider-value="10" name='top_results'>
-              </div>
-            </div><br>
-              <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:buttonClicked()>Submit Query</button>
-              <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"><br><br><br>
-
-            <div class="input_element">
-                Model:
-                <div data-toggle="tooltip_button" title="Choose another model!">
-                <select id="select_model" class="form-control" name='model'>
-                  <option value="model1">Model 1</option>
-                  <option value="model2">Model 2</option>
-                  <option value="model3">Model 3</option>
+              <!-- div containing the second "input element" which means, dropdown selection menu for the role -->
+              <div class="input_element" data-toggle="tooltip" title="Specify the role of the noun!">
+                <span class="left_align">Role:</span><br>
+                <select id="select_role" class="form-control" name='role'>
+                  {% if role_list %}
+                    {% for r in role_list %}
+                        <option value="{{r.name}}">{{r.name}} : {{r.description}}</option>
+                    {% endfor %}
+                  {% else %}
+                    <p>No roles are available.</p>
+                  {% endif %}
                 </select>
               </div>
-            </div><br>
-                <button id="changeModelBtn" type='button' class="btn btn-primary" onclick=javascript:changeModel()>Change Model</button>
-            </div>
-          </form><br>
-          <div class="hide_information_when_small"> ! Visualization below !</div>
+              <br>
+
+              <!-- div containing the third "input element" which means the "Noun:", the input field for the noun, "Noun selects Verb"-radio button, label for error messages  -->
+              <div class="input_element">
+                <span class="left_align">Noun:</span>
+                <input id="input_noun" type="text" name="noun" value="apple" class="form-control"  placeholder="e.g. apple" data-toggle="tooltip_noun" title="Enter a noun here!">
+                <div class="input_element radio">
+                  <label class="left_align">
+                    <input id="radio_noun" type="radio" name="group1" value="noun">Noun selects verb
+                  </label>
+                </div>
+                <!-- label show related error message for the input -->
+                <label id="label_msg_noun"></label>
+              </div>
+              <br>
+
+              <!-- div containing the fourth "input element", which means the "Top N results" scroll bar  -->
+              <div class="input_element">
+                Top N results:
+                <div data-toggle="tooltip_button" title="How many result words do you want?">
+                  <input id="ex1" style="width:100%;" data-slider-id='ex1Slider' type="text" data-slider-min="10" data-slider-max="100" data-slider-step="10" data-slider-value="10" name='top_results'>
+                </div>
+              </div>
+              <br>
+
+              <!-- button which sends the query to the backend and builds the visualization, when the user clicks it -->
+              <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:buttonClicked()>Submit Query</button>
+              <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+              <br><br><br>
+
+              <!-- div containing the fifth "input element" with the possibility to change the model -->
+              <div class="input_element">
+                Model:
+                <div data-toggle="tooltip_button" title="Choose another model!">
+                  <select id="select_model" class="form-control" name='model'>
+                    <option value="model1">Model 1</option>
+                    <option value="model2">Model 2</option>
+                    <option value="model3">Model 3</option>
+                  </select>
+                </div>
+              </div>
+              <br>
+
+              <!-- button which changes the model in the backend, when the user clicks it -->
+              <button id="changeModelBtn" type='button' class="btn btn-primary" onclick=javascript:changeModel()>Change Model</button>
+
           </div>
-      <div class="col-md-7 col-sm-7 col-xs-12 col-ld-6" id="canvas_column">
-        <div class="visualization" id="visualization_result">
-		  <!-- Label show query errors passed from backend -->
-		  <label id="label_msg_query_error"></label>
-          <canvas id="myCanvas" class="canvas_style">
-    			This text is displayed if your browser does not support HTML5 Canvas.
-    	  </canvas>
+          </form>
+          <br>
+
+          <!-- red information text, which helps the user to understand that the visualization is below the query input column on smaller mobile devices -->
+          <div class="hide_information_when_small"> ! Visualization below !</div>
+        </div>
+
+        <!-- second column, containing the canvas with the visualization -->
+        <div class="col-md-7 col-sm-7 col-xs-12 col-ld-6" id="canvas_column">
+          <div class="visualization" id="visualization_result">
+
+    		    <!-- Label show query errors passed from backend -->
+    		    <label id="label_msg_query_error"></label>
+
+            <!-- canvas which contains the final visualized result of the query -->
+            <canvas id="myCanvas" class="canvas_style">
+        			This text is displayed if your browser does not support HTML5 Canvas.
+        	  </canvas>
+          </div>
+        </div>
+
+        <!-- third column, containing information of the current query and containing buttons which perform actions regarding the query result -->
+        <div class="col-md-3 col-sm-2 col-xs-12 col-ld-3" id="right_menu_column">
+
+          <!-- div containing the information about the current query, which is visualized in the canvas -->
+          <div class="right_menu_column">
+            Query Information:<br><br>
+            Verb:&nbsp <label  id="lbl_verb_info"></label><br>
+            Role:&nbsp <label id="lbl_role_info"></label><br>
+            Noun:&nbsp <label id="lbl_noun_info"></label><br>
+            Model:&nbsp <label  id="lbl_model_info"></label><br><br>
+
+          <!-- buttons which contain actions related to the current query, which is visualized in the canvas -->
+          <!-- Add a dropdown menu let user specify image format -->
+          <!-- starts the presentation mode, which hides the top navigation bar and the left (first) column (the one that contains the input fields for the user to enter a query) -->
+          <button id="start_presentation_mode" type='button' class="btn btn-primary" onclick=javascript:start_presentation_mode();javascript:reloadView()>Presentation Mode</button>
+
+          <!-- ends the presentation mode, which hides the top navigation bar and the left (first) column (the one that contains the input fields for the user to enter a query) -->
+          <button id="end_presentation_mode" type='button' class="btn btn-primary end_presentation_mode" onclick=javascript:end_presentation_mode();javascript:reloadView()>Default Mode</button>
+          <br><br>
+
+          <!-- button to download the current visualization, which is in the canvas -->
+              <button id="downloadBtn" class="btn btn-primary">Download Image</button>
+          <a href="#" id="downloadA" download></a>
+          <br><br>
+
+          <!-- button to recenter the view in the canvas to the centroid (default view after querying) -->
+          <button id="resetViewBtn" type='button' class="btn btn-primary" onclick=javascript:resetView()>Re-centralize</button>
+          </div>
         </div>
       </div>
-      <div class="col-md-3 col-sm-2 col-xs-12 col-ld-3" id="right_menu_column">
-        <div class="right_menu_column">
-          Query Information:<br><br>
-          Verb:&nbsp <label  id="lbl_verb_info"></label><br>
-          Role:&nbsp <label id="lbl_role_info"></label><br>
-          Noun:&nbsp <label id="lbl_noun_info"></label><br>
-          Model:&nbsp <label  id="lbl_model_info"></label><br><br>
-
-        <!-- Add a dropdown menu let user specify image format -->
-        <button id="start_presentation_mode" type='button' class="btn btn-primary" onclick=javascript:start_presentation_mode();javascript:reloadView()>Presentation Mode</button>
-        <button id="end_presentation_mode" type='button' class="btn btn-primary end_presentation_mode" onclick=javascript:end_presentation_mode();javascript:reloadView()>Default Mode</button>
-        <br><br>
-            <button id="downloadBtn" class="btn btn-primary">Download Image</button>
-        <a href="#" id="downloadA" download></a><br><br>
-        <button id="resetViewBtn" type='button' class="btn btn-primary" onclick=javascript:resetView()>Re-centralize</button>
-    </div></div>
-    </div>
     </div><!-- /.container -->
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
 
+    <!-- initializing the tooltips on the elements in the first, left column, where the user enters the query -->
     <script>
     $('[data-toggle="tooltip"]').tooltip({'placement': 'right'});
     $('[data-toggle="tooltip_noun"]').tooltip({'placement': 'right'});
