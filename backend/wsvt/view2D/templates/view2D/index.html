@@ -134,7 +134,7 @@
               <select id="select_role" class="form-control" name='role'>
                 {% if role_list %}
                   {% for r in role_list %}
-                      <option value="{{r.name}}">{{r.name}}</option>
+                      <option value="{{r.name}}">{{r.name}} : {{r.description}}</option>
                   {% endfor %}
                 {% else %}
                   <p>No roles are available.</p>
