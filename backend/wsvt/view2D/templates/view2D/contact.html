@@ -23,6 +23,7 @@
 
   <body>
 
+    <!-- navigation bar at the top, if the display has not enought pixels it becomes a dynamic navigation bar -->
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -32,10 +33,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
+
+          <!-- text, which is shown in the top left corner in the navigation bar -->
           <a class="navbar-brand" href="../">Web-based semantic visualization tool</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
+
+            <!-- links to the respective pages in the navigation bar -->
             <li id = "query_page"><a href="../">Query</a></li>
             <li id = "help_page"><a href="../help">Help</a></li>
             <li id = "contact_page" class="active"><a href="../contact">Contact</a></li>
@@ -45,53 +50,66 @@
       </div>
     </nav>
 
+    <!-- content of the contact page below of the navigation bar -->
     <div class="container padding_top_menu">
+
+      <!-- title -->
       <h2> Contact </h2>
+
+      <!-- first person - Vera -->
       <div class="person">
+
+        <!-- image - Vera -->
         <div class="right" >
-          <img src="../../static/view2D/img/SFB-251-top.jpg" width="300" style="border: 1px solid lightgrey">
+          <img src="{% static 'view2D/img/SFB-251-top.jpg' %}" width="300" style="border: 1px solid lightgrey">
         </div>
-      <div class="left">
-      <p class="well">
 
-      Vera Demberg<br><br>
-      Head of Independent Research Group in Saarbrücken,<br>
-      Cluster of Excellence<br>
-      Saarland University<br><br>
-      email:   FIRSTNAME@coli.uni-saarland.de<br>
-      address:<br>
-          Saarland University<br>
-          Campus C7.4<br>
-          66123 Saarbrücken<br>
-          Germany<br>
-      office: Campus C7 4, room 3.05<br>
-      phone: +49 (0)681 302 70024<br>
-      </p>
-    </div>
-    </div>
-    <br>
-    <div class="person">
-    <div class="right">
-          <img src="../../static/view2D/img/twitterprofile_400x400.jpg" height="300" width="300" style="border: 1px solid lightgrey">
-        </div>
+        <!-- text - Vera -->
         <div class="left">
-        <p class="well">
-
-        Asad Sayeed<br><br>
-        TBF<br>
-        TBF<br>
-        Saarland University<br><br>
-        email:   FIRSTNAME@coli.uni-saarland.de<br>
-        address:<br>
-            Saarland University<br>
-            Campus C7.4<br>
-            66123 Saarbrücken<br>
-            Germany<br>
-        office: Campus C7 4, TBF<br>
-        phone: TBF<br>
-        </p>
+          <p class="well">
+            Vera Demberg<br><br>
+            Head of Independent Research Group in Saarbrücken,<br>
+            Cluster of Excellence<br>
+            Saarland University<br><br>
+            email:   FIRSTNAME@coli.uni-saarland.de<br>
+            address:<br>
+                Saarland University<br>
+                Campus C7.4<br>
+                66123 Saarbrücken<br>
+                Germany<br>
+            office: Campus C7 4, room 3.05<br>
+            phone: +49 (0)681 302 70024<br>
+          </p>
+        </div>
       </div>
-</div>
+      <br>
+
+      <!-- second person - Asad -->
+      <div class="person">
+
+        <!-- image - Asad -->
+        <div class="right">
+            <img src="{% static 'view2D/img/twitterprofile_400x400.jpg' %}" height="300" width="300" style="border: 1px solid lightgrey">
+        </div>
+
+        <!-- text - Asad -->
+        <div class="left">
+          <p class="well">
+            Asad Sayeed<br><br>
+            TBF<br>
+            TBF<br>
+            Saarland University<br><br>
+            email:   FIRSTNAME@coli.uni-saarland.de<br>
+            address:<br>
+                Saarland University<br>
+                Campus C7.4<br>
+                66123 Saarbrücken<br>
+                Germany<br>
+            office: Campus C7 4, TBF<br>
+            phone: TBF<br>
+          </p>
+        </div>
+      </div>
     </div><!-- /.container -->
   </body>
 </html>

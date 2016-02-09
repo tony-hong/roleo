@@ -1,3 +1,4 @@
+/** custom styles for the index.php **/
 body {
   padding-top: 50px;
 }
@@ -45,6 +46,7 @@ div.fill_display_with_padding{
   padding-bottom:20px;
 }
 
+/** custom styles for the elements, when the display is bigger than 768px **/
 @media only screen and (min-width: 768px) {
   div.parent_row {
       overflow: hidden;
@@ -62,6 +64,7 @@ div.fill_display_with_padding{
   }
 }
 
+/** custom styles for the elements, when the display is smaller than 768px **/
 @media only screen and (max-width: 768px) {
   div.content_columns {
       padding-bottom: 20px;
