@@ -8,5 +8,6 @@ urlpatterns = [
     url(r'^contact/', views.contact, name='contact'),
     url(r'^impressum/', views.impressum, name='impressum'),
     url(r'^query/', views.query, name='query'),
+    url(r'^changeModel/', views.changeModel, name='changeModel'),
     url(r'^errorCodeJSON/', views.errorCodeJSON, name='errorCodeJSON'),
 ]

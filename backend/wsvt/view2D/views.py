@@ -41,7 +41,7 @@ def query(request):
 
     semanticRole = role
     result = {}
-    
+
     # LOG
     # print 'v: ' + verb
     # print 'r: ' + role
@@ -56,9 +56,23 @@ def query(request):
     else:
         result = errorMessage
         return JsonResponse(result)
-    
+
     result = process(verb, noun, semanticRole, group, topN)
     return JsonResponse(result)
+
+'''
+This call of the index.html in the case that the "Change Model" button ist clicked
+Later here the new model should be loaded.
+
+def changeModel(request):
+    template = loader.get_template('view2D/index.html')
+    role_list = SemanticRole.objects.all()
+    response = { 'role_list' : role_list }
+
+    context = RequestContext(request, response)
+
+    return HttpResponse(template.render(context))
+'''
 
 def errorCodeJSON(request):
     return JsonResponse(ecj, safe = False)
