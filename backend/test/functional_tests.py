@@ -136,6 +136,19 @@ class TravelAround(unittest.TestCase):
                 inputbox_verb.get_attribute('value'),
                 'read'
         )
+
+        #Also, the query information(currently on the leftside of the webpage) should be:
+        #Verb:  eat Noun:  apple
+        noun_info = self.browser.find_element_by_id('lbl_noun_info')
+        verb_info = self.browser.find_element_by_id('lbl_verb_info')
+        self.assertEqual(
+                noun_info.get_attribute('textContent'),
+                'book'
+        )
+        self.assertEqual(
+                verb_info.get_attribute('textContent'),
+                'read'
+        )
         
 
     def tearDown(self):
@@ -149,20 +162,27 @@ class simultaneousTest(unittest.TestCase):
     
 
     def setUp(self):
-        global driver
-        driver = webdriver.Firefox()
+        global driver1
+        global driver2
+        driver1 = webdriver.Firefox()
+        driver2 = webdriver.Firefox()
 
     # TODO: fill in the name of the use case
     def test_simultaneous_requests(self):
         # Open the browser and visit the tool
-        driver.get("http://www.python.org")
+        driver1.get('http://localhost:8000/view2D')
         # Wait for 3 secs
-        driver.implicitly_wait(3)
+        
+
+        driver2.get('http://localhost:8000/view2D')
+        # Wait for 3 secs
+        
         
 
 
     def tearDown(self):
-        driver.quit()
+        driver1.quit()
+        driver2.quit()
 
 
 
