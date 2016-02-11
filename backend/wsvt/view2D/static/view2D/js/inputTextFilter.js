@@ -6,9 +6,9 @@ var nounRadioBtn;
 var labelMsgNoun;
 var labelMsgVerb;
 
-var regex_non_char = "[^(a-zA-Z)]"
+var regex_non_char = "[^(a-zA-Z)]";
 
-// add to window.onload
+/** initialization for input text filter **/
 function loadInputTextFilter() {
 	inputNoun = document.getElementById("input_noun");
 	inputVerb = document.getElementById("input_verb");
@@ -32,9 +32,11 @@ function loadInputTextFilter() {
 	inputNoun.addEventListener('blur', function(e) {
 		preprocess(this);
 	});
+	// start looping
 	setInterval(main, 200);
 }
 
+/** validation function **/
 function main() {
 	// no check during processing query
 	if (ifInProcessing()) return; // view2D.js
@@ -69,11 +71,11 @@ function main() {
 	var index_verb = verb.search(regex_non_char);
 	var index_noun = noun.search(regex_non_char);
 	if (index_verb > -1) {
-		labelMsgVerb.innerHTML += "Invalid character for verb: \"" + verb.substring(index_verb, index_verb+1) + "\"\n";
+		labelMsgVerb.innerHTML += "Invalid character for verb: \"" + verb.substring(index_verb, index_verb+1) + "\"\n"; // TODO '\n' may has no desired effect
 		ifDisable = true;
 	}
 	if (index_noun > -1) {
-		labelMsgNoun.innerHTML += "Invalid character for noun: \"" + noun.substring(index_noun, index_noun+1) + "\"\n";
+		labelMsgNoun.innerHTML += "Invalid character for noun: \"" + noun.substring(index_noun, index_noun+1) + "\"\n"; // TODO '\n' may has no desired effect
 		ifDisable = true;
 	}
 	
@@ -85,6 +87,7 @@ function main() {
 	submitBtn.disabled = false;
 }
 
+/** convert inputs to lower case **/
 function preprocess(inputElement) {
 	inputElement.value = inputElement.value.trim().toLowerCase();
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
   <head>
     {% load staticfiles %}
     <meta charset="utf-8">
@@ -28,68 +29,20 @@
     <!-- bootstrap JS for slider -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.0.13/bootstrap-slider.min.js"></script>
 
+	<!-- js loading order matters because of dependencies -->
+	<!-- js for input validation -->
+	<script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
+	<!-- js responsible for visualization -->
     <script src="{% static 'view2D/js/view2D.js' %}"></script>
-    <script src="{% static 'view2D/js/index.js' %}"></script>
-  	<script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
-	  <!-- <script src="{% static 'view2D/js/xmlHttpRequest.js' %}"></script> -->
-    <script type="text/javascript">
-
-
-
-	// window.onload can only be defined at here
-    window.onload = function() {
-
-
-			loadView2D(false); // view2D.js
-			loadInputTextFilter(); // inputTextFilter.js
-			// load error_code.json into frontend
-			$.ajax({
-				url:      'errorCodeJSON/',
-				type:     'GET',
-				data:     null,
-				async:    true,
-				success:  function(response){
-				  loadErrCodeJSON(response);
-				}
-      });
-
-      $('#ex1').slider({
-        formatter: function(value) {
-          return 'Top ' + value;
-        }
-      });
-		}
-
-
-        function buttonClicked(){
-			setIsInProcessing(true);
-          $.ajax({
-            url:      'query/',
-            type:     'POST',
-            data:     $('#myDiv').serialize(),
-            async:    true,
-            success:  function(response){
-			  // only store query information if no error returned
-			  if (response.errCode == null) {
-			    sessionStorage.prevNoun = document.getElementById("input_noun").value;
-			    sessionStorage.prevVerb = document.getElementById("input_verb").value;
-				  sessionStorage.prevRole = document.getElementById("select_role").value;
-          sessionStorage.prevModel = document.getElementById("select_model").value;
-          group = $('input:radio:checked').val()
-          sessionStorage.prevGroup = group
-			  }
-			  //
-              updateQuerySet(createNodesFromJSON(response));
-			  setIsInProcessing(false);
-            }
-          });
-        }
-    </script>
-
+	<script src="{% static 'view2D/js/view2D_models.js' %}"></script>
+	<script src="{% static 'view2D/js/view2D_draw.js' %}"></script>
+	<script src="{% static 'view2D/js/view2D_events.js' %}"></script>
+	<script src="{% static 'view2D/js/view2D_main.js' %}"></script>
+	<!-- js for others -->
+	<script src="{% static 'view2D/js/index.js' %}"></script>
   </head>
 
   <body>
-
     <!-- navigation bar at the top, if the display has not enought pixels it becomes a dynamic navigation bar -->
     <nav class="navbar navbar-inverse navbar-fixed-top no-margin-bottom" id="navigation_bar">
       <div class="container">
@@ -184,7 +137,7 @@
               <br>
 
               <!-- button which sends the query to the backend and builds the visualization, when the user clicks it -->
-              <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:buttonClicked()>Submit Query</button>
+              <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:submitQuery()>Submit Query</button>
               <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
               <br><br><br>
 
@@ -247,7 +200,7 @@
           <br><br>
 
           <!-- button to download the current visualization, which is in the canvas -->
-              <button id="downloadBtn" class="btn btn-primary">Download Image</button>
+              <button id="downloadBtn" class="btn btn-primary" onclick=javascript:downloadImage()>Download Image</button>
           <a href="#" id="downloadA" download></a>
           <br><br>
 
@@ -268,6 +221,6 @@
     $('[data-toggle="tooltip_noun"]').tooltip({'placement': 'right'});
     $('[data-toggle="tooltip_button"]').tooltip({'placement': 'right'});
     </script>
-
   </body>
+  
 </html>

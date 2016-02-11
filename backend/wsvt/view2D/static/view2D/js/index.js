@@ -1,4 +1,73 @@
-// this function starts the presentation mode of the query site
+/** initialization for index.html **/
+window.onload = function() {
+	loadView2D(); // view2D_main.js
+	loadInputTextFilter(); // inputTextFilter.js
+	// load error_code.json into frontend
+	$.ajax({
+		url:      'errorCodeJSON/',
+		type:     'GET',
+		data:     null,
+		async:    true,
+		success:  function(response){ loadErrCodeJSON(response);}
+    });
+	// slider for TOP N selection
+	$('#ex1').slider({
+        formatter: function(value) {
+            return 'Top ' + value;
+        }
+    });
+}
+
+/** responsive canvas **/
+window.onresize = function() {
+	reloadView(); // view2D.js
+}
+
+/** function call when click submit button **/
+function submitQuery() {
+	setIsInProcessing(true);
+    $.ajax({
+		url:      'query/',
+		type:     'POST',
+		data:     $('#myDiv').serialize(),
+		async:    true,
+		success:  function(response){
+			// only store query information if no error returned
+			if (response.errCode == null) {
+				sessionStorage.prevNoun = document.getElementById("input_noun").value;
+				sessionStorage.prevVerb = document.getElementById("input_verb").value;
+				sessionStorage.prevRole = document.getElementById("select_role").value;
+				sessionStorage.prevModel = document.getElementById("select_model").value;
+				group = $('input:radio:checked').val();
+				sessionStorage.prevGroup = group;
+			}
+			// invoke APIs in view2D.js to visualize the result
+			updateQuerySet(createNodesFromJSON(response));
+			setIsInProcessing(false);
+		}
+    });
+}
+
+/** function call when click download image button **/
+function downloadImage() {
+	var dlA = document.getElementById("downloadA");
+	if (!dlA) alert("getElementById(\"downloadA\") failed!");
+	dlA.href = canvas.toDataURL('image/png');
+	// construct name dynamically
+	if(typeof(Storage) !== "undefined") {
+		var nounStr = sessionStorage.prevNoun;
+		var verbStr = sessionStorage.prevVerb;
+		var roleStr = sessionStorage.prevRole;
+		var modelStr = sessionStorage.prevModel;
+		dlA.download = verbStr + "_" + roleStr + "_" + nounStr + "_" + modelStr + ".png" ;
+	}
+	else { // when session storage is not supported
+		dla.download = "result.png";
+	}
+	dlA.click();
+}
+
+/** this function starts the presentation mode of the query site **/
 function start_presentation_mode() {
 
   // disable nav bar at the top
@@ -22,7 +91,7 @@ function start_presentation_mode() {
 
 }
 
-// this function ends the presentation mode of the query site
+/** this function ends the presentation mode of the query site **/
 function end_presentation_mode() {
 
   // enable nav bar at the top
