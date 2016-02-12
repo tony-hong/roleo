@@ -42,40 +42,41 @@ wordSupports = dict()
 fractions = dict()
 result = dict()
 
-# ISSUE Power can be controlled form the front end
-power = 10
-
+# Initialize data structure Matricisation
 matrix = Matricisation({
     'word0' : os.path.join(BASE_DIR, 'wackylmi-malt-v2-36K.word0.h5'),
     'word1' : os.path.join(BASE_DIR, 'wackylmi-malt-v2-36K.word1.h5') 
 })
 
-'''
+
+def process(verb, noun, role, group, topN = 20):
+    '''
     Processing function for the query for the client
 
     @parameters: 
-        verb    : str
-        noun    : str
-        role    : str 
-        group   : str
-        topN    : int  # Number of top vectors which will be returned
+        verb    : str  # without suffix
+        noun    : str  # without suffix
+        role    : str  # semantic role without suffix
+        group   : str  # string in the set {'verb', 'noun'} indicating the primal query word
+        topN    : int  # number of top vectors which will be returned
 
     @return: result = dict()
-'''
-def process(verb, noun, role, group, topN = 20):
+
+    ''' 
     logger.info('process start...')
 
     memberIndex = dict()
     result = dict()
     double = False
 
-    # query word 0 # with '-v/-n' suffix
+    # primal query word # with '-v/-n' suffix
     query0 = ''
-    # query word 1 # with '-v/-n' suffix
+    # second query word # with '-v/-n' suffix
     query1 = ''
     # with '-1' suffix if noun selects noun
     semanticRole = ''
 
+    # Adding suffix according to different types of query
     # Case of noun selects verb
     if group == 'noun':
         query0 = noun + '-n'
@@ -102,10 +103,12 @@ def process(verb, noun, role, group, topN = 20):
     logger.debug('group: %s' , group)
     logger.debug('top_results: %d' , topN)
 
-    # members[0]: vectors
-    # members[1]: list of words
+    # memberTuple[0]: list of vectors
+    # memberTuple[1]: list of words
     memberTuple = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, topN)
 
+    # A hack checking whether the return is empty
+    # if it is not tuple(), it is empty, the model return nothing for the primal query word
     if type(memberTuple) != type(tuple()):
         logger.error('errCode: %d. memberVectors is empty', errorCode.MBR_VEC_EMPTY)
         result = {'errCode' : errorCode.MBR_VEC_EMPTY}
@@ -113,29 +116,32 @@ def process(verb, noun, role, group, topN = 20):
     else:
         vectorList, wordList = memberTuple
 
+    # Reshape wordList, vectorList to a dict(), with key is word and value is vector
     wordVectors = dict(zip(wordList, vectorList))
-
+  
+    # LOG
     logger.info('getMemberVectors finished...')
-    print wordList
+    # print wordList
 
     resultList = []
     queryFraction = 0
     queryCosine = 0
-    maxmaxSupport = 0
+    maxSupport = 0
 
-    # ISSUE: double call of getMemberVectors, need improvement
-    # centroid = matrix.getCentroid(query0, 'word1', 'word0', {'link':[semanticRole]})
+    # Compute centroid from the vectorList using pandas
     centroid = pd.concat(vectorList).sum(level=[0,1])
 
+    # Obtain all supports and compute the max support 
     for w in wordList:
         v = wordVectors[w]
 
         support = v.ix[semanticRole].ix[query0]
         wordSupports[w] = support
 
-        if support > maxmaxSupport:
-            maxmaxSupport = support
+        if support > maxSupport:
+            maxSupport = support
 
+    # if there are 2 query words, process the second query word
     if double:
         # process query
         query = matrix.getRow('word0', query1)
@@ -143,30 +149,38 @@ def process(verb, noun, role, group, topN = 20):
         logger.info('getting query finished')
 
         if query.isnull().all():
+            # Second query word does not exist in the model
             logger.error( 'errCode: %d. query is empty', errorCode.QUERY_EMPTY)
             result = {'errCode' : errorCode.QUERY_EMPTY}
             return result
         try:
             vector = query.ix[semanticRole]
             if vector.get(query0, 0) == 0:
+                # For the second query word, in this semantic role, the primal query word does not exist
                 queryCosine = cosine_sim(centroid, query)
                 logger.info('query.ix[semanticRole].ix[query0] is empty')
             else:
                 support = vector.ix[query0] 
-                queryFraction = float(support) / maxmaxSupport
+
+                # Computer fraction and cosine
+                # If the mapping function is changed, this must be changed
+                queryFraction = float(support) / maxSupport
                 queryCosine = cosine_sim(centroid, query)
         except KeyError:
+            # Semantic role of second query word does not exist
             logger.error( 'errCode: %d. query.ix[semanticRole] is empty', errorCode.SMT_ROLE_EMPTY)
             result = {'errCode' : errorCode.SMT_ROLE_EMPTY}
             return result
 
-        # Apply mapping to query
+        # Apply mapping to second query word
         q_x, q_y = mapping(queryFraction, queryCosine)
         if query1 in wordList:
             wordList.remove(query1)
 
+    # Computer fraction and cosine
+    # If the mapping function is changed, this must be changed
     for w in wordList:
-        fraction = float(wordSupports[w]) / maxmaxSupport
+        fraction = float(wordSupports[w]) / maxSupport
 
         wordCosine = cosine_sim(centroid, wordVectors[w])
 
@@ -181,7 +195,6 @@ def process(verb, noun, role, group, topN = 20):
             'x'     : x, 
             'cos'   : wordCosine, 
             'word'  : w,
-
         })
 
     logger.info('result list is prepared')
@@ -189,6 +202,8 @@ def process(verb, noun, role, group, topN = 20):
     result = {
         'nodes' : resultList
     }
+
+    # if there are 2 query words
     if double:
         result['queried'] = {
                 'y'    : q_y,
@@ -203,22 +218,32 @@ def process(verb, noun, role, group, topN = 20):
 
 
 
-'''
-    Mapping from fraction, and cosine to the x, y coordinate
+def mapping(fraction, cosine):
+    '''
+    Mapping from fraction, and cosine to the x, y coordinate.
+    This is a simple function which maps the high dimension vector to 2D.
+    It is suitable for a web tool which need a short response time.
 
     @parameters:
-        fraction = support / maxmaxSupport
+        fraction = support / maxSupport
         cosine   = cosine_sim(centroid, wordVector)
-    @return: (x, y) = tuple
-'''
-def mapping(fraction, cosine):
+    @return: 
+        (x, y) is a tuple
+    '''
+    # Scale fraciton and cosine, let them become more sparse over [0, 1]
     y = math.pow(fraction, 0.4)
     x = math.pow(cosine, 0.8)
+
+    # Compute radial coordinates
     r = math.sqrt((math.pow(1-x, 2) + math.pow(1-y, 2)) / 2)
     if x == 0:
         rad = math.pi / 2
     else:
+        # Scale rad from [0, pi/2] to [0, 2 * pi]
         rad = math.atan(y / x) * 4
+
+    # Transform back to Cartesian coordinates
     x = r * math.cos(rad)
     y = r * math.sin(rad)
+
     return x, y
