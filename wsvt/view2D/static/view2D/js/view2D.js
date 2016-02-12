@@ -148,9 +148,9 @@ function createNodesFromJSON(responseJSON_Object) {
 }
 
 /* initialize member vars for view2D */
-function init(canvas2) {
-	if (!canvas2) alert("canvas is null");
-	canvas = canvas2;
+function init(canvasObj) {
+	if (!canvasObj) alert("canvas is null");
+	canvas = canvasObj;
 	setCanvasDimensions();
 	ctx    = canvas.getContext('2d');
 	querySet = new QuerySet();
@@ -293,7 +293,10 @@ NodeElement.prototype.computeRGBA = function() {
 			H = deltaY > 0 ? 90.0 : 270.0;
 		}
 		else {
-			if (deltaX > 0 && deltaY > 0) {
+			if (deltaY == 0) {
+				H = deltaX > 0 ? 360 : 180;
+			}
+			else if (deltaX > 0 && deltaY > 0) {
 				H = Math.atan(deltaY/deltaX) / Math.PI * 180.0;
 			}
 			else if (deltaX < 0 && deltaY > 0) {
