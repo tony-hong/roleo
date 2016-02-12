@@ -63,3 +63,16 @@ def query(request):
 
 def errorCodeJSON(request):
     return JsonResponse(ecj, safe = False)
+
+
+
+'''
+This call of the index.html in the case that the "Change Model" button ist clicked
+Later here the new model should be loaded.
+# def changeModel(request): 
+#     template = loader.get_template('view2D/index.html')
+#     role_list = SemanticRole.objects.all()
+#     response = { 'role_list' : role_list }
+#     context = RequestContext(request, response)
+#     return HttpResponse(template.render(context))
+'''
