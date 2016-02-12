@@ -8,8 +8,5 @@ urlpatterns = [
     url(r'^contact/', views.contact, name='contact'),
     url(r'^impressum/', views.impressum, name='impressum'),
     url(r'^query/', views.query, name='query'),
-
-    # TODO: A hook to implement the change of model in the future
-    # url(r'^changeModel/', views.changeModel, name='changeModel'),
     url(r'^errorCodeJSON/', views.errorCodeJSON, name='errorCodeJSON'),
 ]
