@@ -1,4 +1,9 @@
+'''
+    This module contains the error code of the view2D app.
 
+    @Author: 
+        Tony Hong
+'''
 
 # "error: noun is empty"
 NOUN_FORMAT_ERROR   = 301
