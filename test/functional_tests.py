@@ -159,30 +159,27 @@ class TravelAround(unittest.TestCase):
 
 
 class simultaneousTest(unittest.TestCase):
-    
+    size = 11
+    drivers = []
+    nouns = []
+    verbs = []
 
     def setUp(self):
-        global driver1
-        global driver2
-        driver1 = webdriver.Firefox()
-        driver2 = webdriver.Firefox()
+        for i in range(0, 10):
+            self.drivers.append(webdriver.Firefox())
 
     # TODO: fill in the name of the use case
     def test_simultaneous_requests(self):
-        # Open the browser and visit the tool
-        driver1.get('http://localhost:8000/view2D')
-        # Wait for 3 secs
-        
 
-        driver2.get('http://localhost:8000/view2D')
-        # Wait for 3 secs
+        for i in range(0, 10):
+            self.drivers[i].get('http://localhost:8000/view2D')
         
         
 
 
     def tearDown(self):
-        driver1.quit()
-        driver2.quit()
+        for i in range(0, 10):
+            self.drivers[i].quit()
 
 
 
