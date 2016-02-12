@@ -38,7 +38,8 @@ function submitQuery() {
 				sessionStorage.prevVerb = document.getElementById("input_verb").value;
 				sessionStorage.prevRole = document.getElementById("select_role").value;
 				sessionStorage.prevModel = document.getElementById("select_model").value;
-				group = $('input:radio:checked').val();
+				// TODO if there is other radio boxes this may result undefined behavior
+				group = $('input[name=group1]:checked').val();
 				sessionStorage.prevGroup = group;
 			}
 			// invoke APIs in view2D.js to visualize the result
@@ -55,11 +56,15 @@ function downloadImage() {
 	dlA.href = canvas.toDataURL('image/png');
 	// construct name dynamically
 	if(typeof(Storage) !== "undefined") {
-		var nounStr = sessionStorage.prevNoun;
-		var verbStr = sessionStorage.prevVerb;
+		var firstStr = sessionStorage.prevVerb;
+		var secondStr = sessionStorage.prevNoun;
 		var roleStr = sessionStorage.prevRole;
 		var modelStr = sessionStorage.prevModel;
-		dlA.download = verbStr + "_" + roleStr + "_" + nounStr + "_" + modelStr + ".png" ;
+		if (sessionStorage.prevGroup == "noun") {
+			firstStr = sessionStorage.prevNoun;
+			secondStr = sessionStorage.prevVerb;
+		}
+		dlA.download = firstStr + "_" + roleStr + "_" + secondStr + "_" + modelStr + ".png" ;
 	}
 	else { // when session storage is not supported
 		dla.download = "result.png";
