@@ -1,4 +1,4 @@
-/** initialization for index.html **/
+/** Callback for window.onload to initializing index.html **/
 window.onload = function() {
 	loadView2D(); // view2D_main.js
 	loadInputTextFilter(); // inputTextFilter.js
@@ -18,12 +18,12 @@ window.onload = function() {
     });
 }
 
-/** responsive canvas **/
+/** Callback for window.onresize to create responsive canvas **/
 window.onresize = function() {
 	reloadView(); // view2D.js
 }
 
-/** function call when click submit button **/
+/** Callback for clicking submit button **/
 function submitQuery() {
 	setIsInProcessing(true);
     $.ajax({
@@ -48,7 +48,7 @@ function submitQuery() {
     });
 }
 
-/** function call when click download image button **/
+/** Callback for clicking download image button **/
 function downloadImage() {
 	var dlA = document.getElementById("downloadA");
 	if (!dlA) alert("getElementById(\"downloadA\") failed!");
@@ -67,7 +67,7 @@ function downloadImage() {
 	dlA.click();
 }
 
-/** this function starts the presentation mode of the query site **/
+/** This function starts the presentation mode of the query site **/
 function start_presentation_mode() {
 
   // disable nav bar at the top
@@ -91,7 +91,7 @@ function start_presentation_mode() {
 
 }
 
-/** this function ends the presentation mode of the query site **/
+/** This function ends the presentation mode of the query site **/
 function end_presentation_mode() {
 
   // enable nav bar at the top

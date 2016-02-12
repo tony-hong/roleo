@@ -63,18 +63,25 @@ var errCodeJSON = null;  // A json load from backend which map errCode -> errMsg
 /** APIs **/
 /** APIs **/
 /** APIs **/
+
+/** Initialize view and try load last session if it exists
+ */
 function reloadView(){
 	init(canvas);
 	loadLastSession();
 }	
 
-/* load the errCode:errMsg pairs into var */
+/** Load the errCode:errMsg pairs from server to frontend 
+ *  @param {json} errCodeJSON_Object - A json contains errCode and errMsg Pairs
+ */
 function loadErrCodeJSON(errCodeJSON_Object) {
 	errCodeJSON = errCodeJSON_Object;
 	if (errCodeJSON == null) alert("errCodeJSON_Object is null");
 }
 
-/* Should be called using the return value of function createNodesFromJSON(json_obj) as param */
+/** Should be called using the return value of function createNodesFromJSON(json_obj) as param 
+ *  @param {Node[]} nodes - An array of {@link Node} instances
+ */
 function updateQuerySet(nodes) {
 	init(document.getElementById("myCanvas"));
 	if(nodes) {
@@ -91,7 +98,10 @@ function updateQuerySet(nodes) {
 	}
 }
 
-/* Should be called after query result(a JSON object) returned */
+/** Should be called after query result(a JSON object) returned 
+ *  @param {json} responseJSON_Object - A json contains query results, see {@link response_example.json} for detail
+ *  @returns {Node[]} 
+ */
 function createNodesFromJSON(responseJSON_Object) {
 	var btn_start_presentation_mode = document.getElementById("start_presentation_mode");
 	var btn_download = document.getElementById("downloadBtn");
@@ -147,7 +157,9 @@ function createNodesFromJSON(responseJSON_Object) {
 	return nodes;
 }
 
-/* initialize member vars for view2D */
+/** Initialize member variables for view2D 
+ *  @param {Canvas} canvasObj - A DOM object represents html canvas
+ */
 function init(canvasObj) {
 	if (!canvasObj) alert("canvas is null");
 	canvas = canvasObj;
@@ -195,14 +207,21 @@ function initStateVariables() {
 	mouseWheelCnt = 0;
 }
 
+/** Set current canvas as invalidate
+ */
 function invalidate() {
 	isValid = false;
 }
 
+/** Set current canvas as validate
+ */
 function validate() {
 	isValid = true;
 }
 
+/** Set the state whether backend is processing query or not
+ *  @param {boolean} b - A boolean used to set the current state
+ */
 function setIsInProcessing(b) {
 	isInProcessing = b;
 	var submitBtn = document.getElementById("submitBtn");
@@ -211,6 +230,9 @@ function setIsInProcessing(b) {
 	else submitBtn.disabled = false;
 }
 
+/** Get the state whether backend is processing query or not
+ *  @returns {boolean}
+ */
 function ifInProcessing() {
 	return isInProcessing;
 }
@@ -230,7 +252,9 @@ function loadLastSession(){
 	//	
 }
 
-/* Move a node to center of the canvas */
+/** Move a node to center of the canvas 
+ *  @param {NodeElement} nodeElement - Centralize based on this {@link NodeElement}
+ */
 function centralize(nodeElement) {
 	// translation move the current node to the center of the canvas
 	var offsetX = (0.5*WIDTH)  - (nodeElement.bbox.pos.x + nodeElement.bbox.w*0.5);
@@ -239,7 +263,8 @@ function centralize(nodeElement) {
 	TRANSFORMATION.translationY += offsetY;
 }
 
-/* Reset the view and move centroid to the centre */
+/** Reset the view and move centroid to the centre 
+ */
 function resetView() {
 	var centroid = view.nodeElements[0];
 	if (centroid == null) return;
@@ -260,7 +285,10 @@ function resetView() {
 /** Models which encapsulate Node and querySet for visualization **/
 /** Models which encapsulate Node and querySet for visualization **/
 
-/** A NodeElement contains one Node **/
+/** A NodeElement contains one {@link Node}
+ *  @constructor 
+ *  @param {Node} node - A {@link Node} instance used to initialize
+ */
 function NodeElement(node) {
 	if (!node) alert("arg node is null");
 	this.node = node;
@@ -270,11 +298,15 @@ function NodeElement(node) {
 	this.isMouseOver = false;
 	this.ifDrawText = true;
 }
+/** Compute the {@link BBox2D} for this instance based on the current {@link Transformation}
+ */
 NodeElement.prototype.computeBBox = function() {
 	var ul = TRANSFORMATION.transform(new Point2D(this.node.pos.x - DEFAULT_NODE_RADIUS, this.node.pos.y + DEFAULT_NODE_RADIUS));
 	return new BBox2D(ul, 2*DEFAULT_NODE_RADIUS*TRANSFORMATION.scale, 2*DEFAULT_NODE_RADIUS*TRANSFORMATION.scale);
 }
-/* This function initilize the rgba value for this node element, thus other color mapping method can be adapted directly in this function */
+/** This function initialize the RGBA value for this node element using HSL&HSV
+ *  See https://en.wikipedia.org/wiki/HSL_and_HSV
+ */
 NodeElement.prototype.computeRGBA = function() {
 	if (querySet.nodes.length == 0) alert("querySet is empty");
 	var centeroid = querySet.nodes[0];
@@ -323,23 +355,31 @@ NodeElement.prototype.computeRGBA = function() {
 	}
 }
 
-/** A CanvasView contains all elements used to draw **/
+/** A CanvasView contains all {@link NodeElement} used to draw 
+ *  @constructor
+ */
 function CanvasView() {
 	this.nodeElements = [];
 }
+/** Initialize using the current {@link QuerySet} instance
+ */
 CanvasView.prototype.update = function() {
 	if (!querySet) alert("querySet is null");
 	for (i=0; i<querySet.nodes.length; ++i) {
 		this.nodeElements.push(new NodeElement(querySet.nodes[i]));
 	}
 }
+/** Reset grids to display texts for all {@link NodeElement}
+ */
 CanvasView.prototype.resetGrids = function() {
 	for (i=0; i<this.nodeElements.length; ++i) {
 		this.nodeElements[i].ifDrawText = true;
 	}
 }
 
-/** Transformation handle the view transformation from node 2D projection coordinate to canvas(screen) coordinate **/
+/** Transformation handle the view transformation from node 2D projection coordinate to canvas(screen) coordinate 
+ *  @constructor
+ */
 function Transformation() {
 	this.dataScaleX = 1;    // compute based on query
 	this.dataScaleY = 1;    // compute based on query
@@ -355,9 +395,13 @@ function Transformation() {
  *
  *  Y axis get inverted
  */
+/** Set the transformation of current canvas 2D context
+ */
 Transformation.prototype.updateTransform = function() {
 	ctx.setTransform(this.scale*this.dataScaleX, 0, 0, this.scale*this.dataScaleY*(-1), this.translationX, this.translationY);
 }
+/** Reset the transformation of current canvas 2D context to identity matrix
+ */
 Transformation.prototype.resetTransform = function() {
 	ctx.setTransform(1,0,0,1,0,0);
 }
