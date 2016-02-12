@@ -27,7 +27,7 @@ class simultaneousTest(unittest.TestCase):
 
             # The user inputs a noun 
             inputbox_noun.clear()
-            inputbox_noun.send_keys("apple")
+            inputbox_noun.send_keys("he")
         
         
             # The user inputs a verb
