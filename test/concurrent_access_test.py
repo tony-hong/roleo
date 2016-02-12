@@ -8,8 +8,6 @@ browserNum = 10
 class simultaneousTest(unittest.TestCase):
 
     drivers = []
-    nouns = ['people','person','he']
-    verbs = ['read','cook','dirve']
 
     def setUp(self):
         for i in range(0, browserNum):

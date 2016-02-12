@@ -46,13 +46,6 @@ class NewVisitorTest(unittest.TestCase):
         )
 
 
-        
-
-        
-
-    #self.fail('Finish the test!')
-    # TODO: define more tests
-    # 
 
     def tearDown(self):
         self.browser.quit()
@@ -153,41 +146,6 @@ class TravelAround(unittest.TestCase):
 
     def tearDown(self):
         self.browser.quit()
-
-
-
-
-
-class simultaneousTest(unittest.TestCase):
-    size = 11
-    drivers = []
-    nouns = []
-    verbs = []
-
-    def setUp(self):
-        for i in range(0, 10):
-            self.drivers.append(webdriver.Firefox())
-
-    # TODO: fill in the name of the use case
-    def test_simultaneous_requests(self):
-
-        for i in range(0, 10):
-            self.drivers[i].get('http://localhost:8000/view2D')
-        
-        
-
-
-    def tearDown(self):
-        for i in range(0, 10):
-            self.drivers[i].quit()
-
-
-
-
-
-
-
-
 
 
 
