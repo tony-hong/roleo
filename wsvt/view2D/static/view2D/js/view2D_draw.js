@@ -1,4 +1,5 @@
-/** loop function for canvas visualization **/
+/** Loop function for canvas visualization 
+ */
 function draw() {
 	// In processing
 	if (isInProcessing) {
@@ -25,7 +26,9 @@ function draw() {
 	}
 }
 
-/** draw each node element **/
+/** Draw this instance
+ *  @param {CanvasRenderingContext2D} ctx - the 2D context of the current canvas
+ */
 NodeElement.prototype.draw = function(ctx) {
 	// draw circle
 	var a = this.isMouseOver ? 1 : this.a;
@@ -50,7 +53,9 @@ NodeElement.prototype.draw = function(ctx) {
 	}
 }
 
-/** draw all nodes including other informations on the canvas **/
+/** Draw all {@link NodeElement} as well as other informations on the canvas
+ *  @param {CanvasRenderingContext2D} ctx - the 2D context of the current canvas
+ */
 CanvasView.prototype.draw = function(ctx) {
 	// TODO move the selected node to the top
 	//      simply draw selected node at last so it appears at the top of the canvas
@@ -88,8 +93,9 @@ CanvasView.prototype.draw = function(ctx) {
 	TRANSFORMATION.updateTransform();
 }
 
-/* function used to compute grids adaptively to avoid showing a lot of text of nodes in a small area, 
-   which heavily overlapping from each other 
+/** Function used to compute grids adaptively to avoid showing a lot of text of nodes in a small area, 
+ *  which heavily overlapping from each other 
+ *  @param {boolean} isZoomIn - A boolean value indicate whether previous action is a zoom-in or not
  */
 CanvasView.prototype.checkGrids = function(isZoomIn) {
 	// default grid size when scale is 1
@@ -148,7 +154,9 @@ CanvasView.prototype.checkGrids = function(isZoomIn) {
 	}
 }
 
-/* function shows error messages */
+/** Function shows error messages 
+ *  @param {string} json_errCode - A string representation as the key of an errMsg
+ */
 function showErrorMsg(json_errCode) {
 	// Originla Version: Draw error message in canvas, but drawText do not support multiple line
 /*
@@ -179,7 +187,7 @@ function showErrorMsg(json_errCode) {
 	}
 }
 
-/* function draws text during querying */
+/** Function draws text as feedback during querying */
 function drawProgressBar() {
 	clear();
 	var date = new Date();
@@ -195,7 +203,9 @@ function drawProgressBar() {
 	TRANSFORMATION.updateTransform();
 }
 
-/* function to clear a rect area in canvas */
+/** Function to clear a rectangle area in canvas 
+ *  @param {BBox2D} bbox2D - A {@link BBox2D} instance used for clear
+ */
 function clear(bbox2D) {
 	var bbox = bbox2D || new BBox2D();
 	TRANSFORMATION.resetTransform();
@@ -205,7 +215,13 @@ function clear(bbox2D) {
 	TRANSFORMATION.updateTransform();
 }
 
-/* Utility to convert rgba value to a string */
+/** Utility to convert rgba value to a string 
+ *  @param {double} r - A double between 0 and 1 for red channel
+ *  @param {double} g - A double between 0 and 1 for green channel
+ *  @param {double} b - A double between 0 and 1 for blue channel
+ *  @param {double} a - A double between 0 and 1 for alpha channel
+ *  @returns {string} - A CSS style string represents an RGBA value, e.g. "rgba(255, 0, 0)"
+ */
 function rgbaToString(r, g, b, a) {
 	var r2 = Math.round(r * 255.0);
 	var g2 = Math.round(g * 255.0);

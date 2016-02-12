@@ -1,4 +1,6 @@
-/** canvas events registration **/
+/** Canvas events handler implementations
+ *  @param {Canvas} canvas - A Canvas object the event handler shall bind to
+ */
 function addEventListners(canvas) {
 	/** TOUCH **/
 	/** TOUCH **/
@@ -167,8 +169,10 @@ function addEventListners(canvas) {
     canvas.addEventListener('selectstart', function(e) { e.preventDefault(); return false; }, false);
 }
 
-/** Utilities for event handlers **/
-/* Get the node which it's BBox contains current mouse position, return null if nothing get involved */
+/** Get the node which it's BBox contains current mouse position, return null if nothing get involved 
+ *  @param {Point2D} mousePos - A 2D point represents the mouse position
+ *  @returns {NodeElement[]} - All {@link NodeElement} which their {@link BBox2D} contains the mousePos
+ */
 function getSelectedNode(mousePos) {
 	var nodes = [];
 	if (mousePos) {
@@ -181,13 +185,19 @@ function getSelectedNode(mousePos) {
 	return nodes;
 }
 
-/* Get precise mouse position, reference: http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/ */
+/** Get precise mouse position, reference: http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/
+ *  @param {MouseEvent} e - A MouseEvent object fired from Browser UI
+ *  @returns {Point2D} - A {@link Point2D} object represents the mouse position
+ */
 function getMouse(e) {
     var rect = canvas.getBoundingClientRect();
 	return new Point2D(e.clientX - rect.left, e.clientY - rect.top);
 }
 
-/* Get mouse wheel speed, reference: http://stackoverflow.com/questions/5527601/normalizing-mousewheel-speed-across-browsers */
+/** Get mouse wheel speed, reference: http://stackoverflow.com/questions/5527601/normalizing-mousewheel-speed-across-browsers
+ *  @param {WheelEvent} event - A WheelEvent object fired from Browser UI
+ *  @param {int} - 1 and -1 indicate two different view directions and 0 indicate no wheel action
+ */
 function normalizeWheelSpeed(event) {
     var normalized;
     if (event.wheelDelta) {
@@ -205,7 +215,11 @@ function normalizeWheelSpeed(event) {
 	else return 0;
 }
 
-/* Utility to calculate distance of two touch points */
+/** Utility to calculate distance of two touch points
+ *  @param {Touch} touch1 - A Touch object
+ *  @param {Touch} touch2 - A Touch object
+ *  @param {double} - Distance between two touch positions
+ */
 function distance(touch1, touch2) {
 	var deltaX = touch1.screenX - touch2.screenX;
 	var deltaY = touch1.screenY - touch2.screenY;
