@@ -18,9 +18,8 @@ from django.contrib import admin
 import view2D
 
 urlpatterns = [
-    # Using view2D as index by default
-    # url(r'^$', include('view2D.urls')),
-
+    # for admin page
     url(r'^admin/', include(admin.site.urls)),
+    # for view2D app
     url(r'^view2D/', include('view2D.urls')),
 ]

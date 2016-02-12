@@ -26,7 +26,6 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -34,6 +33,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # view2D app of 2D web semantic visualization
     'view2D', 
 )
 
@@ -71,7 +72,6 @@ WSGI_APPLICATION = 'wsvt.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -82,7 +82,6 @@ DATABASES = {
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -93,16 +92,17 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static/")
-
 STATIC_URL = '/static/'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Static root for static web server deployment
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static/")
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
+# Basic logging setting 
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
