@@ -1,3 +1,10 @@
+'''
+    This module is all views in view2D app.
+    It is acting like a controller(in MVC) in Django.
+
+    @Author: 
+        Tony Hong
+'''
 import logging
 
 from django.http import HttpResponse, JsonResponse
@@ -13,6 +20,8 @@ logger = logging.getLogger('django')
 
 def index(request):
     template = loader.get_template('view2D/index.html')
+
+    # Obtain objects of SemanticRole from models 
     role_list = SemanticRole.objects.all()
     response = { 'role_list' : role_list }
 
@@ -36,22 +45,23 @@ def impressum(request):
     return HttpResponse(template.render())
 
 def query(request):
+    # Obtain attributes from request
     verb = request.POST['verb'].strip().lower()
-    role = request.POST['role']
+    semanticRole = request.POST['role']
     noun = request.POST['noun'].strip().lower()
     group = request.POST['group1']
     topN = int(request.POST['top_results'])
 
-    semanticRole = role
     result = {}
     
     # LOG
     logger.debug('v: %s' , verb)
-    logger.debug('r: %s' , role)
+    logger.debug('r: %s' , semanticRole)
     logger.debug('n: %s' , noun)
     logger.debug('group: %s' , group)
     logger.debug('top_results: %d' , topN)
 
+    # Perform validation on request attributes
     isValid, errorMessage = validate(verb, noun, group, topN)
 
     if isValid:
@@ -63,7 +73,6 @@ def query(request):
 
 def errorCodeJSON(request):
     return JsonResponse(ecj, safe = False)
-
 
 
 '''
