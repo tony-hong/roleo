@@ -1,3 +1,7 @@
+'''
+    This module contains the url patterns for view2D app.
+    It should be included in the url.py in wsvt module.
+'''
 from django.conf.urls import url
 
 import views
