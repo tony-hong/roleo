@@ -9,5 +9,7 @@ errorCodeJSON = {
     errorCode.QUERY_EMPTY       : "Second query word does not exist in the model",      # query is empty, 
     errorCode.SMT_ROLE_EMPTY    : "Semantic role of second query word does not exist",  # query.ix[semanticRole] is empty, / 
     errorCode.INTERNAL_ERROR    : "Server internal error, please refresh the page",
-    errorCode.NON_ENGLISH       : "Non english word is temporarily not supported"
+    errorCode.NON_ENGLISH       : "Non english word is temporarily not supported",
+    errorCode.TON_N_ERROR       : "TopN is out of range"
+
 }

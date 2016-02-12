@@ -52,7 +52,7 @@ def query(request):
     logger.debug('group: %s' , group)
     logger.debug('top_results: %d' , topN)
 
-    isValid, errorMessage = validate(verb, noun, group)
+    isValid, errorMessage = validate(verb, noun, group, topN)
 
     if isValid:
         result = process(verb, noun, semanticRole, group, topN)

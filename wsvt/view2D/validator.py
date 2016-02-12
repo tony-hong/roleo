@@ -12,9 +12,14 @@ logger = logging.getLogger('django')
         isValid      = bool()
         errorResult  = dict()
 '''
-def validate(verb, noun, group):
+def validate(verb, noun, group, topN):
     isValid = False
     errorResult = dict()
+
+    if topN > 100 or topN < 10:
+        logger.critical( 'errCode: %d. topN is out of range', errorCode.TON_N_ERROR)
+        errorResult = {'errCode' : errorCode.TON_N_ERROR}
+        return isValid, errorResult
 
     if group == 'noun':
         if noun:
