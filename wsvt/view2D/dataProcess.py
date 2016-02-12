@@ -1,12 +1,12 @@
 '''
-    This module provide query processing for the 
-    rv.structure.Tensor object which are stored in hdf5 format.
+    This module provide query processing for the rv.structure.Tensor object 
+    which are stored in hdf5 format.
 
     @Author: 
         Tony Hong
 
     @Environment:
-        Already implemented in this file, so no need to export again
+        Already implemented in this file, so no need to export again.
         These paths are only for reference 
 
         export LD_LIBRARY_PATH=hdf5/1.8.16/lib
@@ -17,6 +17,7 @@
 import os
 import math
 import sys
+import logging
 
 # Configuration of environment
 sys.path.append('Rollenverteilung/src/lib')
@@ -30,6 +31,9 @@ from rv.similarity.Similarity import cosine_sim
 
 import view2D.errorCode as errorCode
 
+logger = logging.getLogger('django')
+
+# Base directory of the project
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 wordVectors = dict()
@@ -38,7 +42,7 @@ wordSupports = dict()
 fractions = dict()
 result = dict()
 
-# ISSUE can be controlled form the front end
+# ISSUE Power can be controlled form the front end
 power = 10
 
 matrix = Matricisation({
@@ -46,21 +50,21 @@ matrix = Matricisation({
     'word1' : os.path.join(BASE_DIR, 'wackylmi-malt-v2-36K.word1.h5') 
 })
 
-
 '''
     Processing function for the query for the client
 
     @parameters: 
-        verb : str
-        noun : str
-        role : str 
-        group : str
-        topN   : int  # Number of top vectors which will be returned
+        verb    : str
+        noun    : str
+        role    : str 
+        group   : str
+        topN    : int  # Number of top vectors which will be returned
 
     @return: result = dict()
 '''
 def process(verb, noun, role, group, topN = 20):
-    print 'process start...' 
+    logger.info('process start...')
+
     memberIndex = dict()
     result = dict()
     double = False
@@ -87,23 +91,23 @@ def process(verb, noun, role, group, topN = 20):
             double = True
             query1 = noun + '-n'
     else:
-        print 'exception: internal error!'
+        logger.critical( 'errCode: %d. internal error!', errorCode.INTERNAL_ERROR)
         result = {'errCode' : errorCode.INTERNAL_ERROR}
         return result
 
     # LOG
-    print 'query0: ' + query0
-    print 'query1: ' + query1
-    print 'semanticRole: ' + semanticRole
-    print 'double: ' + str(double)
-    print 'topN: ' + str(topN)
+    logger.debug('query0: %s' , query0)
+    logger.debug('query1: %s' , query1)
+    logger.debug('semanticRole: %s' , semanticRole)
+    logger.debug('group: %s' , group)
+    logger.debug('top_results: %d' , topN)
 
     # members[0]: vectors
     # members[1]: list of words
     memberTuple = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, topN)
 
     if type(memberTuple) != type(tuple()):
-        print 'exception: memberVectors is empty' 
+        logger.error('errCode: %d. memberVectors is empty', errorCode.MBR_VEC_EMPTY)
         result = {'errCode' : errorCode.MBR_VEC_EMPTY}
         return result
     else:
@@ -111,7 +115,7 @@ def process(verb, noun, role, group, topN = 20):
 
     wordVectors = dict(zip(wordList, vectorList))
 
-    print 'getMemberVectors finished...'
+    logger.info('getMemberVectors finished...')
     print wordList
 
     resultList = []
@@ -136,23 +140,23 @@ def process(verb, noun, role, group, topN = 20):
         # process query
         query = matrix.getRow('word0', query1)
 
-        print 'getting query finished'
+        logger.info('getting query finished')
 
         if query.isnull().all():
-            print 'exception: query is empty'
+            logger.error( 'errCode: %d. query is empty', errorCode.QUERY_EMPTY)
             result = {'errCode' : errorCode.QUERY_EMPTY}
             return result
         try:
             vector = query.ix[semanticRole]
             if vector.get(query0, 0) == 0:
                 queryCosine = cosine_sim(centroid, query)
-                print 'exception: query.ix[semanticRole].ix[query0] is empty'
+                logger.info('query.ix[semanticRole].ix[query0] is empty')
             else:
                 support = vector.ix[query0] 
                 queryFraction = float(support) / maxmaxSupport
                 queryCosine = cosine_sim(centroid, query)
         except KeyError:
-            print 'exception: query.ix[semanticRole] is empty'
+            logger.error( 'errCode: %d. query.ix[semanticRole] is empty', errorCode.SMT_ROLE_EMPTY)
             result = {'errCode' : errorCode.SMT_ROLE_EMPTY}
             return result
 
@@ -180,7 +184,7 @@ def process(verb, noun, role, group, topN = 20):
 
         })
 
-    print 'result list is prepared'
+    logger.info('result list is prepared')
 
     result = {
         'nodes' : resultList
@@ -193,7 +197,7 @@ def process(verb, noun, role, group, topN = 20):
                 'word' : query1,
             }
 
-    print 'result creating is prepared'
+    logger.info('result creating is prepared')
 
     return result
 
