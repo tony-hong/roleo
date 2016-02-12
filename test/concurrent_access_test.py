@@ -3,6 +3,7 @@ from selenium.webdriver.common.keys import Keys
 import unittest
 import time
 
+browserNum = 10
 
 class simultaneousTest(unittest.TestCase):
 
@@ -11,16 +12,15 @@ class simultaneousTest(unittest.TestCase):
     verbs = ['read','cook','dirve']
 
     def setUp(self):
-        for i in range(0, 10):
+        for i in range(0, browserNum):
             self.drivers.append(webdriver.Firefox())
             self.drivers[i].get('http://localhost:8000/view2D')
 
-            
-
+    
     # TODO: fill in the name of the use case
     def test_simultaneous_requests(self):
 
-        for i in range(0, 10):
+        for i in range(0, browserNum):
             
             
             #get the input boxes
@@ -40,22 +40,11 @@ class simultaneousTest(unittest.TestCase):
             
 
         time.sleep(10)
-        
-        
 
 
     def tearDown(self):
-        for i in range(0, 10):
+        for i in range(0, browserNum):
             self.drivers[i].quit()
-
-
-
-
-
-
-
-
-
 
 
 
