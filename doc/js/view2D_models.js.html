@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: view2D_models.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: view2D_models.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** Node represents a 2D projection of a queried word
+ *  @constructor
+ *  @param {Point2D} pos - A {@link Point2D} object
+ *  @param {string} word - A string represents a word in the semantic network
+ *  @param {double} cos - A double represents the cosine value between this word(vector) and the centroid(vector)
+ *  @param {boolean} needHighlight - A boolean indicates whether this Node needs to be highlighted during visualization
+ */
+function Node(pos, word, cos, needHighlight) {
+	this.pos = pos   || new Point2D();
+	this.word = word || "UNDEFINED";
+	this.cos = cos   || 0;
+	this.needHighlight = needHighlight || false; // used for the word which get queried
+}
+
+/** Query set contains multiple {@link Node} including centroid and queried word if it exist
+ *  @constructor
+ *  @param {Node[]} nodes - An array contains {@link Node} represents the query result
+ */
+function QuerySet(nodes) {
+	this.nodes = nodes   || [];
+}
+
+/** 2D Pointer representation
+ *  @constructor
+ *  @param {double} x - X coordinate for a 2D point
+ *  @param {double} y - Y coordinate for a 2D point 
+ */
+function Point2D(x, y) {
+	this.x = x || 0;
+	this.y = y || 0;
+}
+
+/** BBox for 2D, upper-left corner is pos
+ *  @constructor
+ *  @param {Point2D} pos - A point as the upper left corner of this bounding box
+ *  @param {double} w - The width of the bounding box
+ *  @param {double} h - The height of the bounding box
+ */
+function BBox2D(pos, w, h) {
+	this.pos = pos || new Point2D();
+	this.w   = w   || WIDTH;
+	this.h   = h   || HEIGHT;
+}
+/** Tells whether the parameter Point2D is contained in this bounding box or not
+ *  @param {Point2D} point2D - A {@link Point2D} object for contain test
+ */
+BBox2D.prototype.contains = function(point2D) {
+	var xMin = this.pos.x;
+	var xMax = this.pos.x + this.w;
+	var yMin = this.pos.y;
+	var yMax = this.pos.y + this.h;
+	return xMin &lt;= point2D.x &amp;&amp; point2D.x &lt;= xMax &amp;&amp;
+	       yMin &lt;= point2D.y &amp;&amp; point2D.y &lt;= yMax;
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BBox2D.html">BBox2D</a></li><li><a href="CanvasView.html">CanvasView</a></li><li><a href="Node.html">Node</a></li><li><a href="NodeElement.html">NodeElement</a></li><li><a href="Point2D.html">Point2D</a></li><li><a href="QuerySet.html">QuerySet</a></li><li><a href="Transformation.html">Transformation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addEventListners">addEventListners</a></li><li><a href="global.html#centralize">centralize</a></li><li><a href="global.html#clear">clear</a></li><li><a href="global.html#CONST_NODE_RADIUS">CONST_NODE_RADIUS</a></li><li><a href="global.html#createNodesFromJSON">createNodesFromJSON</a></li><li><a href="global.html#distance">distance</a></li><li><a href="global.html#downloadImage">downloadImage</a></li><li><a href="global.html#draw">draw</a></li><li><a href="global.html#drawProgressBar">drawProgressBar</a></li><li><a href="global.html#end_presentation_mode">end_presentation_mode</a></li><li><a href="global.html#getMouse">getMouse</a></li><li><a href="global.html#getSelectedNode">getSelectedNode</a></li><li><a href="global.html#ifInProcessing">ifInProcessing</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#invalidate">invalidate</a></li><li><a href="global.html#loadErrCodeJSON">loadErrCodeJSON</a></li><li><a href="global.html#loadInputTextFilter">loadInputTextFilter</a></li><li><a href="global.html#loadView2D">loadView2D</a></li><li><a href="global.html#main">main</a></li><li><a href="global.html#normalizeWheelSpeed">normalizeWheelSpeed</a></li><li><a href="global.html#preprocess">preprocess</a></li><li><a href="global.html#reloadView">reloadView</a></li><li><a href="global.html#resetView">resetView</a></li><li><a href="global.html#rgbaToString">rgbaToString</a></li><li><a href="global.html#setIsInProcessing">setIsInProcessing</a></li><li><a href="global.html#showErrorMsg">showErrorMsg</a></li><li><a href="global.html#start_presentation_mode">start_presentation_mode</a></li><li><a href="global.html#submitQuery">submitQuery</a></li><li><a href="global.html#updateQuerySet">updateQuerySet</a></li><li><a href="global.html#validate">validate</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Fri Feb 12 2016 20:15:35 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

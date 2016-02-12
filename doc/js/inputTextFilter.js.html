@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: inputTextFilter.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: inputTextFilter.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var inputNoun;
+var inputVerb;
+var submitBtn;
+var verbRadioBtn;
+var nounRadioBtn;
+var labelMsgNoun;
+var labelMsgVerb;
+
+var regex_non_char = "[^(a-zA-Z)]";
+
+/** initialization for input text filter **/
+function loadInputTextFilter() {
+	inputNoun = document.getElementById("input_noun");
+	inputVerb = document.getElementById("input_verb");
+	submitBtn = document.getElementById("submitBtn");
+	labelMsgNoun = document.getElementById("label_msg_noun");
+	labelMsgVerb = document.getElementById("label_msg_verb");
+	var tmp = document.getElementsByName("group1");
+	if (tmp[0].value == "noun") { nounRadioBtn = tmp[0]; verbRadioBtn = tmp[1]; }
+	else                        { nounRadioBtn = tmp[1]; verbRadioBtn = tmp[0]; }
+	if (inputNoun == null) { alert("Get Element ID \"input_noun\" failed"); return; }
+	if (inputVerb == null) { alert("Get Element ID \"input_verb\" failed"); return; }
+	if (submitBtn == null) { alert("Get Element ID \"submitBtn\" failed"); return; }
+	if (labelMsgNoun == null) { alert("Get Element ID \"label_msg_noun\" failed"); return; }
+	if (labelMsgVerb == null) { alert("Get Element ID \"label_msg_verb\" failed"); return; }
+	if (verbRadioBtn == null) { alert("Get Elements Name \"group1\" .value == \"verb\" failed"); return; }
+	if (nounRadioBtn == null) { alert("Get Elements Name \"group1\" .value == \"noun\" failed"); return; }
+	
+	inputVerb.addEventListener('blur', function(e) {
+		preprocess(this);
+	});
+	inputNoun.addEventListener('blur', function(e) {
+		preprocess(this);
+	});
+	// start looping
+	setInterval(main, 200);
+}
+
+/** validation function **/
+function main() {
+	// no check during processing query
+	if (ifInProcessing()) return; // view2D.js
+	
+	/** reset state **/
+	labelMsgNoun.innerHTML="";
+	labelMsgVerb.innerHTML="";
+	/** reset state **/
+	
+	var ifDisable = false;
+	
+	var verb = inputVerb.value.trim();
+	var noun = inputNoun.value.trim();
+	
+	/** 1. Empty Check  **/
+	if (verbRadioBtn.checked == true) {
+		if (verb == "") {
+			submitBtn.disabled = true;
+			labelMsgVerb.innerHTML += "Verb input cannot be empty while \"verb selects noun\" radio button is checked\n";
+			ifDisable = true;
+		}
+	}
+	else { // nounRadioBtn.checked == true
+		if (noun == "") {
+			submitBtn.disabled = true;
+			labelMsgNoun.innerHTML += "Noun input cannot be empty while \"noun selects verb\" radio button is checked\n";
+			ifDisable = true;
+		}
+	}
+	
+	/** 2. Invalid Char Check **/
+	var index_verb = verb.search(regex_non_char);
+	var index_noun = noun.search(regex_non_char);
+	if (index_verb > -1) {
+		labelMsgVerb.innerHTML += "Invalid character for verb: \"" + verb.substring(index_verb, index_verb+1) + "\"\n"; // TODO '\n' may has no desired effect
+		ifDisable = true;
+	}
+	if (index_noun > -1) {
+		labelMsgNoun.innerHTML += "Invalid character for noun: \"" + noun.substring(index_noun, index_noun+1) + "\"\n"; // TODO '\n' may has no desired effect
+		ifDisable = true;
+	}
+	
+	// TODO add additional constraints at here
+	// ...
+	
+	// If none of the constraints meet, enable the submit button
+	if (ifDisable) { submitBtn.disabled = true; return; }
+	submitBtn.disabled = false;
+}
+
+/** convert inputs to lower case **/
+function preprocess(inputElement) {
+	inputElement.value = inputElement.value.trim().toLowerCase();
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BBox2D.html">BBox2D</a></li><li><a href="CanvasView.html">CanvasView</a></li><li><a href="Node.html">Node</a></li><li><a href="NodeElement.html">NodeElement</a></li><li><a href="Point2D.html">Point2D</a></li><li><a href="QuerySet.html">QuerySet</a></li><li><a href="Transformation.html">Transformation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addEventListners">addEventListners</a></li><li><a href="global.html#centralize">centralize</a></li><li><a href="global.html#clear">clear</a></li><li><a href="global.html#CONST_NODE_RADIUS">CONST_NODE_RADIUS</a></li><li><a href="global.html#createNodesFromJSON">createNodesFromJSON</a></li><li><a href="global.html#distance">distance</a></li><li><a href="global.html#downloadImage">downloadImage</a></li><li><a href="global.html#draw">draw</a></li><li><a href="global.html#drawProgressBar">drawProgressBar</a></li><li><a href="global.html#end_presentation_mode">end_presentation_mode</a></li><li><a href="global.html#getMouse">getMouse</a></li><li><a href="global.html#getSelectedNode">getSelectedNode</a></li><li><a href="global.html#ifInProcessing">ifInProcessing</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#invalidate">invalidate</a></li><li><a href="global.html#loadErrCodeJSON">loadErrCodeJSON</a></li><li><a href="global.html#loadInputTextFilter">loadInputTextFilter</a></li><li><a href="global.html#loadView2D">loadView2D</a></li><li><a href="global.html#main">main</a></li><li><a href="global.html#normalizeWheelSpeed">normalizeWheelSpeed</a></li><li><a href="global.html#preprocess">preprocess</a></li><li><a href="global.html#reloadView">reloadView</a></li><li><a href="global.html#resetView">resetView</a></li><li><a href="global.html#rgbaToString">rgbaToString</a></li><li><a href="global.html#setIsInProcessing">setIsInProcessing</a></li><li><a href="global.html#showErrorMsg">showErrorMsg</a></li><li><a href="global.html#start_presentation_mode">start_presentation_mode</a></li><li><a href="global.html#submitQuery">submitQuery</a></li><li><a href="global.html#updateQuerySet">updateQuerySet</a></li><li><a href="global.html#validate">validate</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Fri Feb 12 2016 20:15:35 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
