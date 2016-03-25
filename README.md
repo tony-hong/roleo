@@ -1,1 +1,19 @@
-## web-based-semantic-visualization-tool
+## Roleo
+
+web-based-semantic-visualization-tool
+
+# Customers
+Asad Sayeed
+Vera Demberg
+
+# Developers
+Xudong (Tony) Hong
+Mehrnoosh Majari Kasmaei
+Dawei Zhu
+Julian Haluska
+Fannyu Ye
+Jakob Metzger
+
+# Video
+Video demonstrating the first prototype
+https://www.youtube.com/watch?v=BetieI7biBQ&feature=youtu.be
