@@ -23,7 +23,6 @@ import logging
 sys.path.append('Rollenverteilung/src/lib')
 os.system('export LD_LIBRARY_PATH=hdf5/1.8.16/lib')
 
-import matplotlib.pyplot as plt
 import pandas as pd
 
 from rv.structure.Tensor import Matricisation
