@@ -21,5 +21,5 @@ urlpatterns = [
     # for admin page
     url(r'^admin/', include(admin.site.urls)),
     # for view2D app
-    url(r'^view2D/', include('view2D.urls')),
+    url(r'^', include('view2D.urls')),
 ]
