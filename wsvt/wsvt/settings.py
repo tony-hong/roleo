@@ -97,7 +97,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Static root for static web server deployment
-STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static/")
+STATIC_ROOT = '/local/www'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
