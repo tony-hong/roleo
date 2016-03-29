@@ -8,6 +8,17 @@ from numpy.linalg import norm
 def ecu(centroid, vec, item, relations):
     pass
 
+def ecu_dist(series1, series2):
+    """
+    takes two pandas Series and finds the euclidean distance between them,
+    even if they aren't aligned (it aligns them).
+    """
+    A, B = series1.align(series2)
+    A = A.fillna(0)
+    B = B.fillna(0)
+
+    return norm(A - B)
+
 def cosine_sim(series1, series2):
     """
     takes two pandas Series and finds the cosine between them,
