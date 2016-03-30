@@ -249,14 +249,18 @@ def mapping(fraction, cosine, sumFraction):
     # Scale fraciton and cosine, let them become more sparse over [0, 1]
     x = 1 - sumFraction
     y = 1 - cosine
+    weight = 0.5
+
+    # print x, y
 
     # Compute radial coordinates
-    r = math.sqrt((math.pow(x, 2) + math.pow(y, 2)) / 2)
-    if y - 0 < 1e-3:
-        rad = math.pi
+    r = math.sqrt(((1 - weight) * math.pow(x, 2) + weight * math.pow(y, 2)))
+    if x - 0 < 1e-3:
+        rad_b = math.pi / 2
     else:
         # Scale rad from [0, pi/2] to [0, 2 * pi]
-        rad = math.atan(x / y) * 4
+        rad_b = math.atan( weight * y / ((1 - weight) * x))
+    rad = rad_b * 4
 
     # Transform back to Cartesian coordinates
     x = r * math.cos(rad)
