@@ -158,6 +158,7 @@ def process(verb, noun, role, group, topN = 20):
                 if query1 not in sumWordList:
                     queryFraction = -1
                     queryCosine = cosine_sim(centroid, query)
+                    wordVectors[query1] = query
                     sumWordList.append(query1)
                 else:
                     inList = True
@@ -208,12 +209,13 @@ def process(verb, noun, role, group, topN = 20):
     # if there are 2 query words
     if double and not inList: 
         if queryExist:
-            support = v.ix[semanticRole].ix[query1]
+            support = wordSupports[query1]
             queryFraction = float(support) / sumSupport
             sumFraction = queryFraction + sumFraction
         else:
             support = 0
             queryFraction = 0
+            sumFraction = queryFraction + sumFraction
         q_x, q_y = mapping(queryFraction, queryCosine, sumFraction)
 
     if double:
