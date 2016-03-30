@@ -24,10 +24,10 @@
 /** Global Vars **/
 /** Global Vars **/
 /** Global Vars **/
-var CONST_NODE_RADIUS = 8;
+var CONST_NODE_RADIUS = 6;
 // TODO Bellow two vars would be better to be inited dynamically according to the data set
-var MAX_MOUSE_WHEEL_CNT = 30;
-var MIN_MOUSE_WHEEL_CNT = -20;
+var MAX_MOUSE_WHEEL_CNT = 60;
+var MIN_MOUSE_WHEEL_CNT = -10;
 
 var TRANSFORMATION;    // Transformation object
 var WIDTH;             // Width of canvas
