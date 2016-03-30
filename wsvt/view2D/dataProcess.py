@@ -217,7 +217,7 @@ def process(verb, noun, role, group, topN = 20):
 
 
 
-def mapping(fraction, cosine):
+def mapping(fraction, cosine, distance):
     '''
     Mapping from fraction, and cosine to the x, y coordinate.
     This is a simple function which maps the high dimension vector to 2D.
@@ -230,16 +230,18 @@ def mapping(fraction, cosine):
         (x, y) is a tuple
     '''
     # Scale fraciton and cosine, let them become more sparse over [0, 1]
-    y = math.pow(fraction, 0.4)
-    x = math.pow(cosine, 0.8)
+    x = 1 - fraction
+    y = 1 - cosine
+
+    print x, y
 
     # Compute radial coordinates
-    r = math.sqrt((math.pow(1-x, 2) + math.pow(1-y, 2)) / 2)
-    if x == 0:
-        rad = math.pi / 2
+    r = math.sqrt((math.pow(x, 2) + math.pow(y, 2)) / 2)
+    if y == 0:
+        rad = math.pi
     else:
         # Scale rad from [0, pi/2] to [0, 2 * pi]
-        rad = math.atan(y / x) * 4
+        rad = math.atan(x / y) * 4
 
     # Transform back to Cartesian coordinates
     x = r * math.cos(rad)
