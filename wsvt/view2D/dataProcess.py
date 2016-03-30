@@ -36,9 +36,9 @@ logger = logging.getLogger('django')
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 wordVectors = dict()
-simularities = dict()
 wordSupports = dict()
-fractions = dict()
+# simularities = dict()
+# fractions = dict()
 result = dict()
 
 # Initialize data structure Matricisation
@@ -189,8 +189,8 @@ def process(verb, noun, role, group, topN = 20):
         else:
             x, y = mapping(fraction, wordCosine, sumFraction)
 
-        simularities[w] = wordCosine
-        fractions[w] = fraction
+        # simularities[w] = wordCosine
+        # fractions[w] = fraction
 
         resultList.append({
             'y'     : y,
