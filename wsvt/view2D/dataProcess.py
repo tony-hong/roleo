@@ -67,6 +67,8 @@ def process(verb, noun, role, group, topN = 20):
     memberIndex = dict()
     result = dict()
     double = False
+    inList = False
+    queryExist = True
 
     # primal query word # with '-v/-n' suffix
     query0 = ''
@@ -122,23 +124,16 @@ def process(verb, noun, role, group, topN = 20):
     logger.info('getMemberVectors finished...')
     # print wordList
 
+    sumWordList = list(wordList)
     resultList = []
     queryFraction = 0
     queryCosine = 0
-    maxSupport = 0
+    sumSupport = 0
+    sumFraction = 0
 
     # Compute centroid from the vectorList using pandas
     centroid = pd.concat(vectorList).sum(level=[0,1])
 
-    # Obtain all supports and compute the max support 
-    for w in wordList:
-        v = wordVectors[w]
-
-        support = v.ix[semanticRole].ix[query0]
-        wordSupports[w] = support
-
-        if support > maxSupport:
-            maxSupport = support
 
     # if there are 2 query words, process the second query word
     if double:
@@ -157,34 +152,42 @@ def process(verb, noun, role, group, topN = 20):
             if vector.get(query0, 0) == 0:
                 # For the second query word, in this semantic role, the primal query word does not exist
                 queryCosine = cosine_sim(centroid, query)
+                queryExist = False
                 logger.info('query.ix[semanticRole].ix[query0] is empty')
             else:
-                support = vector.ix[query0] 
-
-                # Computer fraction and cosine
-                # If the mapping function is changed, this must be changed
-                queryFraction = float(support) / maxSupport
-                queryCosine = cosine_sim(centroid, query)
+                if query1 not in sumWordList:
+                    queryFraction = -1
+                    queryCosine = cosine_sim(centroid, query)
+                    sumWordList.append(query1)
+                else:
+                    inList = True
         except KeyError:
             # Semantic role of second query word does not exist
             logger.error( 'errCode: %d. query.ix[semanticRole] is empty', errorCode.SMT_ROLE_EMPTY)
             result = {'errCode' : errorCode.SMT_ROLE_EMPTY}
             return result
 
-        # Apply mapping to second query word
-        q_x, q_y = mapping(queryFraction, queryCosine)
-        if query1 in wordList:
-            wordList.remove(query1)
+    # Obtain all supports and compute the sum support 
+    for w in sumWordList:
+        v = wordVectors[w]
+        support = v.ix[semanticRole].ix[query0]
+        sumSupport = sumSupport + support
+        wordSupports[w] = support
 
+    for w in wordList:
     # Computer fraction and cosine
     # If the mapping function is changed, this must be changed
-    for w in wordList:
-        fraction = float(wordSupports[w]) / maxSupport
-
+        fraction = float(wordSupports[w]) / sumSupport
+        sumFraction = fraction + sumFraction
         wordCosine = cosine_sim(centroid, wordVectors[w])
 
         # Apply mapping to each word
-        x, y = mapping(fraction, wordCosine)
+        if inList and w == query1:
+            # Apply mapping to second query word
+            queryCosine = wordCosine
+            q_x, q_y = mapping(fraction, wordCosine, sumFraction)
+        else:
+            x, y = mapping(fraction, wordCosine, sumFraction)
 
         simularities[w] = wordCosine
         fractions[w] = fraction
@@ -203,34 +206,43 @@ def process(verb, noun, role, group, topN = 20):
     }
 
     # if there are 2 query words
+    if double and not inList: 
+        if queryExist:
+            support = v.ix[semanticRole].ix[query1]
+            queryFraction = float(support) / sumSupport
+            sumFraction = queryFraction + sumFraction
+        else:
+            support = 0
+            queryFraction = 0
+        q_x, q_y = mapping(queryFraction, queryCosine, sumFraction)
+
     if double:
         result['queried'] = {
-                'y'    : q_y,
-                'x'    : q_x,
-                'cos'  : queryCosine,
-                'word' : query1,
-            }
+            'y'    : q_y,
+            'x'    : q_x,
+            'cos'  : queryCosine,
+            'word' : query1,
+        }
 
     logger.info('result creating is prepared')
 
     return result
 
 
-
-def mapping(fraction, cosine, distance):
+def mapping(fraction, cosine, sumFraction):
     '''
     Mapping from fraction, and cosine to the x, y coordinate.
     This is a simple function which maps the high dimension vector to 2D.
     It is suitable for a web tool which need a short response time.
 
     @parameters:
-        fraction = support / maxSupport
+        fraction = support / sumSupport
         cosine   = cosine_sim(centroid, wordVector)
     @return: 
         (x, y) is a tuple
     '''
     # Scale fraciton and cosine, let them become more sparse over [0, 1]
-    x = 1 - fraction
+    x = 1 - sumFraction
     y = 1 - cosine
 
     print x, y
