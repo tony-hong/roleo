@@ -175,6 +175,18 @@ def process(verb, noun, role, group, topN = 20):
         sumSupport = sumSupport + support
         wordSupports[w] = support
 
+    # if there are 2 query words
+    if double and not inList: 
+        if queryExist:
+            support = wordSupports[query1]
+            queryFraction = float(support) / sumSupport
+            sumFraction = queryFraction + sumFraction
+        else:
+            support = 0
+            queryFraction = 0
+            sumFraction = queryFraction + sumFraction
+        q_x, q_y = mapping(queryFraction, queryCosine, sumFraction)
+
     for w in wordList:
     # Computer fraction and cosine
     # If the mapping function is changed, this must be changed
@@ -206,17 +218,6 @@ def process(verb, noun, role, group, topN = 20):
         'nodes' : resultList
     }
 
-    # if there are 2 query words
-    if double and not inList: 
-        if queryExist:
-            support = wordSupports[query1]
-            queryFraction = float(support) / sumSupport
-            sumFraction = queryFraction + sumFraction
-        else:
-            support = 0
-            queryFraction = 0
-            sumFraction = queryFraction + sumFraction
-        q_x, q_y = mapping(queryFraction, queryCosine, sumFraction)
 
     if double:
         result['queried'] = {
