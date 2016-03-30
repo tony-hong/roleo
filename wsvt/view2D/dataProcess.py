@@ -175,6 +175,8 @@ def process(verb, noun, role, group, topN = 20):
         sumSupport = sumSupport + support
         wordSupports[w] = support
 
+    wordList.reverse()
+
     # if there are 2 query words
     if double and not inList: 
         if queryExist:
@@ -248,11 +250,9 @@ def mapping(fraction, cosine, sumFraction):
     x = 1 - sumFraction
     y = 1 - cosine
 
-    print x, y
-
     # Compute radial coordinates
     r = math.sqrt((math.pow(x, 2) + math.pow(y, 2)) / 2)
-    if y == 0:
+    if y - 0 < 1e-3:
         rad = math.pi
     else:
         # Scale rad from [0, pi/2] to [0, 2 * pi]
