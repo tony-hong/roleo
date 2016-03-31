@@ -320,7 +320,7 @@ NodeElement.prototype.computeRGBA = function() {
 	}
 	else {
 		var H;     // Hue used to mapping Hue to RGB, reference: https://en.wikipedia.org/wiki/HSL_and_HSV
-		var C = 1.0; // Saturation * Value, reference: https://en.wikipedia.org/wiki/HSL_and_HSV
+		var C = 0.8; // Saturation * Value, reference: https://en.wikipedia.org/wiki/HSL_and_HSV
 		if (deltaX == 0) {
 			H = deltaY > 0 ? 90.0 : 270.0;
 		}
