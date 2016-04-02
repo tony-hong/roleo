@@ -351,7 +351,7 @@ def mapping(fraction, cosine, sumFraction):
         (x, y) is a tuple
     '''
     # Scale fraciton and cosine, let them become more sparse over [0, 1]
-    x = 1 - (sumFraction - fraction)
+    x = 1 - sumFraction
     y = 1 - cosine
     weight = 0.5
 
