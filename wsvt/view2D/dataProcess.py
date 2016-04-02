@@ -355,15 +355,11 @@ def mapping(fraction, cosine, sumFraction):
     y = 1 - cosine
     weight = 0.5
 
-    # print x, y
-
     # Compute radial coordinates
     r = math.sqrt(((1 - weight) * math.pow(x, 2) + weight * math.pow(y, 2)))
-    if x - 0 < 1e-3:
-        rad_b = math.pi / 2
-    else:
-        # Scale rad from [0, pi/2] to [0, 2 * pi]
-        rad_b = math.atan( weight * y / ((1 - weight) * x))
+
+    rad_b = math.atan2( weight * y, ((1 - weight) * x))
+
     rad = rad_b * 4
 
     # Transform back to Cartesian coordinates
