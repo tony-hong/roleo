@@ -19,7 +19,7 @@
  *  Constraints: The 2D points(in json) returned from backend should resides in unit circle to ensure this implementation work
  *               This constraint is only for CanvasView.checkGrids() to work properly
  *
- */
+*/ 
 
 /** Global Vars **/
 /** Global Vars **/
@@ -145,11 +145,14 @@ function createNodesFromJSON(responseJSON_Object) {
 		document.getElementById("select_model").value = sessionStorage.prevModel;
 		radioId = 'radio_' + sessionStorage.prevGroup;
 		document.getElementById(radioId).checked = true;
+		$('#slider').slider('value', sessionStorage.prevTopN)
+
 		// restore previous query infos
 		document.getElementById("lbl_noun_info").textContent = sessionStorage.prevNoun;
 		document.getElementById("lbl_verb_info").textContent = sessionStorage.prevVerb;
 		document.getElementById("lbl_role_info").textContent = sessionStorage.prevRole;
 		document.getElementById("lbl_model_info").textContent = sessionStorage.prevModel;
+		document.getElementById("lbl_topN_info").textContent = sessionStorage.prevTopN;
 	} else {
 		// Sorry! No Web Storage support..
 	}
@@ -412,34 +415,33 @@ Transformation.prototype.transform = function(point2D) {
 }
 
 /** For Test Purpose **/
-/*
-function dummyUpdate() {
-	var centeroid = new Node(new Point2D(), "centroid", 1);
-	var queried = new Node(new Point2D(0.515128023024, -0.853062236398), "teenager", 1, true);
-	var n1 = new Node(new Point2D(0.002124, 0.011698), "i", 1);
-	var n2 = new Node(new Point2D(-0.172109, -0.081946), "he", 1);
-	var n3 = new Node(new Point2D(-0.330853, -0.061861), "people", 1);
-	var n4 = new Node(new Point2D(0.295152, -0.322355), "child", 1);
-	var n5 = new Node(new Point2D(0.578451, -0.182329), "dog", 1);
-	var n6 = new Node(new Point2D(0.642296, -0.218563), "animal", 1);
-	var n7 = new Node(new Point2D(0.704084, -0.132318), "bird", 1);
-	var n8 = new Node(new Point2D(0.750166, -0.039185), "fish", 1);
-	var n9 = new Node(new Point2D(0.510343, -0.616624), "cat", 1);
-	var n10 = new Node(new Point2D(0.393059, -0.764239), "kid", 1);
-	var n11 = new Node(new Point2D(0.860227, -0.025816), "disorder", 1);
-	var n12 = new Node(new Point2D(0.833425, -0.242240), "lion", 1);
-	var n13 = new Node(new Point2D(-0.287748, -0.827654), "man", 1);
-	var n14 = new Node(new Point2D(0.803430, -0.356580), "family", 1);
-	var n15 = new Node(new Point2D(0.709094, -0.519978), "rabbit", 1);
-	var n16 = new Node(new Point2D(0.886305, -0.080745), "shark", 1);
-	var n17 = new Node(new Point2D(0.886105, -0.125888), "cow", 1);
-	var n18 = new Node(new Point2D(0.889652, -0.126101), "vegetarian", 1);
-	var n19 = new Node(new Point2D(0.705012, -0.560259), "human", 1);
-	var n20 = new Node(new Point2D(0.895855, -0.095523), "worm", 1);
-	var nodes = [centeroid, queried, n1, n2, n3, n4, n5,
-	                                 n6, n7, n8, n9, n10,
-									 n11, n12, n13, n14, n15,
-									 n16, n17, n18, n19, n20];
-	updateQuerySet(nodes);
-}
-*/
+
+// function dummyUpdate() {
+// 	var centeroid = new Node(new Point2D(), "centroid", 1);
+// 	var queried = new Node(new Point2D(0.515128023024, -0.853062236398), "teenager", 1, true);
+// 	var n1 = new Node(new Point2D(0.002124, 0.011698), "i", 1);
+// 	var n2 = new Node(new Point2D(-0.172109, -0.081946), "he", 1);
+// 	var n3 = new Node(new Point2D(-0.330853, -0.061861), "people", 1);
+// 	var n4 = new Node(new Point2D(0.295152, -0.322355), "child", 1);
+// 	var n5 = new Node(new Point2D(0.578451, -0.182329), "dog", 1);
+// 	var n6 = new Node(new Point2D(0.642296, -0.218563), "animal", 1);
+// 	var n7 = new Node(new Point2D(0.704084, -0.132318), "bird", 1);
+// 	var n8 = new Node(new Point2D(0.750166, -0.039185), "fish", 1);
+// 	var n9 = new Node(new Point2D(0.510343, -0.616624), "cat", 1);
+// 	var n10 = new Node(new Point2D(0.393059, -0.764239), "kid", 1);
+// 	var n11 = new Node(new Point2D(0.860227, -0.025816), "disorder", 1);
+// 	var n12 = new Node(new Point2D(0.833425, -0.242240), "lion", 1);
+// 	var n13 = new Node(new Point2D(-0.287748, -0.827654), "man", 1);
+// 	var n14 = new Node(new Point2D(0.803430, -0.356580), "family", 1);
+// 	var n15 = new Node(new Point2D(0.709094, -0.519978), "rabbit", 1);
+// 	var n16 = new Node(new Point2D(0.886305, -0.080745), "shark", 1);
+// 	var n17 = new Node(new Point2D(0.886105, -0.125888), "cow", 1);
+// 	var n18 = new Node(new Point2D(0.889652, -0.126101), "vegetarian", 1);
+// 	var n19 = new Node(new Point2D(0.705012, -0.560259), "human", 1);
+// 	var n20 = new Node(new Point2D(0.895855, -0.095523), "worm", 1);
+// 	var nodes = [centeroid, queried, n1, n2, n3, n4, n5,
+// 	                                 n6, n7, n8, n9, n10,
+// 									 n11, n12, n13, n14, n15,
+// 									 n16, n17, n18, n19, n20];
+// 	updateQuerySet(nodes);
+// }

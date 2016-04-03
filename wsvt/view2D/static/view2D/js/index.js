@@ -1,22 +1,34 @@
 /** Callback for window.onload to initializing index.html **/
 window.onload = function() {
-	loadView2D(); // view2D_main.js
-	loadInputTextFilter(); // inputTextFilter.js
-	// load error_code.json into frontend
-	$.ajax({
-		url:      'errorCodeJSON/',
-		type:     'GET',
-		data:     null,
-		async:    true,
-		success:  function(response){ loadErrCodeJSON(response);}
+    loadInputTextFilter(); // inputTextFilter.js
+
+    // load error_code.json into frontend
+    $.ajax({
+        url:      'errorCodeJSON/',
+        type:     'GET',
+        data:     null,
+        async:    true,
+        success:  function(response){ loadErrCodeJSON(response);}
     });
-	// slider for TOP N selection
-	$('#ex1').slider({
-        formatter: function(value) {
-            return 'Top ' + value;
+
+    slider_val = sessionStorage.prevTopN ? sessionStorage.prevTopN : 20
+    // alert(v)
+    $('#slider').slider({
+        max:    100,
+        min:    10,
+        step:   10,
+        value:  slider_val,
+        create: function(event, ui) {
+            $('#slider-val').text(slider_val)
+        },
+        slide: function(event, ui){
+            $('#slider-val').text(ui.value)
         }
     });
-    if (sessionStorage.prevVerb == null){
+
+	loadView2D(); // view2D_main.js
+
+    if (!sessionStorage.prevVerb){
         submitQuery()
     }
 }
@@ -29,10 +41,12 @@ window.onresize = function() {
 /** Callback for clicking submit button **/
 function submitQuery() {
 	setIsInProcessing(true);
+    slider_val= $('#slider-val').text()
+    content = $('#myDiv').serialize()+'&top_results=' + slider_val
     $.ajax({
 		url:      'query/',
 		type:     'POST',
-		data:     $('#myDiv').serialize(),
+		data:     content,
 		async:    true,
 		success:  function(response){
 			// only store query information if no error returned
@@ -44,6 +58,7 @@ function submitQuery() {
 				// TODO if there is other radio boxes this may result undefined behavior
 				group = $('input[name=group1]:checked').val();
 				sessionStorage.prevGroup = group;
+                sessionStorage.prevTopN = $('#slider-val').text();
 			}
 			// invoke APIs in view2D.js to visualize the result
 			updateQuerySet(createNodesFromJSON(response));
