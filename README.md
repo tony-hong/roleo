@@ -3,7 +3,7 @@
 * web-based-semantic-visualization-tool
 * URL: http://roleo.coli.uni-saarland.de/
 
-## Customers
+## Supervisors
 * Asad Sayeed
 * Vera Demberg
 
