@@ -37,9 +37,9 @@ canvas.canvas_style {
 }
 
 div.visualization {
-  padding-top: 25px;
+  padding-top: 5px;
   text-align: center;
-  padding-bottom: 25px;
+  padding-bottom: 5px;
 }
 
 div.fill_display_with_padding{
