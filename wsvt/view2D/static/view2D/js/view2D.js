@@ -135,7 +135,7 @@ function createNodesFromJSON(responseJSON_Object) {
 		//                                         substring remove "-n"                round to two digits
 		nodes.push(new Node(new Point2D(e.x, e.y), e.word.substring(0,e.word.length-2), Math.round((e.cos + 0.00001) * 10000) / 10000));
 	}
-	// store JSON string into session storage
+	// retrieve JSON string from session storage
 	if(typeof(Storage) !== "undefined") {
 		// restore previous inputs
 		sessionStorage.prevQuery = JSON.stringify(responseJSON_Object);

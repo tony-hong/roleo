@@ -13,10 +13,13 @@
 
     <title>Web-based semantic visualization tool</title>
 
+    <!-- Bootstrap core CSS -->
     <link href="{% static 'view2D/jquery-ui/jquery-ui.min.css' %}" rel="stylesheet">    
 
-    <!-- Bootstrap core CSS -->
 	  <link href="{% static 'view2D/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Bootstrap CSS for slider -->
+    <!-- <link href=" https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.1.5/css/bootstrap-slider.css" rel="stylesheet"> -->
+
 
     <!-- Custom styles for this template -->
     <link href="{% static 'view2D/css/index.css' %}" rel="stylesheet">
@@ -26,6 +29,9 @@
     <script src="{% static 'view2D/jquery-ui/jquery-ui.min.js' %}"></script>
 
   	<script src="{% static 'view2D/bootstrap/js/bootstrap.min.js' %}"></script>
+
+    <!-- bootstrap JS for slider -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.1.5/bootstrap-slider.min.js"></script> -->
 
 	<!-- js loading order matters because of dependencies -->
 	<!-- js for input validation -->
@@ -141,21 +147,7 @@
               <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
               <br><br><br>
 
-              <!-- div containing the fifth "input element" with the possibility to change the model -->
-              <div class="input_element">
-                Model:
-                <div data-toggle="tooltip_button" title="Choose another model!">
-                  <select id="select_model" class="form-control" name='model'>
-                    <option value="model1">Model 1</option>
-                    <option value="model2">Model 2</option>
-                    <option value="model3">Model 3</option>
-                  </select>
-                </div>
-              </div>
               <br>
-
-              <!-- button which changes the model in the backend, when the user clicks it -->
-              <button id="changeModelBtn" type='button' class="btn btn-primary" onclick=javascript:changeModel()>Change Model</button>
 
           </div>
           </form>
@@ -201,13 +193,29 @@
           <br><br>
 
           <!-- button to download the current visualization, which is in the canvas -->
-              <button id="downloadBtn" class="btn btn-primary" onclick=javascript:downloadImage()>Download Image</button>
+          <button id="downloadBtn" class="btn btn-primary" onclick=javascript:downloadImage()>Download Image</button>
           <a href="#" id="downloadA" download></a>
           <br><br>
 
           <!-- button to recenter the view in the canvas to the centroid (default view after querying) -->
           <button id="resetViewBtn" type='button' class="btn btn-primary" onclick=javascript:resetView()>Re-centralize</button>
+          <br><br><br>
           </div>
+
+          <!-- div containing the fifth "input element" with the possibility to change the model -->
+          <div class="input_element">
+            Changing Model:
+            <br>
+            <div data-toggle="tooltip_button" title="Choose another model!">
+              <select id="select_model" class="form-control" name='model'>
+                <option value="SDDMX">SDDMX</option>
+                <option value="TypeDM">TypeDM</option>
+              </select>
+            </div><br>
+            <!-- button which changes the model in the backend, when the user clicks it -->
+            <button id="changeModelBtn" type='button' class="btn btn-primary" onclick=javascript:changeModel() data-toggle="tooltip_button" title="Caution! Time consuming operation">Change Model</button>
+          </div>
+
         </div>
       </div>
     </div><!-- /.container -->

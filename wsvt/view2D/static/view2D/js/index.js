@@ -26,7 +26,7 @@ window.onload = function() {
         }
     });
 
-	loadView2D(); // view2D_main.js
+    loadView2D(); // view2D_main.js
 
     if (!sessionStorage.prevVerb){
         submitQuery()
@@ -35,16 +35,49 @@ window.onload = function() {
 
 /** Callback for window.onresize to create responsive canvas **/
 window.onresize = function() {
-	reloadView(); // view2D.js
+    reloadView(); // view2D.js
 }
 
-/** Callback for clicking submit button **/
+/** Callback for clicking Submit Query button **/
 function submitQuery() {
-	setIsInProcessing(true);
+    setIsInProcessing(true);
     slider_val= $('#slider-val').text()
-    content = $('#myDiv').serialize()+'&top_results=' + slider_val
+    select_model = $('#select_model').val()
+
+    content = $('#myDiv').serialize()+'&top_results=' + slider_val + '&select_model=' + select_model
     $.ajax({
-		url:      'query/',
+    url:      'query/',
+    type:     'POST',
+    data:     content,
+    async:    true,
+    success:  function(response){
+      // only store query information if no error returned
+      if (response.errCode == null) {
+        sessionStorage.prevNoun = document.getElementById("input_noun").value;
+        sessionStorage.prevVerb = document.getElementById("input_verb").value;
+        sessionStorage.prevRole = document.getElementById("select_role").value;
+        sessionStorage.prevModel = document.getElementById("select_model").value;
+        // TODO if there is other radio boxes this may result undefined behavior
+        group = $('input[name=group1]:checked').val();
+        sessionStorage.prevGroup = group;
+        sessionStorage.prevTopN = $('#slider-val').text();
+      }
+      // invoke APIs in view2D.js to visualize the result
+      updateQuerySet(createNodesFromJSON(response));
+      setIsInProcessing(false);
+    }
+    });
+}
+
+/** Callback for clicking Change Model button **/
+function changeModel() {
+    setIsInProcessing(true);
+    slider_val= $('#slider-val').text()
+    select_model = $('#select_model').val()
+
+    content = $('#myDiv').serialize() + '&top_results=' + slider_val + '&select_model=' + select_model
+    $.ajax({
+		url:      'changeModel/',
 		type:     'POST',
 		data:     content,
 		async:    true,
@@ -58,7 +91,7 @@ function submitQuery() {
 				// TODO if there is other radio boxes this may result undefined behavior
 				group = $('input[name=group1]:checked').val();
 				sessionStorage.prevGroup = group;
-                sessionStorage.prevTopN = $('#slider-val').text();
+        sessionStorage.prevTopN = $('#slider-val').text();
 			}
 			// invoke APIs in view2D.js to visualize the result
 			updateQuerySet(createNodesFromJSON(response));
@@ -66,6 +99,8 @@ function submitQuery() {
 		}
     });
 }
+
+
 
 /** Callback for clicking download image button **/
 function downloadImage() {
