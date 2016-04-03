@@ -18,23 +18,32 @@ MODEL_MAPPING = {
     'TypeDM'    :   ['typedm.matricised.word0.h5'   , 'typedm.matricised.word1.h5']
 }
 
-matrix = Matricisation({
-    'word0' : os.path.join(BASE_DIR, MODEL_MAPPING['SDDMX'][0]),
-    'word1' : os.path.join(BASE_DIR, MODEL_MAPPING['SDDMX'][1]) 
-})
+class MatrixFactory:
+    def __init__(self):
+        self.matrix = Matricisation({
+            'word0' : os.path.join(BASE_DIR, MODEL_MAPPING['SDDMX'][0]),
+            'word1' : os.path.join(BASE_DIR, MODEL_MAPPING['SDDMX'][1]) 
+        })
 
-def setModel(modelName):
-    if modelName in MODEL_MAPPING.keys():
-        fileNameList = MODEL_MAPPING[modelName]
-    else:
-        logger.critical( 'errCode: %d. internal error!', errorCode.INTERNAL_ERROR)
-        result = {'errCode' : errorCode.INTERNAL_ERROR}
-        return False
-    
-    matrix.close()
-    matrix = Matricisation({
-        'word0' : os.path.join(BASE_DIR, fileNameList[0]),
-        'word1' : os.path.join(BASE_DIR, fileNameList[1]) 
-    })
+    def setModel(self, modelName):
+        if modelName in MODEL_MAPPING.keys():
+            fileNameList = MODEL_MAPPING[modelName]
+        else:
+            logger.critical( 'errCode: %d. internal error!', errorCode.INTERNAL_ERROR)
+            result = {'errCode' : errorCode.INTERNAL_ERROR}
+            return False
+        self.matrix.close()
+        self.matrix = Matricisation({
+            'word0' : os.path.join(BASE_DIR, fileNameList[0]),
+            'word1' : os.path.join(BASE_DIR, fileNameList[1]) 
+        })
+        return True
 
-    return matrix
+    def getMatrix(self):
+        return self.matrix
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_info):
+        self.matrix.close()
