@@ -16,6 +16,9 @@ window.onload = function() {
             return 'Top ' + value;
         }
     });
+    if (sessionStorage.prevVerb == null){
+        submitQuery()
+    }
 }
 
 /** Callback for window.onresize to create responsive canvas **/
