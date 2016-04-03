@@ -14,38 +14,202 @@
         export PYTHONPATH=$PYTHONPATH:view2D
 '''
 
-import os
 import math
-import sys
 import logging
 
-# Configuration of environment
-sys.path.append('Rollenverteilung/src/lib')
-os.system('export LD_LIBRARY_PATH=hdf5/1.8.16/lib')
-
+import numpy as np
 import pandas as pd
 
-from rv.structure.Tensor import Matricisation
 from rv.similarity.Similarity import cosine_sim
 
-import view2D.errorCode as errorCode
+import errorCode as errorCode
+from matrixFactory import matrix
 
 logger = logging.getLogger('django')
 
-# Base directory of the project
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+def process_svd(verb, noun, role, group, topN = 20):
+    wordVectors = dict()
+    wordSupports = dict()
+    wordSeries = dict()
+    # simularities = dict()
+    # fractions = dict()
+    result = dict()
+    
+    logger.info('process start...')
 
-wordVectors = dict()
-wordSupports = dict()
-# simularities = dict()
-# fractions = dict()
-result = dict()
+    memberIndex = dict()
+    double = False
+    inList = False
+    queryExist = True
 
-# Initialize data structure Matricisation
-matrix = Matricisation({
-    'word0' : os.path.join(BASE_DIR, 'wackylmi-malt-v2-36K.word0.h5'),
-    'word1' : os.path.join(BASE_DIR, 'wackylmi-malt-v2-36K.word1.h5') 
-})
+    # primal query word # with '-v/-n' suffix
+    query0 = ''
+    # second query word # with '-v/-n' suffix
+    query1 = ''
+    # with '-1' suffix if noun selects noun
+    semanticRole = ''
+
+    # Adding suffix according to different types of query
+    # Case of noun selects verb
+    if group == 'noun':
+        query0 = noun + '-n'
+        semanticRole = role + '-1'
+        if verb:
+            double = True
+            query1 = verb + '-v'
+    # Case of verb selects noun
+    elif group == 'verb':
+        query0 = verb + '-v'
+        semanticRole = role
+        if noun:
+            double = True
+            query1 = noun + '-n'
+    else:
+        logger.critical( 'errCode: %d. internal error!', errorCode.INTERNAL_ERROR)
+        result = {'errCode' : errorCode.INTERNAL_ERROR}
+        return result
+
+    # LOG
+    logger.debug('query0: %s' , query0)
+    logger.debug('query1: %s' , query1)
+    logger.debug('semanticRole: %s' , semanticRole)
+    logger.debug('group: %s' , group)
+    logger.debug('top_results: %d' , topN)
+
+    # memberTuple[0]: list of vectors
+    # memberTuple[1]: list of words
+    memberTuple = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, topN)
+
+    # A hack checking whether the return is empty
+    # if it is not tuple(), it is empty, the model return nothing for the primal query word
+    if type(memberTuple) != type(tuple()):
+        logger.error('errCode: %d. memberVectors is empty', errorCode.MBR_VEC_EMPTY)
+        result = {'errCode' : errorCode.MBR_VEC_EMPTY}
+        return result
+    else:
+        vectorList, wordList = memberTuple
+
+    # Reshape wordList, vectorList to a dict(), with key is word and value is vector
+    wordVectors = dict(zip(wordList, vectorList))
+  
+    # LOG
+    logger.info('getMemberVectors finished...')
+    # print wordList
+
+    sumWordList = list(wordList)
+    resultList = []
+    queryFraction = 0
+    queryCosine = 0
+    sumSupport = 0
+    sumFraction = 0
+
+    # Compute centroid from the vectorList using pandas
+    centroid = pd.concat(vectorList).sum(level=[0,1])
+
+    # if there are 2 query words, process the second query word
+    if double:
+        # process query
+        query = matrix.getRow('word0', query1)
+
+        logger.info('getting query finished')
+
+        if query.isnull().all():
+            # Second query word does not exist in the model
+            logger.error( 'errCode: %d. query is empty', errorCode.QUERY_EMPTY)
+            result = {'errCode' : errorCode.QUERY_EMPTY}
+            return result
+        try:
+            vector = query.ix[semanticRole]
+            if vector.get(query0, 0) == 0:
+                # For the second query word, in this semantic role, the primal query word does not exist
+                queryCosine = cosine_sim(centroid, query)
+                queryExist = False
+                logger.info('query.ix[semanticRole].ix[query0] is empty')
+            else:
+                if query1 not in sumWordList:
+                    queryFraction = -1
+                    queryCosine = cosine_sim(centroid, query)
+                    wordVectors[query1] = query
+                    sumWordList.append(query1)
+                else:
+                    inList = True
+        except KeyError:
+            # Semantic role of second query word does not exist
+            logger.error( 'errCode: %d. query.ix[semanticRole] is empty', errorCode.SMT_ROLE_EMPTY)
+            result = {'errCode' : errorCode.SMT_ROLE_EMPTY}
+            return result
+
+    # Obtain all supports and compute the sum support 
+    for w in sumWordList:
+        s = pd.Series(centroid)
+        s[:] = 0
+        s = s + wordVectors[w]
+        wordSeries[w] = s
+        if M == -1:
+            M = np.array(s)
+        else:
+            np.concatenate(M, s)
+
+    print M
+
+    '''
+    # if there are 2 query words
+    if double and not inList: 
+        if queryExist:
+            support = wordSupports[query1]
+            queryFraction = float(support) / sumSupport
+            sumFraction = queryFraction + sumFraction
+        else:
+            support = 0
+            queryFraction = 0
+            sumFraction = queryFraction + sumFraction
+        q_x, q_y = mapping(queryFraction, queryCosine, sumFraction)
+
+    for w in wordList:
+    # Computer fraction and cosine
+    # If the mapping function is changed, this must be changed
+        fraction = float(wordSupports[w]) / sumSupport
+        sumFraction = fraction + sumFraction
+        wordCosine = cosine_sim(centroid, wordVectors[w])
+
+        # Apply mapping to each word
+        if inList and w == query1:
+            # Apply mapping to second query word
+            queryCosine = wordCosine
+            q_x, q_y = mapping(fraction, wordCosine, sumFraction)
+        else:
+            x, y = mapping(fraction, wordCosine, sumFraction)
+
+            # simularities[w] = wordCosine
+            # fractions[w] = fraction
+
+            # print w, wordCosine, fraction, sumFraction
+
+            resultList.append({
+                'y'     : y,
+                'x'     : x, 
+                'cos'   : wordCosine, 
+                'word'  : w,
+            })
+
+    logger.info('result list is prepared')
+
+    result = {
+        'nodes' : resultList
+    }
+
+    if double:
+        result['queried'] = {
+            'y'    : q_y,
+            'x'    : q_x,
+            'cos'  : queryCosine,
+            'word' : query1,
+        }
+
+    logger.info('result creating is prepared')
+    '''
+
+    return result
 
 
 def process(verb, noun, role, group, topN = 20):
@@ -62,10 +226,16 @@ def process(verb, noun, role, group, topN = 20):
     @return: result = dict()
 
     ''' 
+
+    wordVectors = dict()
+    wordSupports = dict()
+    # simularities = dict()
+    # fractions = dict()
+    result = dict()
+    
     logger.info('process start...')
 
     memberIndex = dict()
-    result = dict()
     double = False
     inList = False
     queryExist = True
@@ -204,22 +374,23 @@ def process(verb, noun, role, group, topN = 20):
         else:
             x, y = mapping(fraction, wordCosine, sumFraction)
 
-        # simularities[w] = wordCosine
-        # fractions[w] = fraction
+            # simularities[w] = wordCosine
+            # fractions[w] = fraction
 
-        resultList.append({
-            'y'     : y,
-            'x'     : x, 
-            'cos'   : wordCosine, 
-            'word'  : w,
-        })
+            print w, wordCosine, fraction, sumFraction
+
+            resultList.append({
+                'y'     : y,
+                'x'     : x, 
+                'cos'   : wordCosine, 
+                'word'  : w,
+            })
 
     logger.info('result list is prepared')
 
     result = {
         'nodes' : resultList
     }
-
 
     if double:
         result['queried'] = {
@@ -234,7 +405,7 @@ def process(verb, noun, role, group, topN = 20):
     return result
 
 
-def mapping_o_1q(fraction, cosine, sumFraction):
+def mapping_1d(fraction, cosine, sumFraction):
     '''
     Mapping from fraction, and cosine to the x, y coordinate.
     This is a simple function which maps the high dimension vector to 2D.
@@ -253,7 +424,7 @@ def mapping_o_1q(fraction, cosine, sumFraction):
     # print x, y
 
     # Compute radial coordinates
-    r = math.sqrt((math.pow(x, 2) + math.pow(y, 2)))
+    r = math.sqrt((math.pow(x, 2) + math.pow(y, 2))/2)
     if x - 0 < 1e-3:
         rad_b = math.pi / 2
     else:
@@ -267,7 +438,7 @@ def mapping_o_1q(fraction, cosine, sumFraction):
 
     return x, y
 
-def mapping_s_f(fraction, cosine, sumFraction):
+def mapping_sf(fraction, cosine, sumFraction):
     '''
     Mapping from fraction, and cosine to the x, y coordinate.
     This is a simple function which maps the high dimension vector to 2D.
@@ -303,7 +474,7 @@ def mapping_s_f(fraction, cosine, sumFraction):
     return x, y
 
 
-def mapping_s_c(fraction, cosine, sumFraction):
+def mapping_sc(fraction, cosine, sumFraction):
     '''
     Mapping from fraction, and cosine to the x, y coordinate.
     This is a simple function which maps the high dimension vector to 2D.
@@ -338,11 +509,12 @@ def mapping_s_c(fraction, cosine, sumFraction):
 
     return x, y
 
+
 def mapping(fraction, cosine, sumFraction):
     '''
     Mapping from fraction, and cosine to the x, y coordinate.
     This is a simple function which maps the high dimension vector to 2D.
-    It is suitable for a web tool which need a short response time.
+    It is suitable for a web tool which needs a short response time.
 
     @parameters:
         fraction = support / sumSupport
@@ -356,8 +528,8 @@ def mapping(fraction, cosine, sumFraction):
     weight = 0.5
 
     # Compute radial coordinates
-    r = math.sqrt(((1 - weight) * math.pow(x, 2) + weight * math.pow(y, 2)))
-
+    r = math.sqrt(((1 - weight) * math.pow(x, 2) + weight * math.pow(y, 2))/2)
+    
     rad_b = math.atan2( weight * y, ((1 - weight) * x))
 
     rad = rad_b * 4
