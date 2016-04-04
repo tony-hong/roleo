@@ -226,11 +226,12 @@ function validate() {
  *  @param {boolean} b - A boolean used to set the current state
  */
 function setIsInProcessing(b) {
-	isInProcessing = b;
-	var submitBtn = document.getElementById("submitBtn");
-	if (!submitBtn) alert("getElementById \"submitBtn\" failed");
-	if (b) submitBtn.disabled = true;
-	else submitBtn.disabled = false;
+	isInProcessing = b
+	var buttons = $(".btn");
+	if (!buttons) alert("getElementById \"submitBtn\" failed");
+	for (var i = 0; i < buttons.length; i++) {
+		buttons[i].disabled = b
+	};
 }
 
 /** Get the state whether backend is processing query or not
