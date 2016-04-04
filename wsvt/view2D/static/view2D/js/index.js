@@ -1,11 +1,10 @@
-var roleDict;
+var roleDictJSON = null
 
 /** Callback for window.onload to initializing index.html **/
 window.onload = function() {
   select_model = sessionStorage.prevModel ? sessionStorage.prevModel : 'SDDM';
 
   // ajax request for roleDictJSON
-
   $.ajax({
     url:      'roleDictJSON/',
     type:     'GET',
@@ -24,7 +23,7 @@ window.onload = function() {
       data:     null,
       async:    true,
       success:  function(response){
-        loadErrCodeJSON(response, select_model);
+        loadErrCodeJSON(response);
         sessionStorage.errorCodeJSON = response;
       }
     });
@@ -51,7 +50,7 @@ window.onload = function() {
 
   loadView2D(); // view2D_main.js
 
-  fillRoleList(select_model);
+  // fillRoleList(select_model);
 
   if (!sessionStorage.prevVerb){ 
     setTimeout(function (){
@@ -119,9 +118,9 @@ function changeModel() {
 /** Load the roleName:roleLabel pairs from server to frontend 
  *  @param {json} roleListJSON - A json contains roleName and roleLabel Pairs
  */
-function loadRoleDictJSON(roleDictJSON, model) {
-  if (roleDictJSON == null) alert("roleDictJSON is null");
-  roleDict = roleDictJSON;
+function loadRoleDictJSON(json, model) {
+  // if (roleDictJSON == null) alert("roleDictJSON is null");
+  roleDictJSON = json;
   fillRoleList(model);
 }
 
@@ -131,7 +130,7 @@ function loadRoleDictJSON(roleDictJSON, model) {
 function fillRoleList (modelName) {
   var list = $('#select_role');
   list.empty();
-  var dict = eval('roleDict.' + modelName);
+  var dict = eval('roleDictJSON.' + modelName);
   for (var i = 0; i < dict.length; i++) {
     var t = dict[i]
     list.append("<option value='" + t.name + "'>" + t.label + " : " + t.name + "</option>");
