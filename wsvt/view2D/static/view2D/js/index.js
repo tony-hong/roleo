@@ -55,8 +55,14 @@ function getErrCodeJSON () {
 
 /** Callback for clicking Submit Query button **/
 function submitQuery() {
-  setIsInProcessing(true);
+  var noun = $('#input_noun').val();
+  var verb = $('#input_verb').val();
+  var role = $('#select_role').val();
+  var model = roleDictJSON['currentModel']
+  var group = $('input[name=group1]:checked').val();
   var slider_val= $('#slider-val').text();
+
+  setIsInProcessing(true);
   var content = $('#myDiv').serialize()+'&top_results=' + slider_val
   $.ajax({
     url:      'query/',
@@ -66,14 +72,13 @@ function submitQuery() {
     success:  function(response){
       // only store query information if no error returned
       if (response.errCode == null) {
-        sessionStorage.prevNoun = document.getElementById("input_noun").value;
-        sessionStorage.prevVerb = document.getElementById("input_verb").value;
-        sessionStorage.prevRole = document.getElementById("select_role").value;
-        sessionStorage.prevModel = roleDictJSON['currentModel']
+        sessionStorage.prevNoun = noun
+        sessionStorage.prevVerb = verb
+        sessionStorage.prevRole = role
+        sessionStorage.prevModel = model
         //TODO if there is other radio boxes this may result undefined behavior
-        var group = $('input[name=group1]:checked').val();
         sessionStorage.prevGroup = group;
-        sessionStorage.prevTopN = $('#slider-val').text();
+        sessionStorage.prevTopN = slider_val;
       }
       // invoke APIs in view2D.js to visualize the result
       updateQuerySet(createNodesFromJSON(response));
@@ -86,6 +91,7 @@ function submitQuery() {
 function changeModel() {
   var select_model = $('#select_model').val();
   var currentModel = roleDictJSON['currentModel'];
+
   if (select_model != currentModel){
     var content = $('#changingModel').serialize()
     $.ajax({
@@ -95,9 +101,11 @@ function changeModel() {
       async:    true,
       success:  function(response){
         getRoleDict();
-        sessionStorage.prevModel = select_model
-        fillRoleList(select_model);
-        submitQuery();
+        setTimeout(function (){
+          sessionStorage.prevModel = roleDictJSON['currentModel']
+          fillRoleList(select_model);
+          submitQuery();
+        }, 100);
       }
     });
   } else{
