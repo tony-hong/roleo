@@ -2,8 +2,29 @@ var roleDictJSON = null
 
 /** Callback for window.onload to initializing index.html **/
 window.onload = function() {
-  select_model = sessionStorage.prevModel ? sessionStorage.prevModel : 'SDDM';
+  getRoleDict();
 
+  getErrCodeJSON();
+
+  addSlider();
+
+  loadInputTextFilter(); // inputTextFilter.js
+
+  loadView2D(); // view2D_main.js
+
+  if (!sessionStorage.prevVerb){ 
+    setTimeout(function (){
+      submitQuery();
+    }, 10);
+  }
+}
+
+/** Callback for window.onresize to create responsive canvas **/
+window.onresize = function() {
+  reloadView(); // view2D.js
+}
+
+function getRoleDict () {
   // ajax request for roleDictJSON
   $.ajax({
     url:      'roleDictJSON/',
@@ -11,10 +32,12 @@ window.onload = function() {
     data:     null,
     async:    true,
     success:  function(response){
-      loadRoleDictJSON(response, select_model);
+      loadRoleDictJSON(response);
     }
   });
+}
 
+function getErrCodeJSON () {
   // ajax request for errorCodeJSON 
   if (!errCodeJSON){
     $.ajax({
@@ -28,40 +51,6 @@ window.onload = function() {
       }
     });
   }
-
-  var slider_val = sessionStorage.prevTopN ? sessionStorage.prevTopN : 20;
-  // alert(v)
-  $('#slider').slider({
-    max:    100,
-    min:    10,
-    step:   10,
-    value:  slider_val,
-    create: function(event, ui) {
-      $('#slider-val').text(slider_val)
-    },
-    slide: function(event, ui){
-      $('#slider-val').text(ui.value)
-    }
-  });
-
-  // fillRoleList(select_model);
-
-  loadInputTextFilter(); // inputTextFilter.js
-
-  loadView2D(); // view2D_main.js
-
-  // fillRoleList(select_model);
-
-  if (!sessionStorage.prevVerb){ 
-    setTimeout(function (){
-      submitQuery();
-    }, 10);
-  }
-}
-
-/** Callback for window.onresize to create responsive canvas **/
-window.onresize = function() {
-  reloadView(); // view2D.js
 }
 
 /** Callback for clicking Submit Query button **/
@@ -80,7 +69,8 @@ function submitQuery() {
         sessionStorage.prevNoun = document.getElementById("input_noun").value;
         sessionStorage.prevVerb = document.getElementById("input_verb").value;
         sessionStorage.prevRole = document.getElementById("select_role").value;
-        // TODO if there is other radio boxes this may result undefined behavior
+        sessionStorage.prevModel = roleDictJSON['currentModel']
+        //TODO if there is other radio boxes this may result undefined behavior
         var group = $('input[name=group1]:checked').val();
         sessionStorage.prevGroup = group;
         sessionStorage.prevTopN = $('#slider-val').text();
@@ -94,9 +84,9 @@ function submitQuery() {
 
 /** Callback for clicking Change Model button **/
 function changeModel() {
-  setIsInProcessing(true);
-  var select_model = $('#select_model').val()
-  if (select_model != sessionStorage.prevModel){
+  var select_model = $('#select_model').val();
+  var currentModel = roleDictJSON['currentModel'];
+  if (select_model != currentModel){
     var content = $('#changingModel').serialize()
     $.ajax({
       url:      'changeModel/',
@@ -104,36 +94,45 @@ function changeModel() {
       data:     content,
       async:    true,
       success:  function(response){
-        setIsInProcessing(false);
+        getRoleDict();
         sessionStorage.prevModel = select_model
         fillRoleList(select_model);
-        submitQuery()
+        submitQuery();
       }
     });
   } else{
-    setIsInProcessing(false);
+    showChangeLabelError()
   }
+}
+
+function showChangeLabelError () {
+  var msg = 'This is the current model, no need to change';
+  $('#label_msg_changeModel_error').text(msg);
+  setTimeout(function (){
+    $('#label_msg_changeModel_error').text('');
+  }, 3000);
 }
 
 /** Load the roleName:roleLabel pairs from server to frontend 
  *  @param {json} roleListJSON - A json contains roleName and roleLabel Pairs
  */
-function loadRoleDictJSON(json, model) {
+function loadRoleDictJSON(json) {
   // if (roleDictJSON == null) alert("roleDictJSON is null");
   roleDictJSON = json;
+  model = json['currentModel']
   fillRoleList(model);
 }
 
 /** Fill the roleLabel:roleName pairs to the list of drawdown box
  *  @param {str} modelName - A string contains name of the model
  */
-function fillRoleList (modelName) {
+function fillRoleList(modelName) {
   var list = $('#select_role');
   list.empty();
   var dict = eval('roleDictJSON.' + modelName);
   for (var i = 0; i < dict.length; i++) {
     var t = dict[i]
-    list.append("<option value='" + t.name + "'>" + t.label + " : " + t.name + "</option>");
+    list.append("<option value='" + t.name + "'>" + t.name + "\t:\t" + t.label + "</option>");
   };
 }
 
@@ -160,6 +159,23 @@ function downloadImage() {
 		dla.download = "result.png";
 	}
 	dlA.click();
+}
+
+function addSlider() {
+  var slider_val = sessionStorage.prevTopN ? sessionStorage.prevTopN : 20;
+  // alert(v)
+  $('#slider').slider({
+    max:    50,
+    min:    10,
+    step:   10,
+    value:  slider_val,
+    create: function(event, ui) {
+      $('#slider-val').text(slider_val)
+    },
+    slide: function(event, ui){
+      $('#slider-val').text(ui.value)
+    }
+  });
 }
 
 /** This function starts the presentation mode of the query site **/

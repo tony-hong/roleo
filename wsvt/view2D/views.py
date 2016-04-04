@@ -75,6 +75,7 @@ def errorCodeJSON(request):
 def roleDictJSON(request):
     # Obtain objects of SemanticRole from models 
     response = getRoleDict()
+    response['currentModel'] = mf.getCurrentModel()
 
     return JsonResponse(response, safe = False)
 

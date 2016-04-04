@@ -33,17 +33,17 @@
     <!-- bootstrap JS for slider -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.1.5/bootstrap-slider.min.js"></script> -->
 
-	<!-- js loading order matters because of dependencies -->
-	<!-- js for input validation -->
-	<script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
-	<!-- js responsible for visualization -->
-  <script src="{% static 'view2D/js/view2D.js' %}"></script>
-	<script src="{% static 'view2D/js/view2D_models.js' %}"></script>
-	<script src="{% static 'view2D/js/view2D_draw.js' %}"></script>
-	<script src="{% static 'view2D/js/view2D_events.js' %}"></script>
-	<script src="{% static 'view2D/js/view2D_main.js' %}"></script>
-	<!-- js for others -->
-	<script src="{% static 'view2D/js/index.js' %}"></script>
+  	<!-- js loading order matters because of dependencies -->
+  	<!-- js for input validation -->
+  	<script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
+  	<!-- js responsible for visualization -->
+    <script src="{% static 'view2D/js/view2D.js' %}"></script>
+  	<script src="{% static 'view2D/js/view2D_models.js' %}"></script>
+  	<script src="{% static 'view2D/js/view2D_draw.js' %}"></script>
+  	<script src="{% static 'view2D/js/view2D_events.js' %}"></script>
+  	<script src="{% static 'view2D/js/view2D_main.js' %}"></script>
+  	<!-- js for others -->
+  	<script src="{% static 'view2D/js/index.js' %}"></script>
   </head>
 
   <body>
@@ -131,7 +131,6 @@
                 <div>
                     <label id="slider-val" name='top_results'></label>                    
                     <div id="slider" data-toggle="tooltip_button" title="How many result words do you want?"></div>
-<!--                   <input id="ex1" style="width:100%;" data-slider-id='ex1Slider' type="text" data-slider-min="10" data-slider-max="100" data-slider-step="10" data-slider-value="20" name='top_results'> -->
                 </div>
               </div>
               <br>
@@ -156,7 +155,7 @@
           <div class="visualization" id="visualization_result">
 
     		    <!-- Label show query errors passed from backend -->
-    		    <label id="label_msg_query_error"></label>
+    		    <label id="label_msg_query_error" class="error"></label>
 
             <!-- canvas which contains the final visualized result of the query -->
             <canvas id="myCanvas" class="canvas_style">
@@ -209,6 +208,7 @@
             <!-- button which changes the model in the backend, when the user clicks it -->
             <button id="changeModelBtn" type='button' class="btn btn-primary" onclick=javascript:changeModel() data-toggle="tooltip_button" title="Caution! Time consuming operation">Change Model</button>
             <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            <label id="label_msg_changeModel_error" class="error"></label>
           </form>
 
         </div>
