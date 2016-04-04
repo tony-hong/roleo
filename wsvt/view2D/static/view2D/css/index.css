@@ -1,10 +1,10 @@
-/** custom styles for the index.php **/
+/** custom styles for the index **/
 body {
   padding-top: 50px;
 }
 
 div.query {
-  padding-top: 25px;
+  padding-top: 20px;
   text-align: center
 }
 
@@ -17,7 +17,7 @@ div.query {
 }
 
 div.right_menu_column {
-  padding-top: 25px;
+  padding-top: 5px;
 }
 
 canvas.canvas_style {
@@ -91,7 +91,7 @@ label#label_msg_noun, label#label_msg_verb {
 	font-size: 10px;
 }
 
-label#label_msg_query_error {
+label.error {
 	color: red;
 	font-size: 15px;
 }
