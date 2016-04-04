@@ -15,6 +15,6 @@ urlpatterns = [
     # The url hook for change model function 
     url(r'^changeModel/', views.changeModel, name='changeModel'),
     url(r'^errorCodeJSON/', views.errorCodeJSON, name='errorCodeJSON'),
+    url(r'^roleDictJSON/', views.roleDictJSON, name='roleDictJSON'),
     
-
 ]
