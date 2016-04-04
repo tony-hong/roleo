@@ -64,49 +64,49 @@ def process(verb, noun, role, group, topN = 20):
     print role_mapping
 
     # primal query word # with '-v/-n' suffix
-    query0 = ''
+    queryWord0 = ''
     # second query word # with '-v/-n' suffix
-    query1 = ''
+    queryWord1 = ''
     # with '-1' suffix if noun selects noun
-    semanticRoleList = role_mapping[model][role]
+    roleList = role_mapping[model][role]
 
     # Adding suffix according to different types of query
     # Case of noun selects verb
     if group == 'noun':
-        query0 = noun + '-n'
-        semanticRoleList = [r + '-1' for r in semanticRoleList]
+        queryWord0 = noun + '-n'
+        roleList = [r + '-1' for r in roleList]
         if verb:
             double = True
-            query1 = verb + '-v'
+            queryWord1 = verb + '-v'
     # Case of verb selects noun
     elif group == 'verb':
-        query0 = verb + '-v'
-        semanticRoleList = semanticRoleList
+        queryWord0 = verb + '-v'
+        roleList = roleList
         if noun:
             double = True
-            query1 = noun + '-n'
+            queryWord1 = noun + '-n'
     else:
         logger.critical( 'errCode: %d. internal error!', errorCode.INTERNAL_ERROR)
         result = {'errCode' : errorCode.INTERNAL_ERROR}
         return result
 
     # LOG
-    # logger.debug('query0: %s' , query0)
-    # logger.debug('query1: %s' , query1)
+    # logger.debug('queryWord0: %s' , queryWord0)
+    # logger.debug('queryWord1: %s' , queryWord1)
     # logger.debug('semanticRole: %s' , semanticRole)
     # logger.debug('group: %s' , group)
     # logger.debug('top_results: %d' , topN)
 
-    print 'query0: %s' , query0
-    print 'query1: %s' , query1
-    print 'semanticRole: %s' , semanticRoleList
+    print 'queryWord0: %s' , queryWord0
+    print 'queryWord1: %s' , queryWord1
+    print 'semanticRole: %s' , roleList
     print 'group: %s' , group
     print 'top_results: %d' , topN
 
 
     # memberTuple[0]: list of vectors
     # memberTuple[1]: list of words
-    memberTuple = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':semanticRoleList}, topN)
+    memberTuple = matrix.getMemberVectors(queryWord0, 'word1', 'word0', {'link':roleList}, topN)
 
     # A hack checking whether the return is empty
     # if it is not tuple(), it is empty, the model return nothing for the primal query word
@@ -138,7 +138,7 @@ def process(verb, noun, role, group, topN = 20):
     # if there are 2 query words, process the second query word
     if double:
         # process query
-        query = matrix.getRow('word0', query1)
+        query = matrix.getRow('word0', queryWord1)
 
         logger.info('getting query finished')
 
@@ -147,31 +147,26 @@ def process(verb, noun, role, group, topN = 20):
             logger.error( 'errCode: %d. query is empty', errorCode.QUERY_EMPTY)
             result = {'errCode' : errorCode.QUERY_EMPTY}
             return result
-        try:
-            vector = query.ix[semanticRoleList[0]]
-            if vector.get(query0, 0) == 0:
-                # For the second query word, in this semantic role, the primal query word does not exist
+        else:
+            vector = pd.concat([getVector(query, r) for r in roleList]).sum(level = 0)
+            if vector.get(queryWord0, 0) == 0:
+                # For the second query word, with this semantic role, the primal query word does not exist
                 queryCosine = cosine_sim(centroid, query)
                 queryExist = False
-                logger.info('query.ix[semanticRole].ix[query0] is empty')
+                logger.info('vector for queryWord0 is empty')
             else:
-                if query1 not in sumWordList:
+                if queryWord1 not in sumWordList:
                     queryFraction = -1
                     queryCosine = cosine_sim(centroid, query)
-                    wordVectors[query1] = query
-                    sumWordList.append(query1)
+                    wordVectors[queryWord1] = query
+                    sumWordList.append(queryWord1)
                 else:
                     inList = True
-        except KeyError:
-            # Semantic role of second query word does not exist
-            logger.error( 'errCode: %d. query.ix[semanticRole] is empty', errorCode.SMT_ROLE_EMPTY)
-            result = {'errCode' : errorCode.SMT_ROLE_EMPTY}
-            return result
 
     # Obtain all supports and compute the sum support 
     for w in sumWordList:
         v = wordVectors[w]
-        support = v.ix[semanticRoleList[0]].ix[query0]
+        support = sum([getSupport(v, r, queryWord0) for r in roleList])
         sumSupport = sumSupport + support
         wordSupports[w] = support
 
@@ -180,7 +175,7 @@ def process(verb, noun, role, group, topN = 20):
     # if there are 2 query words
     if double and not inList: 
         if queryExist:
-            support = wordSupports[query1]
+            support = wordSupports[queryWord1]
             queryFraction = float(support) / sumSupport
             sumFraction = queryFraction + sumFraction
         else:
@@ -197,7 +192,7 @@ def process(verb, noun, role, group, topN = 20):
         wordCosine = cosine_sim(centroid, wordVectors[w])
 
         # Apply mapping to each word
-        if inList and w == query1:
+        if inList and w == queryWord1:
             # Apply mapping to second query word
             queryCosine = wordCosine
             q_x, q_y = mapping(fraction, wordCosine, sumFraction)
@@ -227,12 +222,25 @@ def process(verb, noun, role, group, topN = 20):
             'y'    : q_y,
             'x'    : q_x,
             'cos'  : queryCosine,
-            'word' : query1,
+            'word' : queryWord1,
         }
 
     logger.info('result creating is prepared')
 
     return result
+
+def getVector(word, role):
+    try:
+        return word.ix[role]
+    except KeyError, e:
+        return pd.DataFrame().sum()
+
+def getSupport(word0, role, word1):
+    try:
+        return word0.ix[role].ix[word1]
+    except KeyError, e:
+        return 0
+
 
 
 def mapping_1d(fraction, cosine, sumFraction):
@@ -268,76 +276,6 @@ def mapping_1d(fraction, cosine, sumFraction):
 
     return x, y
 
-def mapping_sf(fraction, cosine, sumFraction):
-    '''
-    Mapping from fraction, and cosine to the x, y coordinate.
-    This is a simple function which maps the high dimension vector to 2D.
-    It is suitable for a web tool which need a short response time.
-
-    @parameters:
-        fraction = support / sumSupport
-        cosine   = cosine_sim(centroid, wordVector)
-    @return: 
-        (x, y) is a tuple
-    '''
-    # Scale fraciton and cosine, let them become more sparse over [0, 1]
-    x = 1 - (sumFraction - fraction)
-    y = 1 - cosine
-
-    # print x, y
-
-    # Compute radial coordinates
-    r = y
-    if x - 0 < 1e-3:
-        rad = math.pi / 2
-    else:
-        rad = x * 2 * math.pi + math.pi / 2
-
-    # Transform back to Cartesian coordinates
-    if rad < 2 * math.pi:
-        x = -r * math.cos(rad)
-        y = r * math.sin(rad)
-    else:
-        x = -r * math.cos(rad - 2 * math.pi)
-        y = r * math.sin(rad - 2 * math.pi)
-
-    return x, y
-
-
-def mapping_sc(fraction, cosine, sumFraction):
-    '''
-    Mapping from fraction, and cosine to the x, y coordinate.
-    This is a simple function which maps the high dimension vector to 2D.
-    It is suitable for a web tool which need a short response time.
-
-    @parameters:
-        fraction = support / sumSupport
-        cosine   = cosine_sim(centroid, wordVector)
-    @return: 
-        (x, y) is a tuple
-    '''
-    # Scale fraciton and cosine, let them become more sparse over [0, 1]
-    x = 1 - (sumFraction - fraction)
-    y = 1 - cosine
-
-    # print x, y
-
-    # Compute radial coordinates
-    r = x
-    if y - 0 < 1e-3:
-        rad = math.pi / 2
-    else:
-        rad = y * 2 * math.pi + math.pi / 2
-
-    # Transform back to Cartesian coordinates
-    if rad < 2 * math.pi:
-        x = -r * math.cos(rad)
-        y = r * math.sin(rad)
-    else:
-        x = -r * math.cos(rad - 2 * math.pi)
-        y = r * math.sin(rad - 2 * math.pi)
-
-    return x, y
 
 
 def mapping(fraction, cosine, sumFraction):
@@ -369,135 +307,3 @@ def mapping(fraction, cosine, sumFraction):
     y = r * math.sin(rad)
 
     return x, y
-
-
-
-'''
-def process_svd(verb, noun, role, group, topN = 20):
-    matrix = mf.getMatrix()
-
-    wordVectors = dict()
-    wordSupports = dict()
-    wordSeries = dict()
-    # simularities = dict()
-    # fractions = dict()
-    result = dict()
-    
-    logger.info('process start...')
-
-    memberIndex = dict()
-    double = False
-    inList = False
-    queryExist = True
-
-    # primal query word # with '-v/-n' suffix
-    query0 = ''
-    # second query word # with '-v/-n' suffix
-    query1 = ''
-    # with '-1' suffix if noun selects noun
-    semanticRole = ''
-
-    # Adding suffix according to different types of query
-    # Case of noun selects verb
-    if group == 'noun':
-        query0 = noun + '-n'
-        semanticRole = role + '-1'
-        if verb:
-            double = True
-            query1 = verb + '-v'
-    # Case of verb selects noun
-    elif group == 'verb':
-        query0 = verb + '-v'
-        semanticRole = role
-        if noun:
-            double = True
-            query1 = noun + '-n'
-    else:
-        logger.critical( 'errCode: %d. internal error!', errorCode.INTERNAL_ERROR)
-        result = {'errCode' : errorCode.INTERNAL_ERROR}
-        return result
-
-    # LOG
-    logger.debug('query0: %s' , query0)
-    logger.debug('query1: %s' , query1)
-    logger.debug('semanticRole: %s' , semanticRole)
-    logger.debug('group: %s' , group)
-    logger.debug('top_results: %d' , topN)
-
-    # memberTuple[0]: list of vectors
-    # memberTuple[1]: list of words
-    memberTuple = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, topN)
-
-    # A hack checking whether the return is empty
-    # if it is not tuple(), it is empty, the model return nothing for the primal query word
-    if type(memberTuple) != type(tuple()):
-        logger.error('errCode: %d. memberVectors is empty', errorCode.MBR_VEC_EMPTY)
-        result = {'errCode' : errorCode.MBR_VEC_EMPTY}
-        return result
-    else:
-        vectorList, wordList = memberTuple
-
-    # Reshape wordList, vectorList to a dict(), with key is word and value is vector
-    wordVectors = dict(zip(wordList, vectorList))
-  
-    # LOG
-    logger.info('getMemberVectors finished...')
-    # print wordList
-
-    sumWordList = list(wordList)
-    resultList = []
-    queryFraction = 0
-    queryCosine = 0
-    sumSupport = 0
-    sumFraction = 0
-
-    # Compute centroid from the vectorList using pandas
-    centroid = pd.concat(vectorList).sum(level=[0,1])
-
-    # if there are 2 query words, process the second query word
-    if double:
-        # process query
-        query = matrix.getRow('word0', query1)
-
-        logger.info('getting query finished')
-
-        if query.isnull().all():
-            # Second query word does not exist in the model
-            logger.error( 'errCode: %d. query is empty', errorCode.QUERY_EMPTY)
-            result = {'errCode' : errorCode.QUERY_EMPTY}
-            return result
-        try:
-            vector = query.ix[semanticRole]
-            if vector.get(query0, 0) == 0:
-                # For the second query word, in this semantic role, the primal query word does not exist
-                queryCosine = cosine_sim(centroid, query)
-                queryExist = False
-                logger.info('query.ix[semanticRole].ix[query0] is empty')
-            else:
-                if query1 not in sumWordList:
-                    queryFraction = -1
-                    queryCosine = cosine_sim(centroid, query)
-                    wordVectors[query1] = query
-                    sumWordList.append(query1)
-                else:
-                    inList = True
-        except KeyError:
-            # Semantic role of second query word does not exist
-            logger.error( 'errCode: %d. query.ix[semanticRole] is empty', errorCode.SMT_ROLE_EMPTY)
-            result = {'errCode' : errorCode.SMT_ROLE_EMPTY}
-            return result
-
-    # Obtain all supports and compute the sum support 
-    for w in sumWordList:
-        s = pd.Series(centroid)
-        s[:] = 0
-        s = s + wordVectors[w]
-        wordSeries[w] = s
-        if M == -1:
-            M = np.array(s)
-        else:
-            np.concatenate(M, s)
-
-    print M
-
-'''
