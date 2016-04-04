@@ -167,12 +167,10 @@ function showErrorMsg(json_errCode) {
 	ctx.fillText(errCodeJSON[errCode], 0.5*WIDTH, 0.5*HEIGHT);
 	TRANSFORMATION.updateTransform();
 */
-	// New Version: Show error message using other element out side of the canvas
-	var lbl_msg_query_error = document.getElementById("label_msg_query_error");
-	if (lbl_msg_query_error == null) alert("getElementById(\"label_msg_query_error\") failed");
+	
 	// Draw some message on canvas
 	if (json_errCode != null) {
-		var canvasMsg = "Oops ! A void space returned."
+		var canvasMsg = "Oops ! An empty space returned."
 		TRANSFORMATION.resetTransform();
 		ctx.font = "15px Comic Sans MS";
 		ctx.textAlign = "center";
@@ -180,11 +178,18 @@ function showErrorMsg(json_errCode) {
 		ctx.fillText(canvasMsg, 0.5*WIDTH, 0.5*HEIGHT);
 		TRANSFORMATION.updateTransform();
 		// Show detailed error information in a label
-		lbl_msg_query_error.textContent = errCodeJSON[json_errCode];
+		setErrMsgLabel(errCodeJSON[json_errCode]);
 	}
 	else {
-		lbl_msg_query_error.textContent = "";
+		setErrMsgLabel("");
 	}
+}
+
+function setErrMsgLabel (msg) {
+	// New Version: Show error message using other element out side of the canvas
+	var lbl_msg_query_error = document.getElementById("label_msg_query_error");
+	if (lbl_msg_query_error == null) alert("getElementById(\"label_msg_query_error\") failed");
+	lbl_msg_query_error.textContent = msg
 }
 
 /** Function draws text as feedback during querying */
