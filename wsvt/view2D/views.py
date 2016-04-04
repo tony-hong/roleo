@@ -10,24 +10,19 @@ import logging
 from django.http import HttpResponse, JsonResponse
 from django.template import RequestContext, loader
 
-from models import SemanticRole
 from matrixFactory import MatrixFactory
 from dataProcess import process, mf
+from roleDict import getRoleDict
 
+import errorCode
 from errorCodeJSON import errorCodeJSON as ecj
 from validator import validate
 
 logger = logging.getLogger('django')
 
-role_mapping = dict()
 
 def index(request):
     template = loader.get_template('view2D/index.html')
-
-    # Obtain objects of SemanticRole from models 
-    # role_list = SemanticRole.objects.all()
-    # response = { 'role_list' : role_list }
-
     context = RequestContext(request)
 
     return HttpResponse(template.render(context))
@@ -49,11 +44,12 @@ def impressum(request):
 
 def query(request):
     # Obtain attributes from request
-    verb = request.POST['verb'].strip().lower()
-    semanticRole = request.POST['role']
-    noun = request.POST['noun'].strip().lower()
-    group = request.POST['group1']
+    verb = str(request.POST['verb']).strip().lower()
+    semanticRole = str(request.POST['role'])
+    noun = str(request.POST['noun']).strip().lower()
+    group = str(request.POST['group1'])
     topN = int(request.POST['top_results'])
+    model = str(request.POST['select_model'])
 
     result = {}
     
@@ -68,7 +64,7 @@ def query(request):
     isValid, errorMessage = validate(verb, noun, group, topN)
 
     if isValid:
-        result = process(verb, noun, semanticRole, group, topN)
+        result = process(verb, noun, semanticRole, group, model, topN)
     else:
         result = errorMessage
     
@@ -79,38 +75,7 @@ def errorCodeJSON(request):
 
 def roleDictJSON(request):
     # Obtain objects of SemanticRole from models 
-    role_list_SDDM = list()
-    role_list_TypeDM = list()
-    role_list_TypeDM_split = list()
-
-    role_list = SemanticRole.objects.exclude(
-        modelSupport = 3
-    )
-    for r in role_list:
-        role_list_SDDM.append({
-            'label'   :   r.labelSDDM,
-            'name'    :   r.name
-        })
-    response = { 'SDDM' : role_list_SDDM }
-    
-    role_list = SemanticRole.objects.exclude(
-        modelSupport = 1
-    )
-    for r in role_list:
-        role_list_TypeDM.append({
-            'label'   :   r.labelTypeDM,
-            'name'    :   r.name
-        })
-        role_list_TypeDM_split.append({
-            'label'   :   r.labelTypeDM.split(','),
-            'name'    :   r.name
-        })
-    response['TypeDM'] = role_list_TypeDM
-
-    role_mapping = {
-        'SDDM'      :   role_list_SDDM,
-        'TypeDM'    :   role_list_TypeDM_split
-    }
+    response = getRoleDict()
 
     return JsonResponse(response, safe = False)
 
@@ -123,7 +88,12 @@ def changeModel(request):
     template = loader.get_template('view2D/index.html')
     # Obtain attributes from request
     model = request.GET['select_model']
-    mf.setModel(model)
-    context = RequestContext(request)
+    if(mf.setModel(model)):
+        print 'Change model successfully'
+        response = {}
+    else:
+        logger.critical( 'errCode: %d. internal error!', errorCode.INTERNAL_ERROR)
+        response = {'errCode' : errorCode.INTERNAL_ERROR}
+    context = RequestContext(request, response)
 
     return HttpResponse(template.render(context))
