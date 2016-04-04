@@ -24,12 +24,13 @@ from rv.similarity.Similarity import cosine_sim
 
 import errorCode as errorCode
 from matrixFactory import MatrixFactory
+from roleDict import getRoleMapping
 
 mf = MatrixFactory()
 logger = logging.getLogger('django')
 
 
-def process(verb, noun, role, group, topN = 20):
+def process(verb, noun, role, group, model, topN = 20):
     '''
     Processing function for the query for the client
 
@@ -45,7 +46,6 @@ def process(verb, noun, role, group, topN = 20):
     ''' 
     matrix = mf.getMatrix()
 
-
     wordVectors = dict()
     wordSupports = dict()
     # simularities = dict()
@@ -59,25 +59,28 @@ def process(verb, noun, role, group, topN = 20):
     inList = False
     queryExist = True
 
+    role_mapping = getRoleMapping()
+    print role_mapping
+
     # primal query word # with '-v/-n' suffix
     query0 = ''
     # second query word # with '-v/-n' suffix
     query1 = ''
     # with '-1' suffix if noun selects noun
-    semanticRole = ''
+    semanticRoleList = role_mapping[model][role]
 
     # Adding suffix according to different types of query
     # Case of noun selects verb
     if group == 'noun':
         query0 = noun + '-n'
-        semanticRole = role + '-1'
+        semanticRoleList = [r + '-1' for r in semanticRoleList]
         if verb:
             double = True
             query1 = verb + '-v'
     # Case of verb selects noun
     elif group == 'verb':
         query0 = verb + '-v'
-        semanticRole = role
+        semanticRoleList = semanticRoleList
         if noun:
             double = True
             query1 = noun + '-n'
@@ -87,15 +90,22 @@ def process(verb, noun, role, group, topN = 20):
         return result
 
     # LOG
-    logger.debug('query0: %s' , query0)
-    logger.debug('query1: %s' , query1)
-    logger.debug('semanticRole: %s' , semanticRole)
-    logger.debug('group: %s' , group)
-    logger.debug('top_results: %d' , topN)
+    # logger.debug('query0: %s' , query0)
+    # logger.debug('query1: %s' , query1)
+    # logger.debug('semanticRole: %s' , semanticRole)
+    # logger.debug('group: %s' , group)
+    # logger.debug('top_results: %d' , topN)
+
+    print 'query0: %s' , query0
+    print 'query1: %s' , query1
+    print 'semanticRole: %s' , semanticRoleList
+    print 'group: %s' , group
+    print 'top_results: %d' , topN
+
 
     # memberTuple[0]: list of vectors
     # memberTuple[1]: list of words
-    memberTuple = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':[semanticRole]}, topN)
+    memberTuple = matrix.getMemberVectors(query0, 'word1', 'word0', {'link':semanticRoleList}, topN)
 
     # A hack checking whether the return is empty
     # if it is not tuple(), it is empty, the model return nothing for the primal query word
@@ -111,7 +121,7 @@ def process(verb, noun, role, group, topN = 20):
   
     # LOG
     logger.info('getMemberVectors finished...')
-    # print wordList
+    print wordList
 
     sumWordList = list(wordList)
     resultList = []
@@ -137,7 +147,7 @@ def process(verb, noun, role, group, topN = 20):
             result = {'errCode' : errorCode.QUERY_EMPTY}
             return result
         try:
-            vector = query.ix[semanticRole]
+            vector = query.ix[semanticRoleList[0]]
             if vector.get(query0, 0) == 0:
                 # For the second query word, in this semantic role, the primal query word does not exist
                 queryCosine = cosine_sim(centroid, query)
@@ -160,7 +170,7 @@ def process(verb, noun, role, group, topN = 20):
     # Obtain all supports and compute the sum support 
     for w in sumWordList:
         v = wordVectors[w]
-        support = v.ix[semanticRole].ix[query0]
+        support = v.ix[semanticRoleList[0]].ix[query0]
         sumSupport = sumSupport + support
         wordSupports[w] = support
 
@@ -256,6 +266,7 @@ def mapping_1d(fraction, cosine, sumFraction):
     y = r * math.sin(rad)
 
     return x, y
+
 
 def mapping(fraction, cosine, sumFraction):
     '''
