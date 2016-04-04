@@ -15,7 +15,7 @@ window.onload = function() {
   if (!sessionStorage.prevVerb){ 
     setTimeout(function (){
       submitQuery();
-    }, 10);
+    }, 100);
   }
 }
 
