@@ -107,10 +107,13 @@ function changeModel() {
       async:    true,
       success:  function(response){
         setIsInProcessing(false);
+        sessionStorage.prevModel = select_model
         fillRoleList(select_model);
         submitQuery()
       }
     });
+  } else{
+    setIsInProcessing(false);
   }
 }
 
@@ -132,7 +135,7 @@ function fillRoleList (modelName) {
   var dict = eval('roleDict.' + modelName);
   for (var i = 0; i < dict.length; i++) {
     var t = dict[i]
-    list.append("<option value='" + t.label + "'>" + t.label + " : " + t.name + "</option>");
+    list.append("<option value='" + t.name + "'>" + t.label + " : " + t.name + "</option>");
   };
 }
 
