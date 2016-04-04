@@ -12,7 +12,8 @@ from rv.structure.Tensor import Matricisation
 
 
 # Base directory of the project
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(BASE_DIR, 'data')
 
 MODEL_MAPPING = {
     'SDDM'     :   ['wackylmi-malt-v2-36K.word0.h5', 'wackylmi-malt-v2-36K.word1.h5'],
@@ -22,8 +23,8 @@ MODEL_MAPPING = {
 class MatrixFactory:
     def __init__(self):
         self.matrix = Matricisation({
-            'word0' : os.path.join(BASE_DIR, MODEL_MAPPING['SDDM'][0]),
-            'word1' : os.path.join(BASE_DIR, MODEL_MAPPING['SDDM'][1]) 
+            'word0' : os.path.join(DATA_DIR, MODEL_MAPPING['SDDM'][0]),
+            'word1' : os.path.join(DATA_DIR, MODEL_MAPPING['SDDM'][1]) 
         })
         self.currentModel = 'SDDM'
 
@@ -34,8 +35,8 @@ class MatrixFactory:
             return False
         self.matrix.close()
         self.matrix = Matricisation({
-            'word0' : os.path.join(BASE_DIR, fileNameList[0]),
-            'word1' : os.path.join(BASE_DIR, fileNameList[1]) 
+            'word0' : os.path.join(DATA_DIR, fileNameList[0]),
+            'word1' : os.path.join(DATA_DIR, fileNameList[1]) 
         })
         self.currentModel = modelName
         return True
