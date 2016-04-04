@@ -49,7 +49,6 @@ def query(request):
     noun = str(request.POST['noun']).strip().lower()
     group = str(request.POST['group1'])
     topN = int(request.POST['top_results'])
-    model = str(request.POST['select_model'])
 
     result = {}
     
@@ -64,7 +63,7 @@ def query(request):
     isValid, errorMessage = validate(verb, noun, group, topN)
 
     if isValid:
-        result = process(verb, noun, semanticRole, group, model, topN)
+        result = process(verb, noun, semanticRole, group, topN)
     else:
         result = errorMessage
     

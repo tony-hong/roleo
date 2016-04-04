@@ -51,6 +51,8 @@ window.onload = function() {
 
   loadView2D(); // view2D_main.js
 
+  fillRoleList(select_model);
+
   if (!sessionStorage.prevVerb){ 
     setTimeout(function (){
       submitQuery();
@@ -67,9 +69,7 @@ window.onresize = function() {
 function submitQuery() {
   setIsInProcessing(true);
   var slider_val= $('#slider-val').text();
-  var select_model = $('#select_model').val();
-
-  var content = $('#myDiv').serialize()+'&top_results=' + slider_val + '&select_model=' + select_model;
+  var content = $('#myDiv').serialize()+'&top_results=' + slider_val
   $.ajax({
     url:      'query/',
     type:     'POST',
@@ -81,7 +81,6 @@ function submitQuery() {
         sessionStorage.prevNoun = document.getElementById("input_noun").value;
         sessionStorage.prevVerb = document.getElementById("input_verb").value;
         sessionStorage.prevRole = document.getElementById("select_role").value;
-        sessionStorage.prevModel = document.getElementById("select_model").value;
         // TODO if there is other radio boxes this may result undefined behavior
         var group = $('input[name=group1]:checked').val();
         sessionStorage.prevGroup = group;
