@@ -140,7 +140,10 @@ function fillRoleList(modelName) {
   var dict = eval('roleDictJSON.' + modelName);
   for (var i = 0; i < dict.length; i++) {
     var t = dict[i]
-    list.append("<option value='" + t.name + "'>" + t.name + "\t:\t" + t.label + "</option>");
+    if(modelName == 'SDDM')
+      list.append("<option value='" + t.name + "'>" + t.name + "\t:\t" + t.label + "</option>");
+    else
+      list.append("<option value='" + t.name + "'>" + t.name + "</option>");
   };
 }
 
