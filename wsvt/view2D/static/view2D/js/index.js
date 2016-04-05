@@ -18,9 +18,7 @@ window.onload = function() {
   loadView2D(); // view2D_main.js
 
   if (!sessionStorage.prevVerb){ 
-    setTimeout(function (){
-      submitQuery();
-    }, 100);
+    submitQuery();
   }
 }
 
@@ -40,6 +38,7 @@ function getRoleDict () {
       var model = sessionStorage.prevModel ? sessionStorage.prevModel : 'SDDM'
       loadRoleDictJSON(response);
       fillRoleList(model);
+      $('#select_role').val('Patient')
     }
   });
 }
