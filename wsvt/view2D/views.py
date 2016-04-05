@@ -11,7 +11,7 @@ from django.http import HttpResponse, JsonResponse
 from django.template import RequestContext, loader
 
 from matrixFactory import MatrixFactory
-from dataProcess import process, mf
+from dataProcess import mf, process
 from roleDict import getRoleDict
 
 import errorCode
@@ -48,8 +48,9 @@ def query(request):
     semanticRole = str(request.POST['role'])
     noun = str(request.POST['noun']).strip().lower()
     group = str(request.POST['group1'])
-    model = str(request.POST['model'])
+    model = str(request.POST['select_model'])
     topN = int(request.POST['top_results'])
+    quadrant = int(request.POST['quadrant'])
 
     result = {}
     
@@ -64,7 +65,7 @@ def query(request):
     isValid, errorMessage = validate(verb, noun, group, topN)
 
     if isValid:
-        result = process(verb, noun, semanticRole, group, model, topN)
+        result = process(verb, noun, semanticRole, group, model, topN, quadrant)
     else:
         result = errorMessage
     
