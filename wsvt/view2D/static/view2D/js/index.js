@@ -244,5 +244,5 @@ function end_presentation_mode() {
 
   // change the column classes back, so that the columns do not use the space of the left column anymore
   document.getElementById("canvas_column").className = "col-md-7 col-sm-7 col-xs-12 col-ld-6";
-  document.getElementById("right_menu_column").className = "col-md-3 col-sm-2 col-xs-12 col-ld-3";
+  document.getElementById("right_menu_column").className = "col-md-2 col-sm-2 col-xs-12 col-ld-3";
 }
