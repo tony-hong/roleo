@@ -145,6 +145,7 @@ function createNodesFromJSON(responseJSON_Object) {
 		document.getElementById("select_model").value = sessionStorage.prevModel;
 		radioId = 'radio_' + sessionStorage.prevGroup;
 		document.getElementById(radioId).checked = true;
+		$("slider-val").text(sessionStorage.prevTopN);
 		$('#slider').slider('value', sessionStorage.prevTopN)
 
 		// restore previous query infos
