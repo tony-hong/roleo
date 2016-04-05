@@ -57,6 +57,7 @@ var isInProcessing = false;  // Boolean tells current post request is still in p
 
 var errCode = null;      // Store the errCode if it exists in returned response
 var errCodeJSON = null;  // A json load from backend which map errCode -> errMsg
+var quadrant = 0
 
 //var debugCnt = 0;
 
@@ -110,6 +111,7 @@ function createNodesFromJSON(responseJSON_Object) {
 	var set = responseJSON_Object;
 	if (set == null) alert("responseJSON_Object is null");
 	errCode = set.errCode;
+	quadrant = set.quadrant;
 	// if error when query simply return null
 	if (errCode != null) {
 		btn_start_presentation_mode.disabled = true;
@@ -122,8 +124,12 @@ function createNodesFromJSON(responseJSON_Object) {
 	}
 	//
 	var nodes = [];
-	var centeroid = new Node(new Point2D(), "centroid", 1);
+	if (quadrant == 1)
+		var centeroid = new Node(new Point2D(-0.75, -0.75), "centroid", 1);
+	else
+		var centeroid = new Node(new Point2D(), "centroid", 1);		
 	nodes.push(centeroid); // [0]
+
 	var q = set.queried;
 	if (q != null) { // handle queried == null properly
 		//                                            substring remove "-n"                round to two digits
@@ -147,6 +153,7 @@ function createNodesFromJSON(responseJSON_Object) {
 		document.getElementById(radioId).checked = true;
 		$("slider-val").text(sessionStorage.prevTopN);
 		$('#slider').slider('value', sessionStorage.prevTopN)
+		$('#select_quadrant').val(sessionStorage.prevQuadrant);
 
 		// restore previous query infos
 		document.getElementById("lbl_noun_info").textContent = sessionStorage.prevNoun;
