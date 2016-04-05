@@ -32,7 +32,9 @@ function getRoleDict () {
     data:     null,
     async:    true,
     success:  function(response){
+      var model = sessionStorage.prevModel ? sessionStorage.prevModel : 'SDDM'
       loadRoleDictJSON(response);
+      fillRoleList(model);
     }
   });
 }
@@ -58,12 +60,12 @@ function submitQuery() {
   var noun = $('#input_noun').val();
   var verb = $('#input_verb').val();
   var role = $('#select_role').val();
-  var model = roleDictJSON['currentModel']
+  var model = $('#select_model').val();
   var group = $('input[name=group1]:checked').val();
   var slider_val= $('#slider-val').text();
 
   setIsInProcessing(true);
-  var content = $('#myDiv').serialize()+'&top_results=' + slider_val
+  var content = $('#myDiv').serialize()+'&top_results=' + slider_val + '&model=' + model
   $.ajax({
     url:      'query/',
     type:     'POST',
@@ -87,31 +89,33 @@ function submitQuery() {
   });
 }
 
-/** Callback for clicking Change Model button **/
-function changeModel() {
-  var select_model = $('#select_model').val();
-  var currentModel = roleDictJSON['currentModel'];
+// /** Callback for clicking Change Model button **/
+// function changeModel() {
+//   setIsInProcessing(true);
+//   var select_model = $('#select_model').val();
+//   var currentModel = roleDictJSON['currentModel'];
 
-  if (select_model != currentModel){
-    var content = $('#changingModel').serialize()
-    $.ajax({
-      url:      'changeModel/',
-      type:     'GET',
-      data:     content,
-      async:    true,
-      success:  function(response){
-        getRoleDict();
-        setTimeout(function (){
-          sessionStorage.prevModel = roleDictJSON['currentModel']
-          fillRoleList(select_model);
-          submitQuery();
-        }, 100);
-      }
-    });
-  } else{
-    showChangeLabelError()
-  }
-}
+//   if (select_model != currentModel){
+//     var content = $('#changingModel').serialize()
+//     $.ajax({
+//       url:      'changeModel/',
+//       type:     'GET',
+//       data:     content,
+//       async:    true,
+//       success:  function(response){
+//         getRoleDict();
+//         setTimeout(function (){
+//           sessionStorage.prevModel = roleDictJSON['currentModel']
+//           fillRoleList(select_model);
+//           setIsInProcessing(false);
+//           submitQuery();
+//         }, 100);
+//       }
+//     });
+//   } else{
+//     showChangeLabelError()
+//   }
+// }
 
 function showChangeLabelError () {
   var msg = 'This is the current model, no need to change';
@@ -125,10 +129,9 @@ function showChangeLabelError () {
  *  @param {json} roleListJSON - A json contains roleName and roleLabel Pairs
  */
 function loadRoleDictJSON(json) {
-  // if (roleDictJSON == null) alert("roleDictJSON is null");
   roleDictJSON = json;
-  model = json['currentModel']
-  fillRoleList(model);
+  if (roleDictJSON == null) alert("roleDictJSON is null");
+
 }
 
 /** Fill the roleLabel:roleName pairs to the list of drawdown box
@@ -142,8 +145,10 @@ function fillRoleList(modelName) {
     var t = dict[i]
     if(modelName == 'SDDM')
       list.append("<option value='" + t.name + "'>" + t.name + "\t:\t" + t.label + "</option>");
-    else
+    else if (modelName == 'TypeDM')
       list.append("<option value='" + t.name + "'>" + t.name + "</option>");
+    else 
+      alert('No such model:' + modelName)
   };
 }
 

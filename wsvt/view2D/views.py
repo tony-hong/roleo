@@ -48,6 +48,7 @@ def query(request):
     semanticRole = str(request.POST['role'])
     noun = str(request.POST['noun']).strip().lower()
     group = str(request.POST['group1'])
+    model = str(request.POST['model'])
     topN = int(request.POST['top_results'])
 
     result = {}
@@ -63,7 +64,7 @@ def query(request):
     isValid, errorMessage = validate(verb, noun, group, topN)
 
     if isValid:
-        result = process(verb, noun, semanticRole, group, topN)
+        result = process(verb, noun, semanticRole, group, model, topN)
     else:
         result = errorMessage
     
@@ -75,7 +76,7 @@ def errorCodeJSON(request):
 def roleDictJSON(request):
     # Obtain objects of SemanticRole from models 
     response = getRoleDict()
-    response['currentModel'] = mf.getCurrentModel()
+    # response['currentModel'] = mf.getCurrentModel()
 
     return JsonResponse(response, safe = False)
 

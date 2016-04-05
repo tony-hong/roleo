@@ -135,11 +135,21 @@
               </div>
               <br>
 
+              <!-- div containing the fourth "input element", which means the dropdown box for model selection -->
+              <div class="input_element" data-toggle="tooltip_button" title="Choose a model">
+                <span class="left_align">Model:</span><br>
+                <div>
+                  <select id="select_model" class="form-control" name='select_model'>
+                    <option value="SDDM">Malt-only SDDM(Sayeed et al., 2015)</option>
+                    <option value="TypeDM">TypeDM(Baroni and Lenci, 2010)</option>
+                  </select>
+                </div>
+              </div>
+              <br>
+            
               <!-- button which sends the query to the backend and builds the visualization, when the user clicks it -->
               <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:submitQuery()>Submit Query</button>
               <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-              <br><br><br>
-
               <br>
 
           </div>
@@ -176,40 +186,36 @@
             Model:&nbsp <label  id="lbl_model_info"></label><br>
             Top N:&nbsp <label id="lbl_topN_info"></label><br><br>
 
-          <!-- buttons which contain actions related to the current query, which is visualized in the canvas -->
-          <!-- Add a dropdown menu let user specify image format -->
-          <!-- starts the presentation mode, which hides the top navigation bar and the left (first) column (the one that contains the input fields for the user to enter a query) -->
-          <button id="start_presentation_mode" type='button' class="btn btn-primary" onclick=javascript:start_presentation_mode();javascript:reloadView()>Presentation Mode</button>
+            <!-- buttons which contain actions related to the current query, which is visualized in the canvas -->
+            <!-- Add a dropdown menu let user specify image format -->
+            <!-- starts the presentation mode, which hides the top navigation bar and the left (first) column (the one that contains the input fields for the user to enter a query) -->
+            <button id="start_presentation_mode" type='button' class="btn btn-primary" onclick=javascript:start_presentation_mode();javascript:reloadView()>Presentation Mode</button>
 
-          <!-- ends the presentation mode, which hides the top navigation bar and the left (first) column (the one that contains the input fields for the user to enter a query) -->
-          <button id="end_presentation_mode" type='button' class="btn btn-primary end_presentation_mode" onclick=javascript:end_presentation_mode();javascript:reloadView()>Default Mode</button>
-          <br><br>
+            <!-- ends the presentation mode, which hides the top navigation bar and the left (first) column (the one that contains the input fields for the user to enter a query) -->
+            <button id="end_presentation_mode" type='button' class="btn btn-primary end_presentation_mode" onclick=javascript:end_presentation_mode();javascript:reloadView()>Default Mode</button>
+            <br><br>
 
-          <!-- button to download the current visualization, which is in the canvas -->
-          <button id="downloadBtn" class="btn btn-primary" onclick=javascript:downloadImage()>Download Image</button>
-          <a href="#" id="downloadA" download></a>
-          <br><br>
+            <!-- button to download the current visualization, which is in the canvas -->
+            <button id="downloadBtn" class="btn btn-primary" onclick=javascript:downloadImage()>Download Image</button>
+            <a href="#" id="downloadA" download></a>
+            <br><br>
 
-          <!-- button to recenter the view in the canvas to the centroid (default view after querying) -->
-          <button id="resetViewBtn" type='button' class="btn btn-primary" onclick=javascript:resetView()>Re-centralize</button>
-          <br><br><br>
+            <!-- button to recenter the view in the canvas to the centroid (default view after querying) -->
+            <button id="resetViewBtn" type='button' class="btn btn-primary" onclick=javascript:resetView()>Re-centralize</button>
+            <br><br><br>
           </div>
 
           <!-- div containing the fifth "input element" with the possibility to change the model -->
+          <!-- 
           <form id="changingModel" class="input_element">
-            Model:
-            <br>
-            <div data-toggle="tooltip_button" title="Choose another model!">
-              <select id="select_model" class="form-control" name='select_model'>
-                <option value="SDDM">Malt-only SDDM(Sayeed et al., 2015)</option>
-                <option value="TypeDM">TypeDM(Baroni and Lenci, 2010)</option>
-              </select>
-            </div><br>
-            <!-- button which changes the model in the backend, when the user clicks it -->
-            <button id="changeModelBtn" type='button' class="btn btn-primary" onclick=javascript:changeModel() data-toggle="tooltip_button" title="Caution! Time consuming operation">Change Model</button>
+
+            button which changes the model in the backend, when the user clicks it -->
+            <!-- <button id="changeModelBtn" type='button' class="btn btn-primary" onclick=javascript:changeModel() data-toggle="tooltip_button" title="Caution! Time consuming operation">Change Model</button> 
             <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
             <label id="label_msg_changeModel_error" class="error"></label>
+
           </form>
+            -->
 
         </div>
       </div>

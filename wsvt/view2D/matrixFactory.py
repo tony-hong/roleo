@@ -10,7 +10,6 @@ os.system('export LD_LIBRARY_PATH=hdf5/1.8.16/lib')
 
 from rv.structure.Tensor import Matricisation
 
-
 # Base directory of the project
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
@@ -22,27 +21,29 @@ MODEL_MAPPING = {
 
 class MatrixFactory:
     def __init__(self):
-        self.matrix = Matricisation({
-            'word0' : os.path.join(DATA_DIR, MODEL_MAPPING['SDDM'][0]),
-            'word1' : os.path.join(DATA_DIR, MODEL_MAPPING['SDDM'][1]) 
-        })
+        self.matrixMapping = {}
+        for n in MODEL_MAPPING.keys():
+            self.matrixMapping[n] = Matricisation({
+                'word0' : os.path.join(DATA_DIR, MODEL_MAPPING[n][0]),
+                'word1' : os.path.join(DATA_DIR, MODEL_MAPPING[n][1]) 
+            })
         self.currentModel = 'SDDM'
 
-    def setModel(self, modelName):
-        if modelName in MODEL_MAPPING.keys():
-            fileNameList = MODEL_MAPPING[modelName]
-        else:
-            return False
-        self.matrix.close()
-        self.matrix = Matricisation({
-            'word0' : os.path.join(DATA_DIR, fileNameList[0]),
-            'word1' : os.path.join(DATA_DIR, fileNameList[1]) 
-        })
-        self.currentModel = modelName
-        return True
+    # def setModel(self, modelName, model):
+    #     if modelName in MODEL_MAPPING.keys():
+    #         fileNameList = MODEL_MAPPING[modelName]
+    #         self.matrix.close()
+    #         self.matrix = Matricisation({
+    #             'word0' : os.path.join(DATA_DIR, fileNameList[0]),
+    #             'word1' : os.path.join(DATA_DIR, fileNameList[1]) 
+    #         })
+    #     else:
+    #         return False
+    #     self.currentModel = modelName
+    #     return True
 
-    def getMatrix(self):
-        return self.matrix
+    def getMatrix(self, modelName):
+        return self.matrixMapping[modelName]
 
     def getCurrentModel(self):
         return self.currentModel
@@ -51,4 +52,5 @@ class MatrixFactory:
         return self
 
     def __exit__(self, *exc_info):
-        self.matrix.close()
+        for n in MODEL_MAPPING.keys():
+            self.matrixMapping[n].close()

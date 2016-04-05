@@ -30,7 +30,7 @@ mf = MatrixFactory()
 logger = logging.getLogger('django')
 
 
-def process(verb, noun, role, group, topN = 20):
+def process(verb, noun, role, group, model, topN = 20):
     '''
     Processing function for the query for the client
 
@@ -44,8 +44,7 @@ def process(verb, noun, role, group, topN = 20):
     @return: result = dict()
 
     ''' 
-    matrix = mf.getMatrix()
-    model = mf.getCurrentModel()
+    matrix = mf.getMatrix(model)
 
     wordVectors = dict()
     wordSupports = dict()
@@ -61,7 +60,6 @@ def process(verb, noun, role, group, topN = 20):
     queryExist = True
 
     role_mapping = getRoleMapping()
-    print role_mapping
 
     # primal query word # with '-v/-n' suffix
     queryWord0 = ''
@@ -97,11 +95,11 @@ def process(verb, noun, role, group, topN = 20):
     # logger.debug('group: %s' , group)
     # logger.debug('top_results: %d' , topN)
 
-    print 'queryWord0: %s' , queryWord0
-    print 'queryWord1: %s' , queryWord1
-    print 'semanticRole: %s' , roleList
-    print 'group: %s' , group
-    print 'top_results: %d' , topN
+    # print 'queryWord0: %s' , queryWord0
+    # print 'queryWord1: %s' , queryWord1
+    # print 'semanticRole: %s' , roleList
+    # print 'group: %s' , group
+    # print 'top_results: %d' , topN
 
 
     # memberTuple[0]: list of vectors
@@ -242,7 +240,6 @@ def getSupport(word0, role, word1):
         return 0
 
 
-
 def mapping_1d(fraction, cosine, sumFraction):
     '''
     Mapping from fraction, and cosine to the x, y coordinate.
@@ -275,7 +272,6 @@ def mapping_1d(fraction, cosine, sumFraction):
     y = r * math.sin(rad)
 
     return x, y
-
 
 
 def mapping(fraction, cosine, sumFraction):
