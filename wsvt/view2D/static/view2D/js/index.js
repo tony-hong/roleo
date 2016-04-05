@@ -2,8 +2,9 @@ var roleDictJSON = null
 
 /** Callback for window.onload to initializing index.html **/
 window.onload = function() {
-  $('#select_model').change(function (e) {
-    fillRoleList(e.target.value)
+  $('#select_model').change(function () {
+    var currentModel = $('#select_model option:selected').val()
+    fillRoleList(currentModel)
   });
 
   getRoleDict();
