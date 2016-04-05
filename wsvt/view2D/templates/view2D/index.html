@@ -80,7 +80,7 @@
       <div class="row parent_row">
 
         <!-- first column, containing the input fields, where the user can enter a query -->
-        <div class="col-md-2 col-sm-3 col-xs-12 col-ld-3 left_column content_columns" id="left_menu_bar">
+        <div class="col-md-3 col-sm-3 col-xs-12 col-ld-3 left_column content_columns" id="left_menu_bar">
           <div id="query_form">
             <h1>Roleo</h1>
 
@@ -127,9 +127,9 @@
 
               <!-- div containing the fourth "input element", which means the "Top N results" scroll bar  -->
               <div class="input_element">
-                Top N results:
-                <div>
-                    <label id="slider-val" name='top_results'></label>                    
+                Top N results: 
+                <label id="slider-val" name='top_results'></label>
+                <div>     
                     <div id="slider" data-toggle="tooltip_button" title="How many result words do you want?"></div>
                 </div>
               </div>
@@ -148,8 +148,20 @@
               <br>
             
               <!-- button which sends the query to the backend and builds the visualization, when the user clicks it -->
-              <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:submitQuery()>Submit Query</button>
-              <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+              <div class="input_element">
+                <div class="left_align" data-toggle="tooltip_button" title="How many quadrants do you want?">
+                  <select id="select_quadrant" class="form-control" name='quadrant'>
+                    <option value="4" selected="selected">4 quadrants</option>
+                    <option value="1">1 quadrant</option>
+                    <option value="32">32 quadrants</option>
+                    <option value="0">4-span by cosine</option>                    
+                  </select>
+                </div>
+                <div class="right_align">
+                  <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:submitQuery()>Submit Query</button>
+                  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                </div>
+              </div>
               <br>
 
           </div>
@@ -175,7 +187,7 @@
         </div>
 
         <!-- third column, containing information of the current query and containing buttons which perform actions regarding the query result -->
-        <div class="col-md-3 col-sm-2 col-xs-12 col-ld-3" id="right_menu_column">
+        <div class="col-md-2 col-sm-2 col-xs-12 col-ld-3" id="right_menu_column">
 
           <!-- div containing the information about the current query, which is visualized in the canvas -->
           <div class="right_menu_column">
@@ -227,9 +239,10 @@
 
     <!-- initializing the tooltips on the elements in the first, left column, where the user enters the query -->
     <script>
-    $('[data-toggle="tooltip"]').tooltip({'placement': 'right'});
-    $('[data-toggle="tooltip_noun"]').tooltip({'placement': 'right'});
-    $('[data-toggle="tooltip_button"]').tooltip({'placement': 'right'});
+      $('[data-toggle="tooltip"]').tooltip({'placement': 'right'});
+      $('[data-toggle="tooltip_noun"]').tooltip({'placement': 'right'});
+      $('[data-toggle="tooltip_button"]').tooltip({'placement': 'right'});
+      $('[data-toggle="tooltip_quadrant"]').tooltip({'placement': 'top'});
     </script>
   </body>
   

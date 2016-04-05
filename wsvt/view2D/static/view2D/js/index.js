@@ -66,10 +66,11 @@ function submitQuery() {
   var role = $('#select_role').val();
   var model = $('#select_model').val();
   var group = $('input[name=group1]:checked').val();
-  var slider_val= $('#slider-val').text();
+  var slider_val = $('#slider-val').text();
+  var quadrant = $('#select_quadrant').val();
 
   setIsInProcessing(true);
-  var content = $('#myDiv').serialize()+'&top_results=' + slider_val + '&model=' + model
+  var content = $('#myDiv').serialize()+'&top_results=' + slider_val
   $.ajax({
     url:      'query/',
     type:     'POST',
@@ -85,6 +86,7 @@ function submitQuery() {
         //TODO if there is other radio boxes this may result undefined behavior
         sessionStorage.prevGroup = group;
         sessionStorage.prevTopN = slider_val;
+        sessionStorage.prevQuadrant = quadrant;
       }
       // invoke APIs in view2D.js to visualize the result
       updateQuerySet(createNodesFromJSON(response));
@@ -182,7 +184,7 @@ function downloadImage() {
 }
 
 function addSlider() {
-  var slider_val = sessionStorage.prevTopN ? sessionStorage.prevTopN : 20;
+  var slider_val = sessionStorage.prevTopN ? sessionStorage.prevTopN : 30;
   // alert(v)
   $('#slider').slider({
     max:    50,
