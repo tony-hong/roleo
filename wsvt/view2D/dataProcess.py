@@ -214,7 +214,7 @@ def process(verb, noun, role, group, model, topN = 20, quadrant = 4):
     logger.info('result list is prepared')
 
     result = {
-        'nodes'    : resultList
+        'nodes'    : resultList,
         'quadrant' : quadrant
     }
 
