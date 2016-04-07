@@ -13,13 +13,10 @@
 
     <title>Web-based semantic visualization tool</title>
 
-    <!-- Bootstrap core CSS -->
+    <!-- jquery-ui core CSS -->
     <link href="{% static 'view2D/jquery-ui/jquery-ui.min.css' %}" rel="stylesheet">    
-
+    <!-- Bootstrap core CSS -->
 	  <link href="{% static 'view2D/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-    <!-- Bootstrap CSS for slider -->
-    <!-- <link href=" https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.1.5/css/bootstrap-slider.css" rel="stylesheet"> -->
-
 
     <!-- Custom styles for this template -->
     <link href="{% static 'view2D/css/index.css' %}" rel="stylesheet">
@@ -29,9 +26,6 @@
     <script src="{% static 'view2D/jquery-ui/jquery-ui.min.js' %}"></script>
 
   	<script src="{% static 'view2D/bootstrap/js/bootstrap.min.js' %}"></script>
-
-    <!-- bootstrap JS for slider -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.1.5/bootstrap-slider.min.js"></script> -->
 
   	<!-- js loading order matters because of dependencies -->
   	<!-- js for input validation -->
@@ -217,18 +211,6 @@
             <button id="resetViewBtn" type='button' class="btn btn-primary" onclick=javascript:resetView()>Re-centralize</button>
             <br><br><br>
           </div>
-
-          <!-- div containing the fifth "input element" with the possibility to change the model -->
-          <!-- 
-          <form id="changingModel" class="input_element">
-
-            button which changes the model in the backend, when the user clicks it -->
-            <!-- <button id="changeModelBtn" type='button' class="btn btn-primary" onclick=javascript:changeModel() data-toggle="tooltip_button" title="Caution! Time consuming operation">Change Model</button> 
-            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-            <label id="label_msg_changeModel_error" class="error"></label>
-
-          </form>
-            -->
 
         </div>
       </div>
