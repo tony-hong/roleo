@@ -7,16 +7,17 @@
 * Asad Sayeed
 * Vera Demberg
 
-## Developers
+## Maintainers
 * Xudong (Tony) Hong
-* Mehrnoosh Majari Kasmaei
+
+## Developers
 * Dawei Zhu
-* Julian Haluska
 * Fannyu Ye
 * Jakob Metzger
+* Julian Haluska
+* Mehrnoosh Majari Kasmaei
+* Xudong (Tony) Hong
 
 ## Video
-
  Video demonstrating the first prototype
-
  https://www.youtube.com/watch?v=BetieI7biBQ&feature=youtu.be
