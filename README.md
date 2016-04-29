@@ -8,7 +8,7 @@
 * Vera Demberg
 
 ## Maintainers
-* Xudong (Tony) Hong
+* (Tony) Xudong Hong
 
 ## Developers
 * Dawei Zhu
@@ -16,7 +16,7 @@
 * Jakob Metzger
 * Julian Haluska
 * Mehrnoosh Majari Kasmaei
-* Xudong (Tony) Hong
+* (Tony) Xudong Hong
 
 ## Video
  Video demonstrating the first prototype
