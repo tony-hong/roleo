@@ -37,7 +37,11 @@ class Tensor:
 
         # The columns are the vectors.  Return the topN columnheads by length.
         pivotdf = pivotdf.apply(lambda x: nla.norm(x))
-        pivotdf.sort(ascending=False)
+        
+        # FIXED: sort is deprecated
+        # pivotdf.sort(ascending=False)
+        pivotdf.sort_values(inplace=True, ascending=False)
+
         topcols = list(pivotdf[:topN].index)
         if not topcols:
             return None
@@ -250,10 +254,12 @@ class Matricisation:
         relevantgroups = targetrows.groupby(level=membercol)
         relevantnorms = relevantgroups.apply(nla.norm)
 
-        # TODO: sort() is deprecated
+        # FIXED: sort function is deprecated
         # relevantnorms.sort(ascending=False)
-        # pandas 0.18: FutureWarning: sort is deprecated, use sort_values(inplace=True) for INPLACE sorting
-        relevantnorms.sort(ascending=False)
+        # Hint: FutureWarning: sort is deprecated, use sort_values(inplace=True) for INPLACE sorting
+        relevantnorms.sort_values(inplace=True, ascending=False)
+
+
                 
         # get the top members.
         topmembers = [x for x in relevantnorms.index.tolist() if wordfilter(x)][:topN]
