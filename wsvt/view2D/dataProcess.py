@@ -263,8 +263,8 @@ def mapping_1q(fraction, cosine, sumFraction):
         (x, y) is a tuple
     '''
     # Scale fraciton and cosine, let them become more sparse over [0, 1]
-    x = 1 - math.pow(sumFraction, 0.5)
-    y = 1 - math.pow(cosine, 1)
+    x = 1 - sumFraction
+    y = 1 - cosine
 
     # print x, y
 
@@ -296,8 +296,8 @@ def mapping_nq(fraction, cosine, sumFraction, quadrant = 4):
         (x, y) is a tuple
     '''
     # Scale fraciton and cosine, let them become more sparse over [0, 1]
-    x = 1 - math.pow(sumFraction, 1)
-    y = 1 - math.pow(cosine, 1)
+    x = 1 - sumFraction
+    y = 1 - cosine
     weight = 0.5
 
     # Compute radial coordinates
