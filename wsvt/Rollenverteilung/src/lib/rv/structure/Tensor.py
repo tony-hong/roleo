@@ -249,6 +249,10 @@ class Matricisation:
         #relevantrows = target[targetspace.index.get_level_values(membercol).isin(rowlabels)]
         relevantgroups = targetrows.groupby(level=membercol)
         relevantnorms = relevantgroups.apply(nla.norm)
+
+        # TODO: sort() is deprecated
+        # relevantnorms.sort(ascending=False)
+        # pandas 0.18: FutureWarning: sort is deprecated, use sort_values(inplace=True) for INPLACE sorting
         relevantnorms.sort(ascending=False)
                 
         # get the top members.
