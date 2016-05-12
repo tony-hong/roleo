@@ -4,15 +4,19 @@
 
 import math
 
-
 def mapping(fraction, cosine, sumFraction, quadrant = 4):
-    if (quadrant == 1):
+    if quadrant == 1:
         return mapping_1q(fraction, cosine, sumFraction)
-    elif (quadrant == 4 or quadrant == 32):
+    elif quadrant == 4 or quadrant == 32:
         return mapping_nq(fraction, cosine, sumFraction, quadrant)
-    else:
+    elif quadrant == 0:
         return mapping_sc(fraction, cosine, sumFraction)
-
+    else:
+        x = fraction
+        y = sumFraction
+        cos = cosine
+        return mapping_svd_cosine(x, y, cos)
+    
 def mapping_1q(fraction, cosine, sumFraction):
     '''
     Mapping from fraction, and cosine to the x, y coordinate.
@@ -114,3 +118,13 @@ def mapping_sc(fraction, cosine, sumFraction):
 
     return x, y
 
+
+def mapping_svd_cosine(x, y, cos):
+    rad = math.atan2(y, x)
+    r = 1 - cos
+
+    # Transform back to Cartesian coordinates
+    x = r * math.cos(rad)
+    y = r * math.sin(rad)
+
+    return x, y
