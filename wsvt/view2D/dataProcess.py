@@ -122,11 +122,10 @@ def process(verb, noun, role, group, model, topN = 20, quadrant = 4):
     logger.info('getMemberVectors finished...')
     print wordList
 
-    sumWordList = list(wordList)
+    ExtendWordList = list(wordList)
     resultList = []
     queryFraction = 0
     queryCosine = 0
-    sumSupport = 0
     maxSupport = 0
     sumFraction = 0
     centroidSupport = 0
@@ -148,53 +147,47 @@ def process(verb, noun, role, group, model, topN = 20, quadrant = 4):
             result = {'errCode' : errorCode.QUERY_EMPTY}
             return result
         else:
-            vector = pd.concat([getVector(query, r) for r in roleList]).sum(level = 0)
-            if vector.get(queryWord0, 0) == 0:
-                # For the second query word, with this semantic role, the primal query word does not exist
-                queryCosine = cosine_sim(centroid, query)
+            queryCosine = cosine_sim(centroid, query)
+            wordVectors[queryWord1] = query
+
+            # vectorSum = pd.concat([getVector(query, r) for r in roleList]).sum(level = 0)
+            querySupport = sum([getSupport(query, r, queryWord0) for r in roleList])
+            wordSupports[queryWord1] = querySupport
+
+            queryFraction = float(querySupport) / centroidSupport
+            sumFraction = sumFraction + queryFraction
+            q_x, q_y = ms.mapping(queryFraction, queryCosine, sumFraction, quadrant)
+
+            if querySupport == 0:
+                # For the second query word, with this semantic role, the primal query word does not exist                
                 queryExist = False
-                logger.info('vector for queryWord0 is empty')
+                logger.info('vector sum for queryWord0 is empty')
             else:
-                if queryWord1 not in sumWordList:
-                    queryFraction = -1
-                    queryCosine = cosine_sim(centroid, query)
-                    wordVectors[queryWord1] = query
-                    sumWordList.append(queryWord1)
+                if queryWord1 not in wordList:
+                    ExtendWordList.append(queryWord1)
                 else:
                     inList = True
-
-    # Obtain all supports and compute the sum support 
-    for w in sumWordList:
-        v = wordVectors[w]
-        support = sum([getSupport(v, r, queryWord0) for r in roleList])
-        sumSupport = sumSupport + support
-        wordSupports[w] = support
+    
 
     wordList.reverse()
 
-    # if there are 2 query words
-    if double and not inList: 
-        if queryExist:
-            support = wordSupports[queryWord1]
-            queryFraction = float(support) / centroidSupport
-            sumFraction = queryFraction + sumFraction
-        else:
-            support = 0
-            queryFraction = 0
-            sumFraction = queryFraction + sumFraction
-        q_x, q_y = ms.mapping(queryFraction, queryCosine, sumFraction, quadrant)
-
+    # Obtain all supports and compute the sum support
     for w in wordList:
+        v = wordVectors[w]
+        support = sum([getSupport(v, r, queryWord0) for r in roleList])
+        wordSupports[w] = support
+    
     # Computer fraction and cosine
-    # If the mapping function is changed, this must be changed
+    for w in wordList:
+        v = wordVectors[w]
+        # If the mapping function is changed, this must be changed
         fraction = float(wordSupports[w]) / centroidSupport
         sumFraction = fraction + sumFraction
-        wordCosine = cosine_sim(centroid, wordVectors[w])
+        wordCosine = cosine_sim(centroid, v)
 
         # Apply mapping to each word
         if inList and w == queryWord1:
             # Apply mapping to second query word
-            queryCosine = wordCosine
             q_x, q_y = ms.mapping(fraction, wordCosine, sumFraction, quadrant)
         else:
             x, y = ms.mapping(fraction, wordCosine, sumFraction, quadrant)
@@ -210,6 +203,8 @@ def process(verb, noun, role, group, model, topN = 20, quadrant = 4):
                 'cos'   : wordCosine, 
                 'word'  : w,
             })
+
+    # if not inList:
 
     logger.info('result list is prepared')
 
@@ -229,6 +224,8 @@ def process(verb, noun, role, group, model, topN = 20, quadrant = 4):
     logger.info('result creating is prepared')
 
     return result
+
+
 
 def getVector(word, role):
     try:
