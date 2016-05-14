@@ -242,7 +242,6 @@ def getSupport(word0, role, word1):
 
 
 
-
 def process_svd(verb, noun, role, group, model, topN = 20, quadrant = 4):
     '''
     Processing function for the query for the client
@@ -321,11 +320,10 @@ def process_svd(verb, noun, role, group, model, topN = 20, quadrant = 4):
     logger.info('getMemberVectors finished...')
     # print wordList
 
-    sumWordList = list(wordList)
+    ExtendWordList = list(wordList)
     resultList = []
     queryFraction = 0
     queryCosine = 0
-    sumSupport = 0
     maxSupport = 0
     sumFraction = 0
     centroidSupport = 0
@@ -347,18 +345,20 @@ def process_svd(verb, noun, role, group, model, topN = 20, quadrant = 4):
             result = {'errCode' : errorCode.QUERY_EMPTY}
             return result
         else:
-            vector = pd.concat([getVector(query, r) for r in roleList]).sum(level = 0)
-            if vector.get(queryWord0, 0) == 0:
-                # For the second query word, with this semantic role, the primal query word does not exist
-                queryCosine = cosine_sim(centroid, query)
+            queryCosine = cosine_sim(centroid, query)
+            wordVectors[queryWord1] = query
+
+            # vectorSum = pd.concat([getVector(query, r) for r in roleList]).sum(level = 0)
+            querySupport = sum([getSupport(query, r, queryWord0) for r in roleList])
+            wordSupports[queryWord1] = querySupport
+
+            if querySupport == 0:
+                # For the second query word, with this semantic role, the primal query word does not exist                
                 queryExist = False
-                logger.info('vector for queryWord0 is empty')
+                logger.info('vector sum for queryWord0 is empty')
             else:
-                if queryWord1 not in sumWordList:
-                    queryFraction = -1
-                    queryCosine = cosine_sim(centroid, query)
-                    wordVectors[queryWord1] = query
-                    sumWordList.append(queryWord1)
+                if queryWord1 not in wordList:
+                    ExtendWordList.append(queryWord1)
                 else:
                     inList = True
 
@@ -367,21 +367,19 @@ def process_svd(verb, noun, role, group, model, topN = 20, quadrant = 4):
 
     M = pd.DataFrame()
     index = 0
-    mean = centroid #.div(len(wordList))
-
 
     # Obtain all supports and compute the sum support 
-    for w in sumWordList:
+    for w in ExtendWordList:
         s = pd.Series(base)
 
         s[:] = 0
 
-        s = s + wordVectors[w] - mean
+        s = s + wordVectors[w] - centroid
 
         s.fillna(0, inplace=True)
 
         s.name = w
-        wordIndex[index] = w
+        wordIndex[w] = index
 
         # print '\n s: \n'
         # print s
@@ -399,7 +397,7 @@ def process_svd(verb, noun, role, group, model, topN = 20, quadrant = 4):
 
     meanVals = np.mean(M, axis=0)
     M = M - meanVals
-    
+
     U, sigma, V = np.linalg.svd(M, full_matrices=False, compute_uv=True)
     
     # print '\n U: \n' 
@@ -408,22 +406,25 @@ def process_svd(verb, noun, role, group, model, topN = 20, quadrant = 4):
     # print '\n sigma: \n' 
     # print sigma
 
-    for i in range(len(U) - 1):
+    for w in wordList:
+        i = wordIndex[w]
+
         u = U[i]
-        x, y = u[0], u[1]
+        x0, y0 = u[0], u[1]
+
+        wordCosine = cosine_sim(centroid, wordVectors[w])
+
+        x, y = ms.mapping(x0, wordCosine, y0, -1)
 
         # print wordIndex[i], x, y
 
-        wordCosine = cosine_sim(centroid, wordVectors[wordIndex[i]])
-
+        # if wordIndex[i] != queryWord1:
         resultList.append({
                 'y'     : y,
                 'x'     : x, 
                 'cos'   : wordCosine, 
-                'word'  : wordIndex[i],
+                'word'  : w,
             })
-
-    q_x, q_y = U[len(U) - 1][0], U[len(U) - 1][1]
 
     result = {
         'nodes'    : resultList,
@@ -431,12 +432,20 @@ def process_svd(verb, noun, role, group, model, topN = 20, quadrant = 4):
     }
 
     if double:
+        i = wordIndex[queryWord1]
+        qx0, qy0 = U[i][0], U[i][1]
+
+        print queryWord1, qx0, qy0
+
+        q_x, q_y = ms.mapping(qx0, queryCosine, qy0, -1)
         result['queried'] = {
             'y'    : q_y,
             'x'    : q_x,
             'cos'  : queryCosine,
             'word' : queryWord1,
         }
+        
+        print queryWord1, q_x, q_y
 
     return result
 
