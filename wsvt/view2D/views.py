@@ -11,7 +11,7 @@ from django.http import HttpResponse, JsonResponse
 from django.template import RequestContext, loader
 
 from matrixFactory import MatrixFactory
-from dataProcess import mf, process
+from dataProcess import processQuery
 from roleDict import getRoleDict
 
 import errorCode
@@ -65,7 +65,7 @@ def query(request):
     isValid, errorMessage = validate(verb, noun, group, topN)
 
     if isValid:
-        result = process(verb, noun, semanticRole, group, model, topN, quadrant)
+        result = processQuery(verb, noun, semanticRole, group, model, topN, quadrant)
     else:
         result = errorMessage
     
@@ -80,6 +80,7 @@ def roleDictJSON(request):
     # response['currentModel'] = mf.getCurrentModel()
 
     return JsonResponse(response, safe = False)
+
 
 
 '''
