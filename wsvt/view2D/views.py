@@ -80,23 +80,3 @@ def roleDictJSON(request):
     # response['currentModel'] = mf.getCurrentModel()
 
     return JsonResponse(response, safe = False)
-
-
-
-'''
-    This call of the index.html in the case that the "Change Model" button is clicked
-    Later here the new model should be loaded.
-'''
-def changeModel(request): 
-    template = loader.get_template('view2D/index.html')
-    # Obtain attributes from request
-    model = request.GET['select_model']
-    if(mf.setModel(model)):
-        print 'Change model successfully'
-        response = {}
-    else:
-        logger.critical( 'errCode: %d. internal error!', errorCode.INTERNAL_ERROR)
-        response = {'errCode' : errorCode.INTERNAL_ERROR}
-    context = RequestContext(request, response)
-
-    return HttpResponse(template.render(context))
