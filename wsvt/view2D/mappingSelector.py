@@ -118,10 +118,19 @@ def mapping_sc(fraction, cosine, sumFraction):
 
     return x, y
 
-
 def mapping_svd_cosine(x, y, cos):
     rad = math.atan2(y, x)
     r = 1 - cos
+
+    # Transform back to Cartesian coordinates
+    x = r * math.cos(rad)
+    y = r * math.sin(rad)
+
+    return x, y
+
+def mapping_svd(x, y, cos):
+    rad = math.atan2(y, x)
+    r = math.sqrt(math.pow(x, 2) + math.pow(y, 2))
 
     # Transform back to Cartesian coordinates
     x = r * math.cos(rad)
