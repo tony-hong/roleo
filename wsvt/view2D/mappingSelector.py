@@ -68,7 +68,7 @@ def mapping_nq(fraction, cosine, sumFraction, quadrant = 4):
     weight = 0.5
 
     # Compute radial coordinates
-    r = math.sqrt(((1 - weight) * math.pow(x, 2) + weight * math.pow(y, 2))/2)
+    r = math.sqrt(((1 - weight) * math.pow(x, 2) + weight * math.pow(y, 2)))
     
     rad_b = math.atan2( weight * y, ((1 - weight) * x))
 
@@ -77,44 +77,6 @@ def mapping_nq(fraction, cosine, sumFraction, quadrant = 4):
     # Transform back to Cartesian coordinates
     y = r * math.cos(rad)
     x = r * math.sin(rad)
-
-    return x, y
-
-
-
-
-def mapping_sc(fraction, cosine, sumFraction):
-    '''
-    Mapping from fraction, and cosine to the x, y coordinate.
-    This is a simple function which maps the high dimension vector to 2D.
-    It is suitable for a web tool which need a short response time.
-
-    @parameters:
-        fraction = support / sumSupport
-        cosine   = cosine_sim(centroid, wordVector)
-    @return: 
-        (x, y) is a tuple
-    '''
-    # Scale fraciton and cosine, let them become more sparse over [0, 1]
-    x = 1 - (sumFraction - fraction)
-    y = 1 - cosine
-
-    # print x, y
-
-    # Compute radial coordinates
-    r = x
-    if y - 0 < 1e-3:
-        rad = math.pi / 2
-    else:
-        rad = y * 2 * math.pi + math.pi / 2
-
-    # Transform back to Cartesian coordinates
-    if rad < 2 * math.pi:
-        x = -r * math.cos(rad)
-        y = r * math.sin(rad)
-    else:
-        x = -r * math.cos(rad - 2 * math.pi)
-        y = r * math.sin(rad - 2 * math.pi)
 
     return x, y
 
