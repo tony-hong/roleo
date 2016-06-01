@@ -4,6 +4,8 @@ import os
 import sys
 import pandas as pd
 from numpy.linalg import norm
+from scipy.spatial.distance import cosine
+
 
 def ecu(centroid, vec, item, relations):
     pass
@@ -19,16 +21,18 @@ def ecu_dist(series1, series2):
 
     return norm(A - B)
 
-def cosine_sim(series1, series2):
+def cosine_sim(vector1, vector2):
     """
     takes two pandas Series and finds the cosine between them,
     even if they aren't aligned (it aligns them).
     """
-    
-    A, B = series1.align(series2)
-    A = A.fillna(0)
-    B = B.fillna(0)
-
+    if isinstance(vector1, pd.Series):
+        A, B = vector1.align(vector2)
+        A = A.fillna(0)
+        B = B.fillna(0)
+    else:
+        A = vector1
+        B = vector2
     return A.dot(B)/(norm(A) * norm(B))
 
 def vector_sum(vecs, level=None):
