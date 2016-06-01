@@ -224,6 +224,31 @@ class Matricisation:
         The 'lengthcol' is the name of the length column in the DataFrame.
         The 'criteria' is a filtering criterion over MultiIndex columns.
         The 'topN' is how many 'members' the centroid should have.
+        The 'labelconverter' turns MultiIndex axis labels into something that can be used to query the 'lengthstore'."""      
+        
+        # get the top members.
+        topmembers = self.getMemberList(target, targetcol, membercol, criteria, topN, labelconverter, wordfilter)
+
+        # collect the vectors for the top members.
+        membervectors = []
+        for x in topmembers:
+            try:
+                membervectors.append(self.stores[membercol][x][x])
+            except KeyError:
+                print >>sys.stderr, "missing", x, "in column for", target
+        #membertable = reduce(lambda x, y: x.join(y, how="outer"), membervectors[1:], membervectors[0])
+        
+        return (membervectors, topmembers)
+
+    def getMemberList(self, target, targetcol, membercol, criteria={}, topN=20, labelconverter=None, wordfilter=lambda x: True):
+        """Get the pre-centroid from the matricized tensor. The 'target' is the thing you want the centroid for. 
+        Modifier: Tony Hong
+        The 'targetcol' is the name of the column (should be a matrix store already registered with the constructor).
+        The 'membercol' is the place where you want to look up the 'members' of the centroid.
+        The 'lengthstore' is a LengthStore as above and provides the lengths as a DataFrame.
+        The 'lengthcol' is the name of the length column in the DataFrame.
+        The 'criteria' is a filtering criterion over MultiIndex columns.
+        The 'topN' is how many 'members' the centroid should have.
         The 'labelconverter' turns MultiIndex axis labels into something that can be used to query the 'lengthstore'."""
         
         # get the matrix
@@ -252,27 +277,18 @@ class Matricisation:
 
         #relevantrows = target[targetspace.index.get_level_values(membercol).isin(rowlabels)]
         relevantgroups = targetrows.groupby(level=membercol)
+        
         relevantnorms = relevantgroups.apply(nla.norm)
 
         # FIXED: sort function is deprecated
         # relevantnorms.sort(ascending=False)
         # Hint: FutureWarning: sort is deprecated, use sort_values(inplace=True) for INPLACE sorting
         relevantnorms.sort_values(inplace=True, ascending=False)
-
-
                 
         # get the top members.
         topmembers = [x for x in relevantnorms.index.tolist() if wordfilter(x)][:topN]
-
-        # collect the vectors for the top members.
-        membervectors = []
-        for x in topmembers:
-            try:
-                membervectors.append(self.stores[membercol][x][x])
-            except KeyError:
-                print >>sys.stderr, "missing", x, "in column for", target
-        #membertable = reduce(lambda x, y: x.join(y, how="outer"), membervectors[1:], membervectors[0])
-        return (membervectors, topmembers)
+ 
+        return topmembers
 
     def getCentroid(self, target, targetcol, membercol, criteria={}, topN=20, labelconverter=None, wordfilter=lambda x: True):
         """Get the centroid from the matricized tensor. The 'target' is the thing you want the centroid for. 
