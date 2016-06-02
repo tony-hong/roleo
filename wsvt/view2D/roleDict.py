@@ -17,7 +17,10 @@ def getRoleDict():
             'label'   :   r.labelSDDM,
             'name'    :   r.name
         })
-    response = { 'SDDM' : role_list_SDDM }
+    response = { 
+        'SDDM'              : role_list_SDDM,
+        'SDDM_Embedding'    : role_list_SDDM,        
+    }
     
     # Get TypeDM
     modelResult = SemanticRole.objects.exclude(
@@ -54,7 +57,8 @@ def getRoleMapping():
         role_mapping_TypeDM[str(r.name)] = [str(u) for u in r.labelTypeDM.split(',')]
 
     role_mapping = {
-        'SDDM'      :   role_mapping_SDDM,
-        'TypeDM'    :   role_mapping_TypeDM
+        'SDDM'              :   role_mapping_SDDM,
+        'TypeDM'            :   role_mapping_TypeDM,
+        'SDDM_Embedding'    :   role_mapping_SDDM,
     }
     return role_mapping
