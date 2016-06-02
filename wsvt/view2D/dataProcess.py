@@ -24,25 +24,25 @@ from rv.similarity.Similarity import cosine_sim
 import errorCode as errorCode
 import mappingSelector as ms
 from matrixFactory import MatrixFactory
+from embeddingFactory import EmbeddingFactory
 from roleDict import getRoleMapping
 
 mf = MatrixFactory()
+eb = EmbeddingFactory()
 logger = logging.getLogger('django')
 
 
-def getVector(word, role):
+def getVector(vec, role):
     try:
-        return word.ix[role]
+        return vec.ix[role]
     except KeyError, e:
         return pd.DataFrame().sum()
 
-def getSupport(word0, role, word1):
+def getSupport(vec, role, word1):
     try:
-        return word0.ix[role].ix[word1]
+        return vec.ix[role].ix[word1]
     except KeyError, e:
         return 0
-
-
 
 def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
     '''
@@ -58,11 +58,24 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
     @return: result = dict()
 
     ''' 
-    matrix = mf.getMatrix(model)
+    embeddingUsed = False
+
+    modelList = model.split('_')
+    modelName = modelList[0]
+    matrix = mf.getMatrix(modelName)
+    if len(modelList) == 2:
+        embeddingUsed = True
+        embedding = eb.getEmbedding()
+        vocabulary = eb.getVocabulary()
+
+        if vocabulary == -1:
+            logger.critical( 'errCode: %d. internal error!', errorCode.INTERNAL_ERROR)
+            result = {'errCode' : errorCode.INTERNAL_ERROR}
+            return result
+
 
     wordVectors = dict()
     expandedVectors = dict()
-    wordIndex = dict()
     result = dict()
     
     logger.info('process start...')
@@ -79,7 +92,7 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
     # second query word # with '-v/-n' suffix
     queryWord1 = ''
     # with '-1' suffix if noun selects noun
-    roleList = role_mapping[model][role]
+    roleList = role_mapping[modelName][role]
 
     # Adding suffix according to different types of query
     # Case of noun selects verb
@@ -101,56 +114,121 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
         result = {'errCode' : errorCode.INTERNAL_ERROR}
         return result
 
-    # memberTuple[0]: list of vectors
-    # memberTuple[1]: list of words
-    memberTuple = matrix.getMemberVectors(queryWord0, 'word1', 'word0', {'link':roleList}, topN)
-
-    # A hack checking whether the return is empty
-    # if it is not tuple(), it is empty, the model return nothing for the primal query word
-    if type(memberTuple) != type(tuple()):
-        logger.error('errCode: %d. memberVectors is empty', errorCode.MBR_VEC_EMPTY)
-        result = {'errCode' : errorCode.MBR_VEC_EMPTY}
-        return result
-    else:
-        vectorList, wordList = memberTuple
-
-    # Reshape wordList, vectorList to a dict(), with key is word and value is vector
-    wordVectors = dict(zip(wordList, vectorList))
-
-    # LOG
-    logger.info('getMemberVectors finished...')
-    # print wordList
-
-    # Compute centroid from the vectorList using pandas
-    centroid = pd.concat(vectorList).sum(level=[0,1])
-
-    extendWordList = list(wordList)
     queryFraction = 0
     queryCosine = 0
-    maxSupport = 0
 
-    # if there are 2 query words, process the second query word
-    if double:
-        # process query
-        query = matrix.getRow('word0', queryWord1)
+    if embeddingUsed:
+        roleName = roleList[0]
 
-        logger.info('getting query finished')
+        # list of words
+        wordList = matrix.getMemberList(queryWord0, 'word1', 'word0', {'link':roleList}, topN)
 
-        if query.isnull().all():
-            # Second query word does not exist in the model
-            logger.error( 'errCode: %d. query is empty', errorCode.QUERY_EMPTY)
-            result = {'errCode' : errorCode.QUERY_EMPTY}
+        # A hack checking whether the return is empty
+        # if it is not list(), it is empty, the model return nothing for the primal query word
+        if type(wordList) != type(list()):
+            logger.error('errCode: %d. memberVectors is empty', errorCode.MBR_VEC_EMPTY)
+            result = {'errCode' : errorCode.MBR_VEC_EMPTY}
+            return result
+
+        # LOG
+        logger.info('getMemberVectors finished...')
+        print wordList
+
+        vectorList = list()
+        temp = embedding['A0'][0]
+        vectorSum = np.zeros(len(temp))
+
+        for w in wordList:
+            wordParts = w.split('-')
+            wordName = wordParts[0]
+            wordIndex = vocabulary.get(wordName, -1)
+
+            if wordIndex == -1:
+                # Second query word does not exist in the model
+                logger.error( 'errCode: %d. Returned word in Malt is not in word embedding', errorCode.INTERNAL_ERROR)
+                result = {'errCode' : errorCode.INTERNAL_ERROR}
+                return result
+
+            wordArray = embedding[roleName][wordIndex]
+            vectorSum = vectorSum + wordArray
+            vectorList.append(wordArray)
+
+        # Reshape wordList, vectorList to a dict(), with key is word and value is vector
+        wordVectors = dict(zip(wordList, vectorList))
+
+        centroid = vectorSum / topN
+        
+        query = np.zeros(len(temp)) 
+
+        # if there are 2 query words, process the second query word
+        if queryWord1:
+            # process query
+            queryWord = (queryWord1.split('-'))[0]
+            queryIndex = vocabulary.get(queryWord, -1)
+
+            logger.info('getting query finished')
+
+            if queryIndex == -1:
+                # Second query word does not exist in the model
+                logger.error( 'errCode: %d. query is empty', errorCode.QUERY_EMPTY)
+                result = {'errCode' : errorCode.QUERY_EMPTY}
+                return result
+            else:
+                query = embedding[roleName][queryIndex]
+                queryCosine = cosine_sim(centroid, query)
+                wordVectors[queryWord1] = query
+                if queryWord1 in wordList:
+                    inList = True
+
+    else:
+        # memberTuple[0]: list of vectors
+        # memberTuple[1]: list of words
+        memberTuple = matrix.getMemberVectors(queryWord0, 'word1', 'word0', {'link':roleList}, topN)
+
+        # A hack checking whether the return is empty
+        # if it is not tuple(), it is empty, the model return nothing for the primal query word
+        if type(memberTuple) != type(tuple()):
+            logger.error('errCode: %d. memberVectors is empty', errorCode.MBR_VEC_EMPTY)
+            result = {'errCode' : errorCode.MBR_VEC_EMPTY}
             return result
         else:
-            queryCosine = cosine_sim(centroid, query)
-            wordVectors[queryWord1] = query
-            if queryWord1 in wordList:
-                inList = True
+            vectorList, wordList = memberTuple
 
-    if quadrant == -2:
-        result = svd_cosine(wordList, wordVectors, centroid, queryWord1, double, queryCosine)
+        # Reshape wordList, vectorList to a dict(), with key is word and value is vector
+        wordVectors = dict(zip(wordList, vectorList))
+
+        # LOG
+        logger.info('getMemberVectors finished...')
+        # print wordList
+
+        # Compute centroid from the vectorList using pandas
+        centroid = pd.concat(vectorList).sum(level=[0,1])
+
+        query = pd.Series()
+
+        # if there are 2 query words, process the second query word
+        if queryWord1:
+            # process query
+            query = matrix.getRow('word0', queryWord1)
+
+            logger.info('getting query finished')
+
+            if query.isnull().all():
+                # Second query word does not exist in the model
+                logger.error( 'errCode: %d. query is empty', errorCode.QUERY_EMPTY)
+                result = {'errCode' : errorCode.QUERY_EMPTY}
+                return result
+            else:
+                queryCosine = cosine_sim(centroid, query)
+                wordVectors[queryWord1] = query
+                if queryWord1 in wordList:
+                    inList = True
+
+
+    if quadrant < 0:
+        result = svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadrant)
     else:
-        result = fraction_cosine(wordList, wordVectors, roleList, query, centroid, queryWord0, queryWord1, double, queryCosine, quadrant)
+        result = fraction_cosine(wordList, wordVectors, roleList, query, centroid, queryWord0, queryWord1, queryCosine, quadrant)
 
     result['quadrant'] = quadrant
 
@@ -158,11 +236,10 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
 
 
 
-def fraction_cosine(wordList, wordVectors, roleList, query, centroid, queryWord0, queryWord1, double, queryCosine, quadrant):
+def fraction_cosine(wordList, wordVectors, roleList, query, centroid, queryWord0, queryWord1, queryCosine, quadrant):
     sumFraction = 0
 
     resultList = []
-    wordIndex = dict()
     wordSupports = dict()
 
     centroidSupport = sum([getSupport(centroid, r, queryWord0) for r in roleList])
@@ -218,7 +295,7 @@ def fraction_cosine(wordList, wordVectors, roleList, query, centroid, queryWord0
         'quadrant' : quadrant
     }
 
-    if double:
+    if queryWord1:
         result['queried'] = {
             'y'    : q_y,
             'x'    : q_x,
@@ -319,4 +396,3 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, double, queryCosine)
         print queryWord1, q_x, q_y
 
     return result
-
