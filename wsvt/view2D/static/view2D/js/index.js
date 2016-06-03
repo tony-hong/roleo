@@ -95,33 +95,6 @@ function submitQuery() {
   });
 }
 
-// /** Callback for clicking Change Model button **/
-// function changeModel() {
-//   setIsInProcessing(true);
-//   var select_model = $('#select_model').val();
-//   var currentModel = roleDictJSON['currentModel'];
-
-//   if (select_model != currentModel){
-//     var content = $('#changingModel').serialize()
-//     $.ajax({
-//       url:      'changeModel/',
-//       type:     'GET',
-//       data:     content,
-//       async:    true,
-//       success:  function(response){
-//         getRoleDict();
-//         setTimeout(function (){
-//           sessionStorage.prevModel = roleDictJSON['currentModel']
-//           fillRoleList(select_model);
-//           setIsInProcessing(false);
-//           submitQuery();
-//         }, 100);
-//       }
-//     });
-//   } else{
-//     showChangeLabelError()
-//   }
-// }
 
 function showChangeLabelError () {
   var msg = 'This is the current model, no need to change';
@@ -151,11 +124,14 @@ function fillRoleList(modelName) {
     var t = dict[i]
     if(modelName == 'SDDM')
       list.append("<option value='" + t.name + "'>" + t.name + "\t:\t" + t.label + "</option>");
+    else if(modelName == 'SDDM_Embedding')
+      list.append("<option value='" + t.name + "'>" + t.name + "\t:\t" + t.label + "</option>");
     else if (modelName == 'TypeDM')
       list.append("<option value='" + t.name + "'>" + t.name + "</option>");
     else 
       alert('No such model:' + modelName)
   };
+  list.val('Patient');
 }
 
 
