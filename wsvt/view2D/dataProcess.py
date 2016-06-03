@@ -309,35 +309,50 @@ def fraction_cosine(wordList, wordVectors, roleList, query, centroid, queryWord0
 
 
 
+def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadrant):
+    temp = wordVectors[wordList[0]]
+    if isinstance(temp, pd.Series): 
+        base = pd.concat(wordVectors.values()).sum(level=[0,1])
 
-def svd_cosine(wordList, wordVectors, centroid, queryWord1, double, queryCosine):
-    base = pd.concat(wordVectors.values()).sum(level=[0,1])
+        M = pd.DataFrame()
+        index = 0
+        resultList = []    
+        wordDict = dict()
 
-    M = pd.DataFrame()
-    index = 0
-    resultList = []    
-    wordIndex = dict()
+        # Obtain all supports and compute the sum support 
+        for w in wordVectors.keys():
+            s = pd.Series(base)
 
-    # Obtain all supports and compute the sum support 
-    for w in wordVectors.keys():
-        s = pd.Series(base)
+            s[:] = 0
 
-        s[:] = 0
+            s = s + wordVectors[w] - centroid
 
-        s = s + wordVectors[w] - centroid
+            s.fillna(0, inplace=True)
 
-        s.fillna(0, inplace=True)
+            s.name = w
+            wordDict[w] = index
 
-        s.name = w
-        wordIndex[w] = index
+            # print '\n s: \n'
+            # print s
+            # print '\n M before: \n' 
+            # print M
 
-        # print '\n s: \n'
-        # print s
-        # print '\n M before: \n' 
-        # print M
+            M = M.append(s)
+            index = index + 1
 
-        M = M.append(s)
-        index = index + 1
+    else:
+        keys = wordVectors.keys()
+        num = len(keys)
+        M = np.zeros((num, 256))
+        index = 0
+        resultList = []    
+        wordDict = dict()
+
+        # Obtain all supports and compute the sum support 
+        for w in keys:
+            M[index] = wordVectors[w] - centroid
+            wordDict[w] = index
+            index = index + 1
 
     # print '\n M after: \n' 
     # print M
@@ -357,35 +372,35 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, double, queryCosine)
     # print sigma
 
     for w in wordList:
-        i = wordIndex[w]
+        i = wordDict[w]
 
         u = U[i]
         x0, y0 = u[0], u[1]
 
         wordCosine = cosine_sim(centroid, wordVectors[w])
 
-        x, y = ms.mapping(x0, wordCosine, y0, -1)
+        x, y = ms.mapping(x0, wordCosine, y0, quadrant)
 
-        # print wordIndex[i], x, y
+        # print w, x, y, wordCosine
 
         resultList.append({
-                'y'     : y,
-                'x'     : x, 
-                'cos'   : wordCosine, 
-                'word'  : w,
-            })
+            'y'     : y,
+            'x'     : x, 
+            'cos'   : wordCosine, 
+            'word'  : w,
+        })
 
     result = {
         'nodes'    : resultList,
     }
 
-    if double:
-        i = wordIndex[queryWord1]
+    if queryWord1:
+        i = wordDict[queryWord1]
         qx0, qy0 = U[i][0], U[i][1]
 
         print queryWord1, qx0, qy0
 
-        q_x, q_y = ms.mapping(qx0, queryCosine, qy0, -2)
+        q_x, q_y = ms.mapping(qx0, queryCosine, qy0, quadrant)
         result['queried'] = {
             'y'    : q_y,
             'x'    : q_x,
