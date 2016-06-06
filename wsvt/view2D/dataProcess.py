@@ -234,6 +234,7 @@ def fraction_cosine(wordList, wordVectors, roleList, query, centroid, queryWord0
 
 
 def svd_cosine(wordList, wordVectors, centroid, queryWord1, double, queryCosine):
+    # set up a base vector containing all features of top n returned and the query vector
     base = pd.concat(wordVectors.values()).sum(level=[0,1])
 
     M = pd.DataFrame()
@@ -241,12 +242,14 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, double, queryCosine)
     resultList = []    
     wordIndex = dict()
 
-    # Obtain all supports and compute the sum support 
+    # expand all vectors to the dimension of the base
+
     for w in wordVectors.keys():
         s = pd.Series(base)
 
         s[:] = 0
 
+        # minus centroid to make the centroid in the center
         s = s + wordVectors[w] - centroid
 
         s.fillna(0, inplace=True)
@@ -254,30 +257,15 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, double, queryCosine)
         s.name = w
         wordIndex[w] = index
 
-        # print '\n s: \n'
-        # print s
-        # print '\n M before: \n' 
-        # print M
-
         M = M.append(s)
         index = index + 1
 
-    # print '\n M after: \n' 
-    # print M
-
-    # print '\n M final: \n' 
-    # print M.as_matrix()
-
+    # subtract the mean of target matrix
     meanVals = np.mean(M, axis=0)
     M = M - meanVals
 
+    # perform SVD
     U, sigma, V = np.linalg.svd(M, full_matrices=False, compute_uv=True)
-    
-    # print '\n U: \n' 
-    # print U
-
-    # print '\n sigma: \n' 
-    # print sigma
 
     for w in wordList:
         i = wordIndex[w]
@@ -288,8 +276,6 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, double, queryCosine)
         wordCosine = cosine_sim(centroid, wordVectors[w])
 
         x, y = ms.mapping(x0, wordCosine, y0, -1)
-
-        # print wordIndex[i], x, y
 
         resultList.append({
                 'y'     : y,
@@ -304,6 +290,8 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, double, queryCosine)
 
     if double:
         i = wordIndex[queryWord1]
+
+        # only consider top 2 
         qx0, qy0 = U[i][0], U[i][1]
 
         print queryWord1, qx0, qy0
