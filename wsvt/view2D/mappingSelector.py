@@ -11,12 +11,19 @@ def mapping(fraction, cosine, sumFraction, quadrant = 4):
         return mapping_nq(fraction, cosine, sumFraction, quadrant)
     elif quadrant == 0:
         return mapping_sc(fraction, cosine, sumFraction)
-    else:
+    elif quadrant == -2:
         x = fraction
         y = sumFraction
         cos = cosine
         return mapping_svd_cosine(x, y, cos)
-    
+    elif quadrant == -1:
+        x = fraction
+        y = sumFraction
+        cos = cosine
+        return mapping_svd(x, y, cos)
+    else:
+        return -1, -1
+
 def mapping_1q(fraction, cosine, sumFraction):
     '''
     Mapping from fraction, and cosine to the x, y coordinate.
