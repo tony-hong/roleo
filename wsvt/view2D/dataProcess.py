@@ -322,11 +322,11 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
         # Obtain all supports and compute the sum support 
         for w in wordVectors.keys():
             s = pd.Series(base)
-
+            # expand all vectors to the dimension of the base
             s[:] = 0
 
+            # minus centroid to make the centroid in the center
             s = s + wordVectors[w] - centroid
-
             s.fillna(0, inplace=True)
 
             s.name = w
@@ -354,22 +354,12 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
             wordDict[w] = index
             index = index + 1
 
-    # print '\n M after: \n' 
-    # print M
-
-    # print '\n M final: \n' 
-    # print M.as_matrix()
-
+    # subtract the mean of target matrix
     meanVals = np.mean(M, axis=0)
     M = M - meanVals
 
+    # perform SVD
     U, sigma, V = np.linalg.svd(M, full_matrices=False, compute_uv=True)
-    
-    # print '\n U: \n' 
-    # print U
-
-    # print '\n sigma: \n' 
-    # print sigma
 
     for w in wordList:
         i = wordDict[w]
@@ -396,6 +386,8 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
 
     if queryWord1:
         i = wordDict[queryWord1]
+
+        # only consider top 2 
         qx0, qy0 = U[i][0], U[i][1]
 
         print queryWord1, qx0, qy0
