@@ -82,7 +82,7 @@ CanvasView.prototype.draw = function(ctx) {
 	// always draw the info for the queried word
 	// if it exist
 	var queriedElementNode = this.nodeElements[1];
-	if (!queriedElementNode) alert("No queried word find in array[1]");
+	// if (!queriedElementNode) alert("No queried word find in array[1]");
 	if (queriedElementNode.node.needHighlight == true) {
 		ctx.font = "20px sans-serif";
 		ctx.fillStyle = "red";
@@ -126,7 +126,7 @@ CanvasView.prototype.checkGrids = function(isZoomIn) {
 		var ix = Math.floor(x / w);
 		var iy = Math.floor(y / h);
 		var index = ix + (iy * rows);
-		if (index >= grids.length) alert("out of bound array access in CanvasView.checkGrids()");
+		// if (index >= grids.length) alert("out of bound array access in CanvasView.checkGrids()");
 		var nodes = grids[index];
 		// grid contains only current element, so draw text
 		if (nodes.length == 0) {
@@ -188,7 +188,7 @@ function showErrorMsg(json_errCode) {
 function setErrMsgLabel (msg) {
 	// New Version: Show error message using other element out side of the canvas
 	var lbl_msg_query_error = document.getElementById("label_msg_query_error");
-	if (lbl_msg_query_error == null) alert("getElementById(\"label_msg_query_error\") failed");
+	// if (lbl_msg_query_error == null) alert("getElementById(\"label_msg_query_error\") failed");
 	lbl_msg_query_error.textContent = msg
 }
 
