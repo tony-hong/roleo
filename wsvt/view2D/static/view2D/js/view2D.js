@@ -26,7 +26,7 @@
 /** Global Vars **/
 var CONST_NODE_RADIUS = 6;
 // TODO Bellow two vars would be better to be inited dynamically according to the data set
-var MAX_MOUSE_WHEEL_CNT = 60;
+var MAX_MOUSE_WHEEL_CNT = 80;
 var MIN_MOUSE_WHEEL_CNT = -10;
 
 var TRANSFORMATION;    // Transformation object
@@ -77,7 +77,7 @@ function reloadView(){
  */
 function loadErrCodeJSON(errCodeJSON_Object) {
 	errCodeJSON = errCodeJSON_Object;
-	if (errCodeJSON == null) alert("errCodeJSON_Object is null");
+	// if (errCodeJSON == null) alert("errCodeJSON_Object is null");
 }
 
 /** Should be called using the return value of function createNodesFromJSON(json_obj) as param 
@@ -172,7 +172,7 @@ function createNodesFromJSON(responseJSON_Object) {
  *  @param {Canvas} canvasObj - A DOM object represents html canvas
  */
 function init(canvasObj) {
-	if (!canvasObj) alert("canvas is null");
+	// if (!canvasObj) alert("canvas is null");
 	canvas = canvasObj;
 	setCanvasDimensions();
 	ctx    = canvas.getContext('2d');
