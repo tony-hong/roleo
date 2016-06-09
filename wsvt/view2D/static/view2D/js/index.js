@@ -5,6 +5,7 @@ window.onload = function() {
   $('#select_model').change(function () {
     var currentModel = $('#select_model option:selected').val()
     fillRoleList(currentModel)
+    chageMappingList(currentModel)
   });
 
   getRoleDict();
@@ -135,6 +136,16 @@ function fillRoleList(modelName) {
 }
 
 
+function chageMappingList(modelName) {
+  if(modelName == 'SDDM' || modelName == 'TypeDM'){
+    $('.FCVM').removeAttr('disabled')
+  }
+  else if (modelName == 'SDDM_Embedding'){
+    $('.FCVM').attr('disabled', 'disabled')
+  }  
+  else 
+    alert('No such model:' + modelName);
+}
 
 /** Callback for clicking download image button **/
 function downloadImage() {
