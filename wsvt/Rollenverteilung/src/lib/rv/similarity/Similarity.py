@@ -4,7 +4,6 @@ import os
 import sys
 import pandas as pd
 from numpy.linalg import norm
-from scipy.spatial.distance import cosine
 
 
 def ecu(centroid, vec, item, relations):
