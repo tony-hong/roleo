@@ -36,7 +36,7 @@ function getRoleDict () {
     data:     null,
     async:    true,
     success:  function(response){
-      var model = sessionStorage.prevModel ? sessionStorage.prevModel : 'SDDM'
+      var model = sessionStorage.prevModel ? sessionStorage.prevModel : 'SDDM_Embedding'
       loadRoleDictJSON(response);
       fillRoleList(model);
       $('#select_role').val('Patient')
