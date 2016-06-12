@@ -7,11 +7,10 @@ from models import SemanticRole
 def getRoleDict():
     role_list_SDDM = list()
     role_list_TypeDM = list()
+    role_list_SDDM_Embedding = list()
 
     # Get SDDM
-    modelResult = SemanticRole.objects.exclude(
-        modelSupport = 3
-    )
+    modelResult = SemanticRole.objects.all()
     for r in modelResult:
         role_list_SDDM.append({
             'label'   :   r.labelSDDM,
@@ -19,12 +18,22 @@ def getRoleDict():
         })
     response = { 
         'SDDM'              : role_list_SDDM,
-        'SDDM_Embedding'    : role_list_SDDM,        
     }
-    
-    # Get TypeDM
+
+    # Get SDDM_Embedding
     modelResult = SemanticRole.objects.exclude(
         modelSupport = 1
+    )
+    for r in modelResult:
+        role_list_SDDM_Embedding.append({
+            'label'   :   r.labelSDDM,
+            'name'    :   r.name
+        })
+    response['SDDM_Embedding'] = role_list_SDDM_Embedding
+    
+    # Get TypeDM
+    modelResult = SemanticRole.objects.filter(
+        modelSupport = 3
     )
     for r in modelResult:
         role_list_TypeDM.append({
@@ -43,15 +52,13 @@ def getRoleMapping():
     role_mapping_TypeDM = dict()
 
     # Get SDDM
-    modelResult = SemanticRole.objects.exclude(
-        modelSupport = 3
-    )
+    modelResult = SemanticRole.objects.all()
     for r in modelResult:
         role_mapping_SDDM[str(r.name)] = [str(r.labelSDDM)]
     
     # Get TypeDM
-    modelResult = SemanticRole.objects.exclude(
-        modelSupport = 1
+    modelResult = SemanticRole.objects.filter(
+        modelSupport = 3
     )
     for r in modelResult:
         role_mapping_TypeDM[str(r.name)] = [str(u) for u in r.labelTypeDM.split(',')]
