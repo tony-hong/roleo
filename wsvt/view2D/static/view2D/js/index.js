@@ -40,6 +40,7 @@ function getRoleDict () {
       loadRoleDictJSON(response);
       fillRoleList(model);
       $('#select_role').val('Patient')
+      chageMappingList(model)
     }
   });
 }
@@ -118,21 +119,21 @@ function loadRoleDictJSON(json) {
  *  @param {str} modelName - A string contains name of the model
  */
 function fillRoleList(modelName) {
-  var list = $('#select_role');
-  list.empty();
-  var dict = eval('roleDictJSON.' + modelName);
+  var list = $('#select_role')
+  list.empty()
+  var dict = eval('roleDictJSON.' + modelName)
   for (var i = 0; i < dict.length; i++) {
     var t = dict[i]
     if(modelName == 'SDDM')
-      list.append("<option value='" + t.name + "'>" + t.name + "\t:\t" + t.label + "</option>");
+      list.append("<option value='" + t.name + "'>" + t.name + "\t:\t" + t.label + "</option>")
     else if(modelName == 'SDDM_Embedding')
-      list.append("<option value='" + t.name + "'>" + t.name + "\t:\t" + t.label + "</option>");
+      list.append("<option value='" + t.name + "'>" + t.name + "\t:\t" + t.label + "</option>")
     else if (modelName == 'TypeDM')
-      list.append("<option value='" + t.name + "'>" + t.name + "</option>");
+      list.append("<option value='" + t.name + "'>" + t.name + "</option>")
     else 
       alert('No such model:' + modelName)
   };
-  list.val('Patient');
+  list.val('Patient')
 }
 
 
