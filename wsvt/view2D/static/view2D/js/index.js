@@ -146,6 +146,7 @@ function chageMappingList(modelName) {
   }  
   else 
     alert('No such model:' + modelName);
+  $('#select_quadrant').val('-2')
 }
 
 /** Callback for clicking download image button **/
