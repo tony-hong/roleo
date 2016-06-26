@@ -17,28 +17,28 @@
     <link href="{% static 'view2D/jquery-ui/jquery-ui.min.css' %}" rel="stylesheet">    
     
     <!-- Bootstrap core CSS -->
-	  <link href="{% static 'view2D/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+      <link href="{% static 'view2D/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="{% static 'view2D/css/index.css' %}" rel="stylesheet">
 
     <!-- jquery.min.js to use it in javascript -->
-  	<script src="{% static 'view2D/js/jquery.min.js' %}"></script>
+      <script src="{% static 'view2D/js/jquery.min.js' %}"></script>
     <script src="{% static 'view2D/jquery-ui/jquery-ui.min.js' %}"></script>
 
-  	<script src="{% static 'view2D/bootstrap/js/bootstrap.min.js' %}"></script>
+      <script src="{% static 'view2D/bootstrap/js/bootstrap.min.js' %}"></script>
 
-  	<!-- js loading order matters because of dependencies -->
-  	<!-- js for input validation -->
-  	<script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
-  	<!-- js responsible for visualization -->
+      <!-- js loading order matters because of dependencies -->
+      <!-- js for input validation -->
+      <script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
+      <!-- js responsible for visualization -->
     <script src="{% static 'view2D/js/view2D.js' %}"></script>
-  	<script src="{% static 'view2D/js/view2D_models.js' %}"></script>
-  	<script src="{% static 'view2D/js/view2D_draw.js' %}"></script>
-  	<script src="{% static 'view2D/js/view2D_events.js' %}"></script>
-  	<script src="{% static 'view2D/js/view2D_main.js' %}"></script>
-  	<!-- js for others -->
-  	<script src="{% static 'view2D/js/index.js' %}"></script>
+      <script src="{% static 'view2D/js/view2D_models.js' %}"></script>
+      <script src="{% static 'view2D/js/view2D_draw.js' %}"></script>
+      <script src="{% static 'view2D/js/view2D_events.js' %}"></script>
+      <script src="{% static 'view2D/js/view2D_main.js' %}"></script>
+      <!-- js for others -->
+      <script src="{% static 'view2D/js/index.js' %}"></script>
   </head>
 
   <body>
@@ -84,6 +84,19 @@
             <!-- form element which collects the information from the user entered fields below -->
             <form id="myDiv">
 
+              <!-- div containing the fourth "input element", which means the dropdown box for model selection -->
+              <div class="input_element" data-toggle="tooltip_button" title="Choose a model">
+                <span class="left_align">Model:</span><br>
+                <div>
+                  <select id="select_model" class="form-control" name='select_model'>
+                    <option value="SDDM" selected="selected">Malt-only SDDM(Sayeed et al., 2015)</option>
+                    <option value="TypeDM">TypeDM(Baroni and Lenci, 2010)</option>
+                    <option value="SDDM_Embedding" selected="selected">SDDM_Embedding(Sayeed et al., 2015) (beta)</option>
+                  </select>
+                </div>
+              </div>
+              <br>
+
               <!-- div containing the first "input element" which means, the "Verb:", the input field for the verb, "Verb selects Noun"-radio button, label for error messages -->
               <div class="input_element">
                 <span class="left_align">Verb:</span>
@@ -126,22 +139,9 @@
               <!-- div containing the fourth "input element", which means the "Top N results" scroll bar  -->
               <div class="input_element">
                 Top N results: 
-                <label id="slider-val" name='top_results'></label>
+                <label id="slider_val" name='top_results'></label>
                 <div>     
                     <div id="slider" data-toggle="tooltip_button" title="How many result words do you want?"></div>
-                </div>
-              </div>
-              <br>
-
-              <!-- div containing the fourth "input element", which means the dropdown box for model selection -->
-              <div class="input_element" data-toggle="tooltip_button" title="Choose a model">
-                <span class="left_align">Model:</span><br>
-                <div>
-                  <select id="select_model" class="form-control" name='select_model'>
-                    <option value="SDDM" selected="selected">Malt-only SDDM(Sayeed et al., 2015)</option>
-                    <option value="TypeDM">TypeDM(Baroni and Lenci, 2010)</option>
-                    <option value="SDDM_Embedding" selected="selected">SDDM_Embedding(Sayeed et al., 2015) (beta)</option>
-                  </select>
                 </div>
               </div>
               <br>
@@ -151,11 +151,11 @@
                 <span class="left_align">Mapping Method:</span><br>
                 <div class="left_align" data-toggle="tooltip_quadrant" title="Which mapping method do you want?">
                   <select id="select_quadrant" class="form-control" name='quadrant'>
-                    <option value="-2" selected="selected">SVD+cosine (beta)</option>
-                    <option value="-1">SVD (beta)</option>
-                    <option class="FCVM" value="4" >FCVM 4-quadrant</option>
-                    <option class="FCVM" value="1" >FCVM 1-quadrant</option>
-                    <option class="FCVM" value="32">FCVM 32-quadrant</option>
+                    <option value="-2" selected="selected">SVD+cosine</option>
+                    <option value="-1">SVD</option>
+                    <option class="FCVM" value="4" >FCVM 4-q</option>
+                    <option class="FCVM" value="1" >FCVM 1-q</option>
+                    <option class="FCVM" value="32">FCVM 32-q</option>
                     <!--
                     <option value="0">4-span by cosine</option>
                     -->                    
@@ -180,13 +180,13 @@
         <div class="col-md-7 col-sm-7 col-xs-12 col-ld-6" id="canvas_column">
           <div class="visualization" id="visualization_result">
 
-    		    <!-- Label show query errors passed from backend -->
-    		    <label id="label_msg_query_error" class="error"></label>
+                <!-- Label show query errors passed from backend -->
+                <label id="label_msg_query_error" class="error"></label>
 
             <!-- canvas which contains the final visualized result of the query -->
             <canvas id="myCanvas" class="canvas_style">
-        			This text is displayed if your browser does not support HTML5 Canvas.
-        	  </canvas>
+                    This text is displayed if your browser does not support HTML5 Canvas.
+              </canvas>
           </div>
         </div>
 
