@@ -151,25 +151,25 @@ function chageMappingList(modelName) {
 
 /** Callback for clicking download image button **/
 function downloadImage() {
-	var dlA = document.getElementById("downloadA");
-	if (!dlA) alert("getElementById(\"downloadA\") failed!");
-	dlA.href = canvas.toDataURL('image/png');
-	// construct name dynamically
-	if(typeof(Storage) !== "undefined") {
-		var firstStr = sessionStorage.prevVerb;
-		var secondStr = sessionStorage.prevNoun;
-		var roleStr = sessionStorage.prevRole;
-		var modelStr = sessionStorage.prevModel;
-		if (sessionStorage.prevGroup == "noun") {
-			firstStr = sessionStorage.prevNoun;
-			secondStr = sessionStorage.prevVerb;
-		}
-		dlA.download = firstStr + "_" + roleStr + "_" + secondStr + "_" + modelStr + ".png" ;
-	}
-	else { // when session storage is not supported
-		dla.download = "result.png";
-	}
-	dlA.click();
+  var dlA = document.getElementById("downloadA");
+  if (!dlA) alert("getElementById(\"downloadA\") failed!");
+  dlA.href = canvas.toDataURL('image/png');
+  // construct name dynamically
+  if(typeof(Storage) !== "undefined") {
+    var firstStr = sessionStorage.prevVerb;
+    var secondStr = sessionStorage.prevNoun;
+    var roleStr = sessionStorage.prevRole;
+    var modelStr = sessionStorage.prevModel;
+    if (sessionStorage.prevGroup == "noun") {
+      firstStr = sessionStorage.prevNoun;
+      secondStr = sessionStorage.prevVerb;
+    }
+    dlA.download = firstStr + "_" + roleStr + "_" + secondStr + "_" + modelStr + ".png" ;
+  }
+  else { // when session storage is not supported
+    dla.download = "result.png";
+  }
+  dlA.click();
 }
 
 function addSlider() {
@@ -177,8 +177,8 @@ function addSlider() {
   // alert(v)
   $('#slider').slider({
     max:    50,
-    min:    10,
-    step:   10,
+    min:    5,
+    step:   2,
     value:  slider_val,
     create: function(event, ui) {
       $('#slider-val').text(slider_val)
