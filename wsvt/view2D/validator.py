@@ -16,7 +16,7 @@ def validate(verb, noun, group, topN):
     isValid = False
     errorResult = dict()
 
-    if topN > 100 or topN < 10:
+    if topN > 100 or topN < 5:
         logger.critical( 'errCode: %d. topN is out of range', errorCode.TON_N_ERROR)
         errorResult = {'errCode' : errorCode.TON_N_ERROR}
         return isValid, errorResult
