@@ -2,12 +2,6 @@ var roleDictJSON = null
 
 /** Callback for window.onload to initializing index.html **/
 window.onload = function() {
-  $('#select_model').change(function () {
-    var currentModel = $('#select_model option:selected').val()
-    fillRoleList(currentModel)
-    chageMappingList(currentModel)
-  });
-
   getRoleDict();
 
   getErrCodeJSON();
@@ -19,6 +13,11 @@ window.onload = function() {
   loadView2D(); // view2D_main.js
 
   if (!sessionStorage.prevVerb){ 
+  $('#select_model').change(function () {
+    var currentModel = $('#select_model option:selected').val()
+    fillRoleList(currentModel)
+    chageMappingList(currentModel)
+  });
     submitQuery();
   }
 }
@@ -45,6 +44,14 @@ function getRoleDict () {
   });
 }
 
+/** Load the roleName:roleLabel pairs from server to frontend 
+ *  @param {json} roleListJSON - A json contains roleName and roleLabel Pairs
+ */
+function loadRoleDictJSON(json) {
+  roleDictJSON = json;
+  if (roleDictJSON == null) alert("roleDictJSON is null");
+}
+
 function getErrCodeJSON () {
   // ajax request for errorCodeJSON 
   if (!errCodeJSON){
@@ -65,11 +72,13 @@ function getErrCodeJSON () {
 function submitQuery() {
   var noun = $('#input_noun').val();
   var verb = $('#input_verb').val();
-  var role = $('#select_role').val();
   var model = $('#select_model').val();
   var group = $('input[name=group1]:checked').val();
-  var slider_val = $('#slider-val').text();
+  var slider_val = $('#slider_val').text();
+
+  var role = $('#select_role').val();
   var quadrant = $('#select_quadrant').val();
+  var mapping = $('#select_quadrant option:selected').text()
 
   setIsInProcessing(true);
   var content = $('#myDiv').serialize()+'&top_results=' + slider_val
@@ -106,14 +115,6 @@ function showChangeLabelError () {
   }, 3000);
 }
 
-/** Load the roleName:roleLabel pairs from server to frontend 
- *  @param {json} roleListJSON - A json contains roleName and roleLabel Pairs
- */
-function loadRoleDictJSON(json) {
-  roleDictJSON = json;
-  if (roleDictJSON == null) alert("roleDictJSON is null");
-
-}
 
 /** Fill the roleLabel:roleName pairs to the list of drawdown box
  *  @param {str} modelName - A string contains name of the model
@@ -151,25 +152,25 @@ function chageMappingList(modelName) {
 
 /** Callback for clicking download image button **/
 function downloadImage() {
-	var dlA = document.getElementById("downloadA");
-	if (!dlA) alert("getElementById(\"downloadA\") failed!");
-	dlA.href = canvas.toDataURL('image/png');
-	// construct name dynamically
-	if(typeof(Storage) !== "undefined") {
-		var firstStr = sessionStorage.prevVerb;
-		var secondStr = sessionStorage.prevNoun;
-		var roleStr = sessionStorage.prevRole;
-		var modelStr = sessionStorage.prevModel;
-		if (sessionStorage.prevGroup == "noun") {
-			firstStr = sessionStorage.prevNoun;
-			secondStr = sessionStorage.prevVerb;
-		}
-		dlA.download = firstStr + "_" + roleStr + "_" + secondStr + "_" + modelStr + ".png" ;
-	}
-	else { // when session storage is not supported
-		dla.download = "result.png";
-	}
-	dlA.click();
+    var dlA = document.getElementById("downloadA");
+    if (!dlA) alert("getElementById(\"downloadA\") failed!");
+    dlA.href = canvas.toDataURL('image/png');
+    // construct name dynamically
+    if(typeof(Storage) !== "undefined") {
+        var firstStr = sessionStorage.prevVerb;
+        var secondStr = sessionStorage.prevNoun;
+        var roleStr = sessionStorage.prevRole;
+        var modelStr = sessionStorage.prevModel;
+        if (sessionStorage.prevGroup == "noun") {
+            var firstStr = sessionStorage.prevNoun;
+            var secondStr = sessionStorage.prevVerb;
+        }
+        dlA.download = firstStr + "_" + roleStr + "_" + secondStr + "_" + modelStr + ".png" ;
+    }
+    else { // when session storage is not supported
+        dla.download = "result.png";
+    }
+    dlA.click();
 }
 
 function addSlider() {
@@ -181,10 +182,10 @@ function addSlider() {
     step:   10,
     value:  slider_val,
     create: function(event, ui) {
-      $('#slider-val').text(slider_val)
+      $('#slider_val').text(slider_val)
     },
     slide: function(event, ui){
-      $('#slider-val').text(ui.value)
+      $('#slider_val').text(ui.value)
     }
   });
 }
