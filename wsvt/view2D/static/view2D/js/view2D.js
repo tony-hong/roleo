@@ -104,68 +104,51 @@ function updateQuerySet(nodes) {
  *  @returns {Node[]} 
  */
 function createNodesFromJSON(responseJSON_Object) {
-	var btn_start_presentation_mode = document.getElementById("start_presentation_mode");
-	var btn_download = document.getElementById("downloadBtn");
-	if (btn_start_presentation_mode == null) alert("getElementById(\"start_presentation_mode\") failed");
-	if (btn_download == null) alert("getElementById(\"downloadBtn\") failed");
-	var set = responseJSON_Object;
-	if (set == null) alert("responseJSON_Object is null");
-	errCode = set.errCode;
-	quadrant = set.quadrant;
-	// if error when query simply return null
-	if (errCode != null) {
-		btn_start_presentation_mode.disabled = true;
-		btn_download.disabled = true;
-		return null;
-	}
-	else {
-		btn_start_presentation_mode.disabled = false;
-		btn_download.disabled = false;
-	}
-	//
-	var nodes = [];
-	if (quadrant == 1)
-		var centeroid = new Node(new Point2D(-0.75, -0.75), "centroid", 1);
-	else
-		var centeroid = new Node(new Point2D(), "centroid", 1);		
-	nodes.push(centeroid); // [0]
+    // var btn_start_presentation_mode = document.getElementById("start_presentation_mode");
+    var btn_download = document.getElementById("downloadBtn");
+    // if (btn_start_presentation_mode == null) alert("getElementById(\"start_presentation_mode\") failed");
+    if (btn_download == null) alert("getElementById(\"downloadBtn\") failed");
+    var set = responseJSON_Object;
+    if (set == null) alert("responseJSON_Object is null");
+    errCode = set.errCode;
+    quadrant = set.quadrant;
+    // if error when query simply return null
+    if (errCode != null) {
+        // btn_start_presentation_mode.disabled = true;
+        btn_download.disabled = true;
+        return null;
+    }
+    else {
+        // btn_start_presentation_mode.disabled = false;
+        btn_download.disabled = false;
+    }
+    //
+    var nodes = [];
+    if (quadrant == 1)
+        var centeroid = new Node(new Point2D(-0.75, -0.75), "centroid", 1);
+    else
+        var centeroid = new Node(new Point2D(), "centroid", 1);        
+    nodes.push(centeroid); // [0]
 
-	var q = set.queried;
-	if (q != null) { // handle queried == null properly
-		//                                            substring remove "-n"                round to two digits
-		var queried = new Node(new Point2D(q.x, q.y), q.word.substring(0,q.word.length-2), Math.round((q.cos + 0.00001) * 10000) / 10000, true);
-		nodes.push(queried);   // [1]
-	}
-	for (i=0; i<set.nodes.length; ++i) { // [2...N]
-		var e = set.nodes[i];
-		//                                         substring remove "-n"                round to two digits
-		nodes.push(new Node(new Point2D(e.x, e.y), e.word.substring(0,e.word.length-2), Math.round((e.cos + 0.00001) * 10000) / 10000));
-	}
-	// retrieve JSON string from session storage
-	if(typeof(Storage) !== "undefined") {
-		// restore previous inputs
-		sessionStorage.prevQuery = JSON.stringify(responseJSON_Object);
-		document.getElementById("input_noun").value = sessionStorage.prevNoun;
-		document.getElementById("input_verb").value = sessionStorage.prevVerb;
-		document.getElementById("select_role").value = sessionStorage.prevRole;
-		document.getElementById("select_model").value = sessionStorage.prevModel;
-		radioId = 'radio_' + sessionStorage.prevGroup;
-		document.getElementById(radioId).checked = true;
-		$("slider-val").text(sessionStorage.prevTopN);
-		$('#slider').slider('value', sessionStorage.prevTopN)
-		$('#select_quadrant').val(sessionStorage.prevQuadrant);
+    var q = set.queried;
+    if (q != null) { // handle queried == null properly
+        //                                            substring remove "-n"                round to two digits
+        var queried = new Node(new Point2D(q.x, q.y), q.word.substring(0,q.word.length-2), Math.round((q.cos + 0.00001) * 10000) / 10000, true);
+        nodes.push(queried);   // [1]
+    }
+    for (i=0; i<set.nodes.length; ++i) { // [2...N]
+        var e = set.nodes[i];
+        //                                         substring remove "-n"                round to two digits
+        nodes.push(new Node(new Point2D(e.x, e.y), e.word.substring(0,e.word.length-2), Math.round((e.cos + 0.00001) * 10000) / 10000));
+    }
+    // retrieve JSON string from session storage
+    if(typeof(Storage) !== "undefined") {
 
-		// restore previous query infos
-		document.getElementById("lbl_noun_info").textContent = sessionStorage.prevNoun;
-		document.getElementById("lbl_verb_info").textContent = sessionStorage.prevVerb;
-		document.getElementById("lbl_role_info").textContent = sessionStorage.prevRole;
-		document.getElementById("lbl_model_info").textContent = sessionStorage.prevModel;
-		document.getElementById("lbl_topN_info").textContent = sessionStorage.prevTopN;
-	} else {
-		// Sorry! No Web Storage support..
-	}
-	//
-	return nodes;
+    } else {
+        // Sorry! No Web Storage support..
+    }
+    //
+    return nodes;
 }
 
 /** Initialize member variables for view2D 
@@ -250,19 +233,56 @@ function ifInProcessing() {
 }
 
 function loadLastSession(){
-	// load last query JSON string from session storage
-	if(typeof(Storage) !== "undefined") {
-		if (sessionStorage.prevQuery) {
-			updateQuerySet(createNodesFromJSON(JSON.parse(sessionStorage.prevQuery)));
-		}
-		else {
-			//dummyUpdate();
-		}
-	} else {
-		//dummyUpdate();
-	}
-	//	
+	loadSession(-1) 
 }
+	
+function loadSession(raw_index){
+    // load last query JSON string from session storage
+    if(typeof(Storage) !== "undefined") {
+        if (sessionStorage.searchHistory) {
+
+            // restore previous query history
+            var histories = JSON.parse(sessionStorage.searchHistory)
+        	var index = (histories.length + raw_index) % histories.length
+        	// alert('raw_index: '+ raw_index + '\n len: '+ histories.length + '\n index: ' + index)
+
+            var lastQuery = histories[index]
+
+            fillRoleList(lastQuery.model)
+        	chageMappingList(lastQuery.model)
+            
+            document.getElementById("input_noun").value = lastQuery.noun;
+            document.getElementById("input_verb").value = lastQuery.verb;
+
+            $('#select_role').val(lastQuery.role)
+            $('#select_model').val(lastQuery.model);
+            $('#select_quadrant').val(lastQuery.quadrant);
+
+            var radioId = 'radio_' + lastQuery.group;
+            document.getElementById(radioId).checked = true;
+
+            $("slider_val").text(lastQuery.slider_val);
+            $('#slider').slider('value', lastQuery.slider_val)
+
+            // restore previous query infos            
+            document.getElementById("lbl_noun_info").textContent = lastQuery.noun;
+            document.getElementById("lbl_verb_info").textContent = lastQuery.verb;
+            document.getElementById("lbl_role_info").textContent = lastQuery.role;
+            document.getElementById("lbl_model_info").textContent = lastQuery.model;
+            document.getElementById("lbl_topN_info").textContent = lastQuery.slider_val;
+            document.getElementById("lbl_mapping_info").textContent = lastQuery.mapping;
+
+            updateQuerySet(createNodesFromJSON(lastQuery.query));
+        }
+        else {
+            //dummyUpdate();
+        }
+    } else {
+        //dummyUpdate();
+    }
+    //    
+}
+
 
 /** Move a node to center of the canvas 
  *  @param {NodeElement} nodeElement - Centralize based on this {@link NodeElement}

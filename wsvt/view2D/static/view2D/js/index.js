@@ -12,12 +12,14 @@ window.onload = function() {
 
   loadView2D(); // view2D_main.js
 
-  if (!sessionStorage.prevVerb){ 
   $('#select_model').change(function () {
     var currentModel = $('#select_model option:selected').val()
     fillRoleList(currentModel)
     chageMappingList(currentModel)
   });
+
+  if (!sessionStorage.searchHistory){ 
+    sessionStorage.searchHistory = JSON.stringify(new Array())  
     submitQuery();
   }
 }
@@ -29,19 +31,26 @@ window.onresize = function() {
 
 function getRoleDict () {
   // ajax request for roleDictJSON
-  $.ajax({
-    url:      'roleDictJSON/',
-    type:     'GET',
-    data:     null,
-    async:    true,
-    success:  function(response){
-      var model = sessionStorage.prevModel ? sessionStorage.prevModel : 'SDDM_Embedding'
-      loadRoleDictJSON(response);
-      fillRoleList(model);
-      $('#select_role').val('Patient')
-      chageMappingList(model)
-    }
-  });
+  if(!sessionStorage.roleDictJSON){
+    $.ajax({
+      url:      'roleDictJSON/',
+      type:     'GET',
+      data:     null,
+      async:    true,
+      success:  function(response){
+        loadRoleDictJSON(response)
+        sessionStorage.roleDictJSON = JSON.stringify(response);
+
+        var model = 'SDDM_Embedding'
+        fillRoleList(model)
+        chageMappingList(model)
+      }
+    });
+  }
+  else{
+    var result = JSON.parse(sessionStorage.roleDictJSON)
+    loadRoleDictJSON(result)
+  }
 }
 
 /** Load the roleName:roleLabel pairs from server to frontend 
@@ -54,7 +63,7 @@ function loadRoleDictJSON(json) {
 
 function getErrCodeJSON () {
   // ajax request for errorCodeJSON 
-  if (!errCodeJSON){
+  if (!sessionStorage.errorCodeJSON){
     $.ajax({
       url:      'errorCodeJSON/',
       type:     'GET',
@@ -62,9 +71,13 @@ function getErrCodeJSON () {
       async:    true,
       success:  function(response){
         loadErrCodeJSON(response);
-        sessionStorage.errorCodeJSON = response;
+        sessionStorage.errorCodeJSON = JSON.stringify(response);
       }
     });
+  } 
+  else {
+    var result = JSON.parse(sessionStorage.errorCodeJSON)
+    loadErrCodeJSON(result)
   }
 }
 
@@ -88,19 +101,30 @@ function submitQuery() {
     data:     content,
     async:    true,
     success:  function(response){
+      //TODO if there is other radio boxes this may result undefined behavior
+
       // only store query information if no error returned
       if (response.errCode == null) {
-        sessionStorage.prevNoun = noun
-        sessionStorage.prevVerb = verb
-        sessionStorage.prevRole = role
-        sessionStorage.prevModel = model
-        //TODO if there is other radio boxes this may result undefined behavior
-        sessionStorage.prevGroup = group;
-        sessionStorage.prevTopN = slider_val;
-        sessionStorage.prevQuadrant = quadrant;
+        histories = JSON.parse(sessionStorage.searchHistory)
+
+        record = {
+          'noun'        : noun,
+          'verb'        : verb,
+          'role'        : role,
+          'model'       : model,
+          'group'       : group,
+          'slider_val'  : slider_val,
+          'quadrant'    : quadrant,
+          'mapping'     : mapping,
+          'query'       : response
+        }
+
+        histories.push(record)
+        sessionStorage.searchHistory = JSON.stringify(histories)
       }
       // invoke APIs in view2D.js to visualize the result
       updateQuerySet(createNodesFromJSON(response));
+      loadLastSession();
       setIsInProcessing(false);
     }
   });
