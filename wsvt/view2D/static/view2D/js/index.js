@@ -1,4 +1,5 @@
 var roleDictJSON = null
+var MAX_LENGTH = 7
 
 /** Callback for window.onload to initializing index.html **/
 window.onload = function() {
@@ -16,6 +17,11 @@ window.onload = function() {
     var currentModel = $('#select_model option:selected').val()
     fillRoleList(currentModel)
     chageMappingList(currentModel)
+  });
+
+  $('#select_history').change(function () {
+    var selectedHistory = $('#select_history option:selected').val()
+    loadSession(selectedHistory)
   });
 
   if (!sessionStorage.searchHistory){ 
@@ -108,23 +114,25 @@ function submitQuery() {
         histories = JSON.parse(sessionStorage.searchHistory)
 
         record = {
-          'noun'        : noun,
           'verb'        : verb,
           'role'        : role,
+          'noun'        : noun,
           'model'       : model,
-          'group'       : group,
           'slider_val'  : slider_val,
-          'quadrant'    : quadrant,
           'mapping'     : mapping,
+
+          'group'       : group,
+          'quadrant'    : quadrant,
           'query'       : response
         }
 
         histories.push(record)
+        fillHistories(histories)
         sessionStorage.searchHistory = JSON.stringify(histories)
+        // loadLastSession();
       }
       // invoke APIs in view2D.js to visualize the result
       updateQuerySet(createNodesFromJSON(response));
-      loadLastSession();
       setIsInProcessing(false);
     }
   });
@@ -161,6 +169,36 @@ function fillRoleList(modelName) {
   list.val('Patient')
 }
 
+function fillHistories(histories) {
+  var list = $('#select_history')
+  list.empty()
+  var length = histories.length
+
+  if(length > MAX_LENGTH){
+    iterLength = MAX_LENGTH
+  }
+  else{
+    iterLength = length
+  }
+
+  for (var i = iterLength; i > 0; i--) {
+    var index = length - i
+    var record = histories[index]
+    var text = ''
+    
+    if (record.group == 'verb'){
+        text = text + record.verb + '_' + record.role + '_' + record.noun
+    } 
+    else {
+        text = text + record.noun + '_' + record.role + '_' + record.verb
+    }
+    text = text + '_' + record.model + '_' + record.slider_val + '_' + record.mapping
+    
+    list.append("<option value='" + index + "'>" + text + "</option>")
+  };
+
+  list.val(length - 1)
+}
 
 function chageMappingList(modelName) {
   if(modelName == 'SDDM' || modelName == 'TypeDM'){
