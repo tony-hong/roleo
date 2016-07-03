@@ -1,28 +1,27 @@
-'''
+''' 
     mappingSelector.py
 '''
 
 import math
 
-def mapping(fraction, cosine, sumFraction, quadrant = 4):
+def mapping(parameters, quadrant = 4):
     if quadrant == 1:
-        return mapping_1q(fraction, cosine, sumFraction)
+        return mapping_1q(parameters[0], parameters[1], parameters[2])
     elif quadrant == 4 or quadrant == 32:
-        return mapping_nq(fraction, cosine, sumFraction, quadrant)
-    elif quadrant == 0:
-        return mapping_sc(fraction, cosine, sumFraction)
+        return mapping_nq(parameters[0], parameters[1], parameters[2], quadrant)
     elif quadrant == -2:
-        x = fraction
-        y = sumFraction
-        cos = cosine
-        return mapping_svd_cosine(x, y, cos)
+        x = parameters[0]
+        y = parameters[2]
+        cos = parameters[1]
+        minCos = parameters[3]
+        return mapping_svd_cosine(x, y, cos, minCos)
     elif quadrant == -1:
-        x = fraction
-        y = sumFraction
-        cos = cosine
-        return mapping_svd(x, y, cos)
+        x = parameters[0]
+        y = parameters[2]
+        return mapping_svd(x, y)
     else:
         return -1, -1
+
 
 def mapping_1q(fraction, cosine, sumFraction):
     '''
@@ -57,6 +56,7 @@ def mapping_1q(fraction, cosine, sumFraction):
 
     return x, y
 
+
 def mapping_nq(fraction, cosine, sumFraction, quadrant = 4):
     '''
     Mapping from fraction, and cosine to the x, y coordinate.
@@ -87,9 +87,12 @@ def mapping_nq(fraction, cosine, sumFraction, quadrant = 4):
 
     return x, y
 
-def mapping_svd_cosine(x, y, cos):
+
+def mapping_svd_cosine(x, y, cos, minCos):
+    maxR = 1 - minCos
+
     rad = math.atan2(y, x)
-    r = 1 - cos
+    r = (1 - cos) / maxR
 
     # Transform back to Cartesian coordinates
     x = r * math.cos(rad)
@@ -97,7 +100,8 @@ def mapping_svd_cosine(x, y, cos):
 
     return x, y
 
-def mapping_svd(x, y, cos):
+
+def mapping_svd(x, y):
     rad = math.atan2(y, x)
     r = math.sqrt(math.pow(x, 2) + math.pow(y, 2))
 

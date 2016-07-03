@@ -156,7 +156,7 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
         # Reshape wordList, vectorList to a dict(), with key is word and value is vector
         wordVectors = dict(zip(wordList, vectorList))
 
-        centroid = vectorSum / topN
+        centroid = np.multiply(vectorSum, 1.0 / topN)
         
         query = np.zeros(len(temp)) 
 
@@ -249,7 +249,8 @@ def fraction_cosine(wordList, wordVectors, roleList, query, centroid, queryWord0
 
     queryFraction = float(querySupport) / centroidSupport
     sumFraction = sumFraction + queryFraction
-    q_x, q_y = ms.mapping(queryFraction, queryCosine, sumFraction, quadrant)
+
+    q_x, q_y = ms.mapping([queryFraction, queryCosine, sumFraction], quadrant)
 
     wordList.reverse()
 
@@ -270,9 +271,9 @@ def fraction_cosine(wordList, wordVectors, roleList, query, centroid, queryWord0
         # Apply mapping to each word
         if w == queryWord1:
             # Apply mapping to second query word
-            q_x, q_y = ms.mapping(fraction, wordCosine, sumFraction, quadrant)
+            q_x, q_y = ms.mapping([fraction, wordCosine, sumFraction], quadrant)
         else:
-            x, y = ms.mapping(fraction, wordCosine, sumFraction, quadrant)
+            x, y = ms.mapping([fraction, wordCosine, sumFraction], quadrant)
 
             # simularities[w] = wordCosine
             # fractions[w] = fraction
@@ -354,29 +355,46 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
             wordDict[w] = index
             index = index + 1
 
+    # print '\n M after: \n' 
+    # print M
+
+    # print '\n M final: \n' 
+    # print M.as_matrix()
+
     # subtract the mean of target matrix
     meanVals = np.mean(M, axis=0)
     M = M - meanVals
-
+    
     # perform SVD
     U, sigma, V = np.linalg.svd(M, full_matrices=False, compute_uv=True)
+    
+    # print '\n U: \n' 
+    # print U
+
+    # print '\n sigma: \n' 
+    # print sigma
+    wordCosines = dict()
+    minCosine = queryCosine if (queryCosine > 0) else 10
+
+    for w in wordList:
+        cos = cosine_sim(centroid, wordVectors[w])
+        wordCosines[w] = cos
+        minCosine = cos if (cos < minCosine) else minCosine
 
     for w in wordList:
         i = wordDict[w]
 
+        cos = wordCosines[w]
         u = U[i]
         x0, y0 = u[0], u[1]
-
-        wordCosine = cosine_sim(centroid, wordVectors[w])
-
-        x, y = ms.mapping(x0, wordCosine, y0, quadrant)
+        x, y = ms.mapping([x0, cos, y0, minCosine], quadrant)
 
         # print w, x, y, wordCosine
 
         resultList.append({
             'y'     : y,
             'x'     : x, 
-            'cos'   : wordCosine, 
+            'cos'   : cos, 
             'word'  : w,
         })
 
@@ -386,13 +404,13 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
 
     if queryWord1:
         i = wordDict[queryWord1]
-
-        # only consider top 2 
+        
+        # only consider top 2         
         qx0, qy0 = U[i][0], U[i][1]
 
         print queryWord1, qx0, qy0
 
-        q_x, q_y = ms.mapping(qx0, queryCosine, qy0, quadrant)
+        q_x, q_y = ms.mapping([qx0, queryCosine, qy0, minCosine], quadrant)
         result['queried'] = {
             'y'    : q_y,
             'x'    : q_x,
