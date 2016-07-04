@@ -91,7 +91,7 @@
                   <select id="select_model" class="form-control" name='select_model'>
                     <option value="SDDM" selected="selected">Malt-only SDDM(Sayeed et al., 2015)</option>
                     <option value="TypeDM">TypeDM(Baroni and Lenci, 2010)</option>
-                    <option value="SDDM_Embedding" selected="selected">SDDM_Embedding(Sayeed et al., 2015) (beta)</option>
+                    <option value="RBE" selected="selected">Role-based embeddings(RBE)(Tilk et al., to appear)</option>
                   </select>
                 </div>
               </div>
@@ -177,7 +177,7 @@
         </div>
 
         <!-- second column, containing the canvas with the visualization -->
-        <div class="col-md-7 col-sm-7 col-xs-12 col-ld-6" id="canvas_column">
+        <div class="col-md-6 col-sm-7 col-xs-12 col-ld-6" id="canvas_column">
           <div class="visualization" id="visualization_result">
 
                 <!-- Label show query errors passed from backend -->
@@ -191,7 +191,7 @@
         </div>
 
         <!-- third column, containing information of the current query and containing buttons which perform actions regarding the query result -->
-        <div class="col-md-2 col-sm-2 col-xs-12 col-ld-3" id="right_menu_column">
+        <div class="col-md-3 col-sm-2 col-xs-12 col-ld-3" id="right_menu_column">
 
           <!-- div containing the information about the current query, which is visualized in the canvas -->
           <div class="right_menu_column">
@@ -224,7 +224,7 @@
 
             <!-- button to recenter the view in the canvas to the centroid (default view after querying) -->
             <button id="resetViewBtn" type='button' class="btn btn-primary" onclick=javascript:resetView()>Re-centralize</button>
-            <br><br><br>
+            <br><br>
           </div>
 
           <div class="right_menu_column">

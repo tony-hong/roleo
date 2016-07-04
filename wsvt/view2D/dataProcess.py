@@ -63,7 +63,7 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
     modelList = model.split('_')
     modelName = modelList[0]
     matrix = mf.getMatrix(modelName)
-    if len(modelList) == 2:
+    if modelName == 'RBE':
         embeddingUsed = True
         embedding = eb.getEmbedding()
         vocabulary = eb.getVocabulary()
@@ -118,7 +118,8 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
     queryCosine = 0
 
     if embeddingUsed:
-        roleName = roleList[0]
+        roleParts = roleList[0].split('-')
+        roleName = roleParts[0]
 
         # list of words
         wordList = matrix.getMemberList(queryWord0, 'word1', 'word0', {'link':roleList}, topN)
@@ -275,19 +276,12 @@ def fraction_cosine(wordList, wordVectors, roleList, query, centroid, queryWord0
         else:
             x, y = ms.mapping([fraction, wordCosine, sumFraction], quadrant)
 
-            # simularities[w] = wordCosine
-            # fractions[w] = fraction
-
-            # print w, wordCosine, fraction, sumFraction
-
             resultList.append({
                 'y'     : y,
                 'x'     : x, 
                 'cos'   : wordCosine, 
                 'word'  : w,
             })
-
-    # if not inList:
 
     logger.info('result list is prepared')
 
@@ -323,20 +317,15 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
         # Obtain all supports and compute the sum support 
         for w in wordVectors.keys():
             s = pd.Series(base)
-            # expand all vectors to the dimension of the base
+
             s[:] = 0
 
-            # minus centroid to make the centroid in the center
             s = s + wordVectors[w] - centroid
+
             s.fillna(0, inplace=True)
 
             s.name = w
             wordDict[w] = index
-
-            # print '\n s: \n'
-            # print s
-            # print '\n M before: \n' 
-            # print M
 
             M = M.append(s)
             index = index + 1
@@ -355,24 +344,13 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
             wordDict[w] = index
             index = index + 1
 
-    # print '\n M after: \n' 
-    # print M
-
-    # print '\n M final: \n' 
-    # print M.as_matrix()
-
     # subtract the mean of target matrix
     meanVals = np.mean(M, axis=0)
     M = M - meanVals
     
     # perform SVD
     U, sigma, V = np.linalg.svd(M, full_matrices=False, compute_uv=True)
-    
-    # print '\n U: \n' 
-    # print U
 
-    # print '\n sigma: \n' 
-    # print sigma
     wordCosines = dict()
     minCosine = queryCosine if (queryCosine > 0) else 10
 
@@ -387,9 +365,8 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
         cos = wordCosines[w]
         u = U[i]
         x0, y0 = u[0], u[1]
-        x, y = ms.mapping([x0, cos, y0, minCosine], quadrant)
 
-        # print w, x, y, wordCosine
+        x, y = ms.mapping([x0, cos, y0, minCosine], quadrant)
 
         resultList.append({
             'y'     : y,

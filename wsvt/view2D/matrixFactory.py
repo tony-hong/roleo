@@ -15,8 +15,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 
 MODEL_MAPPING = {
-    'SDDM'     :   ['wackylmi-malt-v2-36K.word0.h5', 'wackylmi-malt-v2-36K.word1.h5'],
-    'TypeDM'    :   ['typedm.matricised.word0.h5'   , 'typedm.matricised.word1.h5']
+    'SDDM'      :   ['wackylmi-malt-v2-36K.word0.h5', 'wackylmi-malt-v2-36K.word1.h5'],
+    'TypeDM'    :   ['typedm.matricised.word0.h5'   , 'typedm.matricised.word1.h5'],
+    'RBE'       :   ['wackylmi-malt-v2-36K.word0.h5', 'wackylmi-malt-v2-36K.word1.h5'],
 }
 
 class MatrixFactory:
@@ -28,19 +29,6 @@ class MatrixFactory:
                 'word1' : os.path.join(DATA_DIR, MODEL_MAPPING[n][1]) 
             })
         self.currentModel = 'SDDM'
-
-    # def setModel(self, modelName, model):
-    #     if modelName in MODEL_MAPPING.keys():
-    #         fileNameList = MODEL_MAPPING[modelName]
-    #         self.matrix.close()
-    #         self.matrix = Matricisation({
-    #             'word0' : os.path.join(DATA_DIR, fileNameList[0]),
-    #             'word1' : os.path.join(DATA_DIR, fileNameList[1]) 
-    #         })
-    #     else:
-    #         return False
-    #     self.currentModel = modelName
-    #     return True
 
     def getMatrix(self, modelName):
         return self.matrixMapping[modelName]

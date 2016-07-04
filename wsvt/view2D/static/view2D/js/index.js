@@ -47,7 +47,7 @@ function getRoleDict () {
         loadRoleDictJSON(response)
         sessionStorage.roleDictJSON = JSON.stringify(response);
 
-        var model = 'SDDM_Embedding'
+        var model = 'RBE'
         fillRoleList(model)
         chageMappingList(model)
       }
@@ -159,7 +159,7 @@ function fillRoleList(modelName) {
     var t = dict[i]
     if(modelName == 'SDDM')
       list.append("<option value='" + t.name + "'>" + t.name + "\t:\t" + t.label + "</option>")
-    else if(modelName == 'SDDM_Embedding')
+    else if(modelName == 'RBE')
       list.append("<option value='" + t.name + "'>" + t.name + "\t:\t" + t.label + "</option>")
     else if (modelName == 'TypeDM')
       list.append("<option value='" + t.name + "'>" + t.name + "</option>")
@@ -204,7 +204,7 @@ function chageMappingList(modelName) {
   if(modelName == 'SDDM' || modelName == 'TypeDM'){
     $('.FCVM').removeAttr('disabled')
   }
-  else if (modelName == 'SDDM_Embedding'){
+  else if (modelName == 'RBE'){
     $('.FCVM').attr('disabled', 'disabled')
   }  
   else 
@@ -224,8 +224,8 @@ function downloadImage() {
     var roleStr = sessionStorage.prevRole;
     var modelStr = sessionStorage.prevModel;
     if (sessionStorage.prevGroup == "noun") {
-      firstStr = sessionStorage.prevNoun;
-      secondStr = sessionStorage.prevVerb;
+      var firstStr = sessionStorage.prevNoun;
+      var secondStr = sessionStorage.prevVerb;
     }
     dlA.download = firstStr + "_" + roleStr + "_" + secondStr + "_" + modelStr + ".png" ;
   }

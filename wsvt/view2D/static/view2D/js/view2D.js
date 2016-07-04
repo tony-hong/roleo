@@ -76,8 +76,8 @@ function reloadView(){
  *  @param {json} errCodeJSON_Object - A json contains errCode and errMsg Pairs
  */
 function loadErrCodeJSON(errCodeJSON_Object) {
-	errCodeJSON = errCodeJSON_Object;
-	// if (errCodeJSON == null) alert("errCodeJSON_Object is null");
+    errCodeJSON = errCodeJSON_Object;
+    // if (errCodeJSON == null) alert("errCodeJSON_Object is null");
 }
 
 /** Should be called using the return value of function createNodesFromJSON(json_obj) as param 
