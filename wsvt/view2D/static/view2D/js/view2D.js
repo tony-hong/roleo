@@ -233,9 +233,9 @@ function ifInProcessing() {
 }
 
 function loadLastSession(){
-	loadSession(-1) 
+    loadSession(-1) 
 }
-	
+    
 function loadSession(raw_index){
     // load last query JSON string from session storage
     if(typeof(Storage) !== "undefined") {
@@ -243,13 +243,13 @@ function loadSession(raw_index){
 
             // restore previous query history
             var histories = JSON.parse(sessionStorage.searchHistory)
-        	var index = (histories.length + raw_index) % histories.length
-        	// alert('raw_index: '+ raw_index + '\n len: '+ histories.length + '\n index: ' + index)
+            var index = (histories.length + raw_index) % histories.length
+            // alert('raw_index: '+ raw_index + '\n len: '+ histories.length + '\n index: ' + index)
 
             var lastQuery = histories[index]
 
             fillRoleList(lastQuery.model)
-        	chageMappingList(lastQuery.model)
+            chageMappingList(lastQuery.model)
             
             document.getElementById("input_noun").value = lastQuery.noun;
             document.getElementById("input_verb").value = lastQuery.verb;

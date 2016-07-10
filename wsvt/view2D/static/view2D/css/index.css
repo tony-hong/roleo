@@ -90,11 +90,11 @@ div.no-margin-bottom {
 
 /** Custom Style for the label which shows error messages for both input text fields **/
 label#label_msg_noun, label#label_msg_verb {
-	color: red;
-	font-size: 10px;
+    color: red;
+    font-size: 10px;
 }
 
 label.error {
-	color: red;
-	font-size: 15px;
+    color: red;
+    font-size: 15px;
 }
