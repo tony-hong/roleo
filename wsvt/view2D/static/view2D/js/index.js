@@ -184,20 +184,23 @@ function fillHistories(histories) {
   for (var i = iterLength; i > 0; i--) {
     var index = length - i
     var record = histories[index]
-    var text = ''
-    
-    if (record.group == 'verb'){
-        text = text + record.verb + '_' + record.role + '_' + record.noun
-    } 
-    else {
-        text = text + record.noun + '_' + record.role + '_' + record.verb
-    }
-    text = text + '_' + record.model + '_' + record.slider_val + '_' + record.mapping
-    
+    var text = getStringFromHistory(record)
     list.append("<option value='" + index + "'>" + text + "</option>")
   };
 
   list.val(length - 1)
+}
+
+function getStringFromHistory(record) {
+  var text = ''
+  if (record.group == 'verb'){
+      text = text + record.verb + '_' + record.role + '_' + record.noun
+  } 
+  else {
+      text = text + record.noun + '_' + record.role + '_' + record.verb
+  }
+  text = text + '_' + record.model + '_' + record.slider_val + '_' + record.mapping
+  return text
 }
 
 function chageMappingList(modelName) {
@@ -219,15 +222,14 @@ function downloadImage() {
   dlA.href = canvas.toDataURL('image/png');
   // construct name dynamically
   if(typeof(Storage) !== "undefined") {
-    var firstStr = sessionStorage.prevVerb;
-    var secondStr = sessionStorage.prevNoun;
-    var roleStr = sessionStorage.prevRole;
-    var modelStr = sessionStorage.prevModel;
-    if (sessionStorage.prevGroup == "noun") {
-      var firstStr = sessionStorage.prevNoun;
-      var secondStr = sessionStorage.prevVerb;
-    }
-    dlA.download = firstStr + "_" + roleStr + "_" + secondStr + "_" + modelStr + ".png" ;
+    // restore previous query history
+    var histories = JSON.parse(sessionStorage.searchHistory)
+    var index = histories.length - 1
+    var lastQuery = histories[index]
+
+    var text = getStringFromHistory(lastQuery)
+
+    dlA.download = text + ".png" ;
   }
   else { // when session storage is not supported
     dla.download = "result.png";
