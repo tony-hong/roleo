@@ -261,12 +261,19 @@ function loadSession(raw_index){
             var radioId = 'radio_' + lastQuery.group;
             document.getElementById(radioId).checked = true;
 
-            $("slider_val").text(lastQuery.slider_val);
+            $('#slider_val').text(lastQuery.slider_val);
             $('#slider').slider('value', lastQuery.slider_val)
 
             // restore previous query infos            
-            document.getElementById("lbl_noun_info").textContent = lastQuery.noun;
-            document.getElementById("lbl_verb_info").textContent = lastQuery.verb;
+            if (lastQuery.group == 'verb'){
+                document.getElementById("lbl_noun_info").textContent = lastQuery.noun;
+                document.getElementById("lbl_verb_info").textContent = lastQuery.verb + ' (selector)';
+            }
+            else{
+                document.getElementById("lbl_noun_info").textContent = lastQuery.noun + ' (selector)';
+                document.getElementById("lbl_verb_info").textContent = lastQuery.verb;
+            }
+
             document.getElementById("lbl_role_info").textContent = lastQuery.role;
             document.getElementById("lbl_model_info").textContent = lastQuery.model;
             document.getElementById("lbl_topN_info").textContent = lastQuery.slider_val;
