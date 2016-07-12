@@ -129,10 +129,9 @@ function submitQuery() {
         histories.push(record)
         fillHistories(histories)
         sessionStorage.searchHistory = JSON.stringify(histories)
-        // loadLastSession();
+        loadLastSession();
       }
       // invoke APIs in view2D.js to visualize the result
-      updateQuerySet(createNodesFromJSON(response));
       setIsInProcessing(false);
     }
   });
