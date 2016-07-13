@@ -176,6 +176,12 @@ function fillRoleList(modelName) {
   list.val('Patient')
 }
 
+function clearHistories() {
+  var list = $('#select_history')
+  list.empty()
+  sessionStorage.searchHistory = JSON.stringify(new Array())
+}
+
 function fillHistories(histories) {
   var list = $('#select_history')
   list.empty()
