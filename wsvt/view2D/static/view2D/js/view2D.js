@@ -240,46 +240,51 @@ function loadSession(raw_index){
     // load last query JSON string from session storage
     if(typeof(Storage) !== "undefined") {
         if (sessionStorage.searchHistory) {
-
             // restore previous query history
             var histories = JSON.parse(sessionStorage.searchHistory)
-            var index = (histories.length + raw_index) % histories.length
-            // alert('raw_index: '+ raw_index + '\n len: '+ histories.length + '\n index: ' + index)
 
-            var lastQuery = histories[index]
+            if (histories.length){
+                var index = (histories.length + raw_index) % histories.length
+                // alert('raw_index: '+ raw_index + '\n len: '+ histories.length + '\n index: ' + index)
 
-            fillRoleList(lastQuery.model)
-            chageMappingList(lastQuery.model)
-            
-            document.getElementById("input_noun").value = lastQuery.noun;
-            document.getElementById("input_verb").value = lastQuery.verb;
+                var lastQuery = histories[index]
 
-            $('#select_role').val(lastQuery.role)
-            $('#select_model').val(lastQuery.model);
-            $('#select_quadrant').val(lastQuery.quadrant);
+                fillRoleList(lastQuery.model)
+                chageMappingList(lastQuery.model)
+                
+                document.getElementById("input_noun").value = lastQuery.noun;
+                document.getElementById("input_verb").value = lastQuery.verb;
 
-            var radioId = 'radio_' + lastQuery.group;
-            document.getElementById(radioId).checked = true;
+                $('#select_role').val(lastQuery.role)
+                $('#select_model').val(lastQuery.model);
+                $('#select_quadrant').val(lastQuery.quadrant);
 
-            $('#slider_val').text(lastQuery.slider_val);
-            $('#slider').slider('value', lastQuery.slider_val)
+                var radioId = 'radio_' + lastQuery.group;
+                document.getElementById(radioId).checked = true;
 
-            // restore previous query infos            
-            if (lastQuery.group == 'verb'){
-                document.getElementById("lbl_noun_info").textContent = lastQuery.noun;
-                document.getElementById("lbl_verb_info").textContent = lastQuery.verb + ' (selector)';
+                $('#slider_val').text(lastQuery.slider_val);
+                $('#slider').slider('value', lastQuery.slider_val)
+
+                // restore previous query infos            
+                if (lastQuery.group == 'verb'){
+                    document.getElementById("lbl_noun_info").textContent = lastQuery.noun;
+                    document.getElementById("lbl_verb_info").textContent = lastQuery.verb + ' (selector)';
+                }
+                else{
+                    document.getElementById("lbl_noun_info").textContent = lastQuery.noun + ' (selector)';
+                    document.getElementById("lbl_verb_info").textContent = lastQuery.verb;
+                }
+
+                document.getElementById("lbl_role_info").textContent = lastQuery.role;
+                document.getElementById("lbl_model_info").textContent = lastQuery.model;
+                document.getElementById("lbl_topN_info").textContent = lastQuery.slider_val;
+                document.getElementById("lbl_mapping_info").textContent = lastQuery.mapping;
+
+                updateQuerySet(createNodesFromJSON(lastQuery.query));
             }
             else{
-                document.getElementById("lbl_noun_info").textContent = lastQuery.noun + ' (selector)';
-                document.getElementById("lbl_verb_info").textContent = lastQuery.verb;
+                //TODO
             }
-
-            document.getElementById("lbl_role_info").textContent = lastQuery.role;
-            document.getElementById("lbl_model_info").textContent = lastQuery.model;
-            document.getElementById("lbl_topN_info").textContent = lastQuery.slider_val;
-            document.getElementById("lbl_mapping_info").textContent = lastQuery.mapping;
-
-            updateQuerySet(createNodesFromJSON(lastQuery.query));
         }
         else {
             //dummyUpdate();

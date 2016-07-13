@@ -25,8 +25,16 @@ window.onload = function() {
   });
 
   if (!sessionStorage.searchHistory){ 
-    sessionStorage.searchHistory = JSON.stringify(new Array())  
+    sessionStorage.searchHistory = JSON.stringify(new Array())
     submitQuery();
+  }
+  else{
+    var histories = JSON.parse(sessionStorage.searchHistory)
+    if (histories.length == 0){
+      submitQuery();
+    }
+    else
+      fillHistories(JSON.parse(sessionStorage.searchHistory)) 
   }
 }
 
@@ -127,8 +135,8 @@ function submitQuery() {
         }
 
         histories.push(record)
-        fillHistories(histories)
         sessionStorage.searchHistory = JSON.stringify(histories)
+        fillHistories(histories)
         loadLastSession();
       }
       // invoke APIs in view2D.js to visualize the result
