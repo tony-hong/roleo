@@ -241,12 +241,10 @@ def fraction_cosine(wordList, wordVectors, roleList, query, centroid, queryWord0
     sumFraction = 0
 
     resultList = []
-    wordSupports = dict()
 
     centroidSupport = sum([getSupport(centroid, r, queryWord0) for r in roleList])
     # vectorSum = pd.concat([getVector(query, r) for r in roleList]).sum(level = 0)
     querySupport = sum([getSupport(query, r, queryWord0) for r in roleList])
-    wordSupports[queryWord1] = querySupport
 
     queryFraction = float(querySupport) / centroidSupport
     sumFraction = sumFraction + queryFraction
@@ -259,13 +257,10 @@ def fraction_cosine(wordList, wordVectors, roleList, query, centroid, queryWord0
     for w in wordList:
         v = wordVectors[w]
         support = sum([getSupport(v, r, queryWord0) for r in roleList])
-        wordSupports[w] = support
     
-    # Computer fraction and cosine
-    for w in wordList:
-        v = wordVectors[w]
+        # Computer fraction and cosine
         # If the mapping function is changed, this must be changed
-        fraction = float(wordSupports[w]) / centroidSupport
+        fraction = float(support) / centroidSupport
         sumFraction = fraction + sumFraction
         wordCosine = cosine_sim(centroid, v)
 
