@@ -120,7 +120,15 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
 
     if embeddingUsed:
         roleParts = roleList[0].split('-')
-        roleName = roleParts[0]
+        if len(roleParts) == 1:
+            roleName = roleParts[0]
+        elif len(roleParts) == 2:
+            if roleParts[1] == '1':
+                roleName = roleParts[0]
+            else:
+                roleName = roleParts[0] + '-' + roleParts[1]
+        else:
+            roleName = roleParts[0] + '-' + roleParts[1]
 
         # list of words
         wordList = matrix.getMemberList(queryWord0, 'word1', 'word0', {'link':roleList}, topN)
