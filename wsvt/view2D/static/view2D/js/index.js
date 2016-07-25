@@ -207,10 +207,10 @@ function fillHistories(histories) {
 function getStringFromHistory(record) {
   var text = ''
   if (record.group == 'verb'){
-      text = text + record.verb + '_' + record.role + '_' + record.noun
+      text = text + record.verb + '_' + record.role[0] + '_' + record.noun
   } 
   else {
-      text = text + record.noun + '_' + record.role + '_' + record.verb
+      text = text + record.noun + '_' + record.role[0] + '_' + record.verb
   }
   text = text + '_' + record.model + '_' + record.slider_val + '_' + record.mapping
   return text
