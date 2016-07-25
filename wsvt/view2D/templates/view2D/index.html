@@ -75,7 +75,7 @@
       <div class="row parent_row">
 
         <!-- first column, containing the input fields, where the user can enter a query -->
-        <div class="col-md-3 col-sm-3 col-xs-12 col-ld-3 left_column content_columns" id="left_menu_bar">
+        <div class="col-md-2 col-sm-2 col-xs-12 col-ld-3 left_column content_columns" id="left_menu_bar">
           <div id="query_form">
 
             <h4>Query</h4>
@@ -89,9 +89,9 @@
                 <span class="left_align">Model:</span><br>
                 <div>
                   <select id="select_model" class="form-control" name='select_model'>
-                    <option value="SDDM" selected="selected">Malt-only SDDM(Sayeed et al., 2015)</option>
-                    <option value="TypeDM">TypeDM(Baroni and Lenci, 2010)</option>
-                    <option value="RBE" selected="selected">Role-based embeddings(RBE)(Tilk et al., to appear)</option>
+                    <option value="SDDM">Malt-only SDDM (Sayeed et al., 2015)</option>
+                    <option value="TypeDM">TypeDM (Baroni and Lenci, 2010)</option>
+                    <option value="RBE" selected="selected">Role-based embeddings (RBE)(Tilk et al., to appear)</option>
                   </select>
                 </div>
               </div>
@@ -151,8 +151,8 @@
                 <span class="left_align">Mapping Method:</span><br>
                 <div class="left_align" data-toggle="tooltip_quadrant" title="Which mapping method do you want?">
                   <select id="select_quadrant" class="form-control" name='quadrant'>
-                    <option value="-2" selected="selected">SVD+cosine</option>
-                    <option value="-1">SVD</option>
+                    <option value="-2" selected="selected">SVDCos (beta)</option>
+                    <option value="-1">SVD (beta)</option>
                     <option class="FCVM" value="4" >FCVM 4-q</option>
                     <option class="FCVM" value="1" >FCVM 1-q</option>
                     <option class="FCVM" value="32">FCVM 32-q</option>
@@ -160,14 +160,13 @@
                     <option value="0">4-span by cosine</option>
                     -->                    
                   </select>
-                </div>
-                <div class="right_align">
-                  <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:submitQuery()>Submit Query</button>
-                  <input id="csrftoken" type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                  <br>
+                  <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:submitQuery()>Submit</button>
+
+                    <input id="csrftoken" type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                 </div>
               </div>
               <br>
-
           </div>
           </form>
           <br>
@@ -177,7 +176,7 @@
         </div>
 
         <!-- second column, containing the canvas with the visualization -->
-        <div class="col-md-6 col-sm-7 col-xs-12 col-ld-6" id="canvas_column">
+        <div class="col-md-7 col-sm-7 col-xs-12 col-ld-6" id="canvas_column">
           <div class="visualization" id="visualization_result">
 
                 <!-- Label show query errors passed from backend -->
@@ -228,15 +227,15 @@
           </div>
 
           <div class="right_menu_column">
-            <h4>Query History:</h4>
-              <select name="select_history" id='select_history' multiple='multiple' size='7' > 
+            <h4>Query History (beta):</h4>
+              <select name="select_history" id='select_history' class="form-control" multiple='multiple' size='7' > 
 
               </select> 
-              <br><br>
+              <br>
 
             <!-- button to recenter the view in the canvas to the centroid (default view after querying) -->
             <button id="clearHistoryBtn" type='button' class="btn btn-primary" onclick=javascript:clearHistories()>Clear Query History</button>
-            <br>
+
 
           </div>
         </div>
