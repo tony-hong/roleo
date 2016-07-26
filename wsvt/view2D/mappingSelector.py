@@ -9,16 +9,19 @@ def mapping(parameters, quadrant = 4):
         return mapping_1q(parameters[0], parameters[1], parameters[2])
     elif quadrant == 4 or quadrant == 32:
         return mapping_nq(parameters[0], parameters[1], parameters[2], quadrant)
+    # elif quadrant == 0:
+    #     return mapping_sc(parameters[0], parameters[1], parameters[2])
     elif quadrant == -2:
         x = parameters[0]
-        y = parameters[2]
-        cos = parameters[1]
+        y = parameters[1]
+        cos = parameters[2]
         minCos = parameters[3]
         return mapping_svd_cosine(x, y, cos, minCos)
     elif quadrant == -1:
         x = parameters[0]
-        y = parameters[2]
-        return mapping_svd(x, y)
+        y = parameters[1]
+        maxVal = parameters[4]
+        return mapping_svd(x, y, maxVal)
     else:
         return -1, -1
 
@@ -101,9 +104,9 @@ def mapping_svd_cosine(x, y, cos, minCos):
     return x, y
 
 
-def mapping_svd(x, y):
+def mapping_svd(x, y, maxVal):
     rad = math.atan2(y, x)
-    r = math.sqrt(math.pow(x, 2) + math.pow(y, 2))
+    r = math.sqrt(math.pow(x, 2) + math.pow(y, 2)) / maxVal
 
     # Transform back to Cartesian coordinates
     x = r * math.cos(rad)
