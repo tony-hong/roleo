@@ -75,18 +75,18 @@ CanvasView.prototype.draw = function(ctx) {
     TRANSFORMATION.resetTransform();
     ctx.textBaseline = "bottom";
     if (selectedNode) {
-        ctx.font = "20px sans-serif";
+        ctx.font = "18px sans-serif";
         ctx.fillStyle = rgbaToString(selectedNode.r, selectedNode.g, selectedNode.b, 1);
         ctx.textAlign = "right";
         var text = selectedNode.node.word + " : cos = " + selectedNode.node.cos;
         ctx.fillText(text, WIDTH, HEIGHT);
     }
     // always draw the info for the queried word
-    // if it exist
+    // if it exists
     var queriedElementNode = this.nodeElements[1];
     if (!queriedElementNode) alert("No queried word find in array[1]");
     if (queriedElementNode.node.needHighlight == true) {
-        ctx.font = "20px sans-serif";
+        ctx.font = "18px sans-serif";
         ctx.fillStyle = "red";
         ctx.textAlign = "left";
         var text = queriedElementNode.node.word + " : cos = " + queriedElementNode.node.cos;
