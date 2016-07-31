@@ -18,6 +18,7 @@ MODEL_MAPPING = {
     'SDDM'      :   ['wackylmi-malt-v2-36K.word0.h5', 'wackylmi-malt-v2-36K.word1.h5'],
     'TypeDM'    :   ['typedm.matricised.word0.h5'   , 'typedm.matricised.word1.h5'],
     'RBE'       :   ['wackylmi-malt-v2-36K.word0.h5', 'wackylmi-malt-v2-36K.word1.h5'],
+    'W2V'       :   ['wackylmi-malt-v2-36K.word0.h5', 'wackylmi-malt-v2-36K.word1.h5'],
 }
 
 class MatrixFactory:

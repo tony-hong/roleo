@@ -30,6 +30,7 @@ def getRoleDict():
             'name'    :   r.name
         })
     response['RBE'] = role_list_SDDM_Embedding
+    response['W2V'] = role_list_SDDM_Embedding
     
     # Get TypeDM
     modelResult = SemanticRole.objects.filter(
@@ -66,6 +67,7 @@ def getRoleMapping():
     role_mapping = {
         'SDDM'              :   role_mapping_SDDM,
         'TypeDM'            :   role_mapping_TypeDM,
-        'RBE'    :   role_mapping_SDDM,
+        'RBE'               :   role_mapping_SDDM,
+        'W2V'               :   role_mapping_SDDM,
     }
     return role_mapping
