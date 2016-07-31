@@ -64,9 +64,9 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
     modelList = model.split('_')
     modelName = modelList[0]
     matrix = mf.getMatrix(modelName)
-    if modelName == 'RBE':
+    if modelName == 'RBE' or modelName == 'W2V':
         embeddingUsed = True
-        embedding = eb.getEmbedding()
+        embedding = eb.getEmbedding(modelName)
         vocabulary = eb.getVocabulary()
 
         if vocabulary == -1:
@@ -145,7 +145,11 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
         print wordList
 
         vectorList = list()
-        temp = embedding['A0'][0]
+        if modelName == 'RBE':
+            temp = embedding['A0'][0]
+        else:
+            temp = embedding['A0']['apple']
+
         vectorSum = np.zeros(len(temp))
 
         for w in wordList:
@@ -159,7 +163,10 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
                 result = {'errCode' : errorCode.INTERNAL_ERROR}
                 return result
 
-            wordArray = embedding[roleName][wordIndex]
+            if modelName == 'RBE':
+                wordArray = embedding[roleName][wordIndex]
+            else:
+                wordArray = embedding[roleName][wordName]                
             vectorSum = vectorSum + wordArray
             vectorList.append(wordArray)
 
@@ -184,7 +191,10 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
                 result = {'errCode' : errorCode.QUERY_EMPTY}
                 return result
             else:
-                query = embedding[roleName][queryIndex]
+                if modelName == 'RBE':
+                    query = embedding[roleName][queryIndex]
+                else:
+                    query = embedding[roleName][queryWord]
                 queryCosine = cosine_sim(centroid, query)
                 wordVectors[queryWord1] = query
                 if queryWord1 in wordList:
@@ -348,7 +358,7 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
     else:
         keys = wordVectors.keys()
         num = len(keys)
-        M = np.zeros((num, 256))
+        M = np.zeros((num, len(temp)))
         index = 0
         resultList = []    
         wordDict = dict()
