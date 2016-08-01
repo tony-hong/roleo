@@ -32,7 +32,7 @@
       <!-- js for input validation -->
       <script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
       <!-- js responsible for visualization -->
-    <script src="{% static 'view2D/js/view2D.js' %}"></script>
+      <script src="{% static 'view2D/js/view2D.js' %}"></script>
       <script src="{% static 'view2D/js/view2D_models.js' %}"></script>
       <script src="{% static 'view2D/js/view2D_draw.js' %}"></script>
       <script src="{% static 'view2D/js/view2D_events.js' %}"></script>
@@ -218,13 +218,24 @@
             -->
 
             <!-- button to download the current visualization, which is in the canvas -->
-            <button id="downloadBtn" class="btn btn-primary" onclick=javascript:downloadImage()>Download Image</button>
-            <a href="#" id="downloadA" download></a>
-            <br><br>
+            <div class="left_align">
+                <button id="downloadBtn" class="btn btn-primary" onclick=javascript:downloadImage()>Download Image</button>
+                <a href="#" id="downloadA" download></a>
+                <br><br>
+            </div>
 
-            <!-- button to recenter the view in the canvas to the centroid (default view after querying) -->
-            <button id="resetViewBtn" type='button' class="btn btn-primary" onclick=javascript:resetView()>Re-centralize</button>
-            <br>
+            <div class="right_align">
+                Image Font Size:
+                <label id="font_size" name='font_size'></label>
+                <div id="font_slider" data-toggle="tooltip_quadrant" title="Which font size of the text do you want in your image?"></div>
+                <br>
+            </div>
+
+            <div>
+                <!-- button to recenter the view in the canvas to the centroid (default view after querying) -->
+                <button id="resetViewBtn" type='button' class="btn btn-primary" onclick=javascript:resetView()>Re-centralize</button>
+                <br><br>
+            </div>
           </div>
 
           <div class="right_menu_column">
@@ -234,8 +245,8 @@
               </select> 
               <br>
 
-            <!-- button to recenter the view in the canvas to the centroid (default view after querying) -->
-            <button id="clearHistoryBtn" type='button' class="btn btn-primary" onclick=javascript:clearHistories()>Clear Query History</button>
+              <!-- button to recenter the view in the canvas to the centroid (default view after querying) -->
+              <button id="clearHistoryBtn" type='button' class="btn btn-primary" onclick=javascript:clearHistories()>Clear Query History</button>
 
 
           </div>

@@ -58,6 +58,7 @@ var isInProcessing = false;  // Boolean tells current post request is still in p
 var errCode = null;      // Store the errCode if it exists in returned response
 var errCodeJSON = null;  // A json load from backend which map errCode -> errMsg
 var quadrant = 0
+var font = 18
 
 //var debugCnt = 0;
 
@@ -193,6 +194,12 @@ function initStateVariables() {
     isOverlap = false;
     isZoomIn = true;
     mouseWheelCnt = 0;
+}
+
+/** Set font size
+ */
+function setFontSize(i) {
+    font = i;
 }
 
 /** Set current canvas as invalidate

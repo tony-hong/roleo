@@ -263,6 +263,21 @@ function addSlider() {
       $('#slider_val').text(ui.value)
     }
   });
+
+  $('#font_slider').slider({
+    max:    20,
+    min:    12,
+    step:   2,
+    value:  20,
+    create: function(event, ui) {
+      $('#font_size').text(20)
+    },
+    slide: function(event, ui){
+      $('#font_size').text(ui.value)
+      setFontSize(ui.value)
+      view.update()
+    }
+  });
 }
 
 /** This function starts the presentation mode of the query site **/
