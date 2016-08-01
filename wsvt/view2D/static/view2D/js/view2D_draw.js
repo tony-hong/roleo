@@ -24,32 +24,34 @@ function draw() {
         view.draw(ctx);
         validate();
     }
+
+    // TODO else?
 }
 
-/** Draw this instance
- *  @param {CanvasRenderingContext2D} ctx - the 2D context of the current canvas
- */
-NodeElement.prototype.draw = function(ctx) {
-    // draw circle
-    var a = this.isMouseOver ? 1 : this.a;
-    ctx.fillStyle = rgbaToString(this.r, this.g, this.b, a);
-    ctx.beginPath();
-    ctx.arc(this.node.pos.x, this.node.pos.y, DEFAULT_NODE_RADIUS, 0*Math.PI, 2*Math.PI);
-    ctx.closePath();
-    ctx.fill();
 
-    // draw text
-    if (this.ifDrawText || this.isMouseOver) { // not draw text for nodes being in same virtual grid to avoid heavy overlapping
-        TRANSFORMATION.resetTransform();
-        ctx.font = "20px Comic Sans MS";
-        // TODO also show difference between selectedNode and others
-        //      e.g. make text larger? more distinguishable
-        // TODO also mark text same color as node respectively
-        //      but how to distinguish queried node then???
-        ctx.fillStyle = this.node.needHighlight ? "red" : rgbaToString(this.r, this.g, this.b, a);
-        ctx.textAlign = "center";
-        ctx.fillText(this.node.word, this.bbox.pos.x + this.bbox.w*0.5, this.bbox.pos.y - DEFAULT_NODE_RADIUS*TRANSFORMATION.scale);
-        TRANSFORMATION.updateTransform();
+
+/** A CanvasView contains all {@link NodeElement} used to draw 
+ *  @constructor
+ */
+function CanvasView() {
+    this.nodeElements = [];
+}
+
+/** Initialize using the current {@link QuerySet} instance
+ */
+CanvasView.prototype.update = function() {
+    if (!querySet) alert("querySet is null");
+    this.nodeElements = []
+    for (i=0; i<querySet.nodes.length; ++i) {
+        this.nodeElements.push(new NodeElement(querySet.nodes[i], font));
+    }
+}
+
+/** Reset grids to display texts for all {@link NodeElement}
+ */
+CanvasView.prototype.resetGrids = function() {
+    for (i=0; i<this.nodeElements.length; ++i) {
+        this.nodeElements[i].ifDrawText = true;
     }
 }
 
@@ -73,18 +75,18 @@ CanvasView.prototype.draw = function(ctx) {
     TRANSFORMATION.resetTransform();
     ctx.textBaseline = "bottom";
     if (selectedNode) {
-        ctx.font = "20px sans-serif";
+        ctx.font = "18px sans-serif";
         ctx.fillStyle = rgbaToString(selectedNode.r, selectedNode.g, selectedNode.b, 1);
         ctx.textAlign = "right";
         var text = selectedNode.node.word + " : cos = " + selectedNode.node.cos;
         ctx.fillText(text, WIDTH, HEIGHT);
     }
     // always draw the info for the queried word
-    // if it exist
+    // if it exists
     var queriedElementNode = this.nodeElements[1];
     if (!queriedElementNode) alert("No queried word find in array[1]");
     if (queriedElementNode.node.needHighlight == true) {
-        ctx.font = "20px sans-serif";
+        ctx.font = "18px sans-serif";
         ctx.fillStyle = "red";
         ctx.textAlign = "left";
         var text = queriedElementNode.node.word + " : cos = " + queriedElementNode.node.cos;
@@ -156,6 +158,43 @@ CanvasView.prototype.checkGrids = function(isZoomIn) {
         this.nodeElements[1].ifDrawText = true;
     }
 }
+
+
+
+/** Transformation handle the view transformation from node 2D projection coordinate to canvas(screen) coordinate 
+ *  @constructor
+ */
+function Transformation() {
+    this.dataScaleX = 1;    // compute based on query
+    this.dataScaleY = 1;    // compute based on query
+    this.scale = 1;         // compute based on moveEvent
+    this.translationX = 0;  // compute based on moveEvent
+    this.translationY = 0;  // compute based on moveEvent
+}
+/* canvas.setTransform(a,b,e,d,e,f)
+ *
+ *  a  b  e
+ *  c  d  f
+ *  0  0  1
+ *
+ *  Y axis get inverted
+ */
+/** Set the transformation of current canvas 2D context
+ */
+Transformation.prototype.updateTransform = function() {
+    ctx.setTransform(this.scale*this.dataScaleX, 0, 0, this.scale*this.dataScaleY*(-1), this.translationX, this.translationY);
+}
+/** Reset the transformation of current canvas 2D context to identity matrix
+ */
+Transformation.prototype.resetTransform = function() {
+    ctx.setTransform(1,0,0,1,0,0);
+}
+/*  */
+Transformation.prototype.transform = function(point2D) {
+    return new Point2D(point2D.x * this.dataScaleX * this.scale + this.translationX,
+                       point2D.y * this.dataScaleY * this.scale * (-1) + this.translationY);
+}
+
 
 /** Function shows error messages 
  *  @param {string} json_errCode - A string representation as the key of an errMsg
