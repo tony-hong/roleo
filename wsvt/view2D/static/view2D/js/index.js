@@ -164,9 +164,7 @@ function fillRoleList(modelName) {
   var dict = eval('roleDictJSON.' + modelName)
   for (var i = 0; i < dict.length; i++) {
     var t = dict[i]
-    if(modelName == 'SDDM')
-      list.append("<option value='" + t.name + "'>" + t.name + "\t:\t" + t.label + "</option>")
-    else if(modelName == 'RBE')
+    if(modelName == 'SDDM' || modelName == 'RBE' || modelName == 'W2V')
       list.append("<option value='" + t.name + "'>" + t.name + "\t:\t" + t.label + "</option>")
     else if (modelName == 'TypeDM')
       list.append("<option value='" + t.name + "'>" + t.name + "</option>")
@@ -220,7 +218,7 @@ function chageMappingList(modelName) {
   if(modelName == 'SDDM' || modelName == 'TypeDM'){
     $('.FCVM').removeAttr('disabled')
   }
-  else if (modelName == 'RBE'){
+  else if (modelName == 'RBE' || modelName == 'W2V'){
     $('.FCVM').attr('disabled', 'disabled')
   }  
   else 
