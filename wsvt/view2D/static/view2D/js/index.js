@@ -266,11 +266,11 @@ function addSlider() {
 
   $('#font_slider').slider({
     max:    20,
-    min:    12,
-    step:   2,
-    value:  20,
+    min:    14,
+    step:   1,
+    value:  18,
     create: function(event, ui) {
-      $('#font_size').text(20)
+      $('#font_size').text(18)
     },
     slide: function(event, ui){
       $('#font_size').text(ui.value)
