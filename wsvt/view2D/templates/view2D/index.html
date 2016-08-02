@@ -180,10 +180,10 @@
           <!-- red information text, which helps the user to understand that the visualization is below the query input column on smaller mobile devices -->
           <div class="hide_information_when_small"> ! Visualization below !</div>
         </div>
-
         <!-- second column, containing the canvas with the visualization -->
         <div class="col-md-7 col-sm-7 col-xs-12 col-ld-6" id="canvas_column">
-          <div class="visualization" id="visualization_result">
+          <!-- data-toggle="tooltip_left" title="Colors of words are the angles of the point. " -->
+          <div class="visualization" id="visualization_result" >
 
                 <!-- Label show query errors passed from backend -->
                 <label id="label_msg_query_error" class="error"></label>
@@ -250,9 +250,11 @@
               </select> 
               <br>
 
-              <!-- button to recenter the view in the canvas to the centroid (default view after querying) -->
+              <!-- button to clear the history list -->
               <button id="clearHistoryBtn" type='button' class="btn btn-primary" onclick=javascript:clearHistories()>Clear  History</button>
 
+              <!-- button to delete the selected history -->
+              <button id="deleteSelectedBtn" type='button' class="btn btn-primary" onclick=javascript:deleteSelected()>Delete Selected</button>
 
           </div>
         </div>
@@ -267,9 +269,9 @@
     <script>
       $('[data-toggle="tooltip_left"]').tooltip({'placement': 'left'});
       $('[data-toggle="tooltip_right"]').tooltip({'placement': 'right'});
+      $('[data-toggle="tooltip_top"]').tooltip({'placement': 'top'});
       $('[data-toggle="tooltip_bottom"]').tooltip({'placement': 'bottom'});
 
-      $('[data-toggle="tooltip_noun"]').tooltip({'placement': 'right'});
     </script>
   </body>
   

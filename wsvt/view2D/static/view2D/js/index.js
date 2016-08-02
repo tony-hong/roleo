@@ -183,6 +183,17 @@ function clearHistories() {
   sessionStorage.searchHistory = JSON.stringify(new Array())
 }
 
+function deleteSelected() {
+  var list = $('#select_history')
+  var selectedIndex = list.val()
+
+  histories = JSON.parse(sessionStorage.searchHistory)
+  histories.splice(selectedIndex, 1)
+  sessionStorage.searchHistory = JSON.stringify(histories) 
+  
+  fillHistories(histories)
+}
+
 function fillHistories(histories) {
   var list = $('#select_history')
   list.empty()
