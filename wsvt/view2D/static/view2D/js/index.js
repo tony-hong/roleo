@@ -138,6 +138,9 @@ function submitQuery() {
         sessionStorage.searchHistory = JSON.stringify(histories)
         fillHistories(histories)
         loadLastSession();
+      } 
+      else {
+        updateQuerySet(createNodesFromJSON(response));
       }
       // invoke APIs in view2D.js to visualize the result
       setIsInProcessing(false);
