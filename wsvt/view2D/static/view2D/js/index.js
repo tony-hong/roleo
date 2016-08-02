@@ -1,5 +1,5 @@
 var roleDictJSON = null
-var MAX_LENGTH = 7
+var MAX_LENGTH = 6
 
 /** Callback for window.onload to initializing index.html **/
 window.onload = function() {
