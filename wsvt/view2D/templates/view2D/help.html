@@ -62,21 +62,39 @@
         <div class="right">
 
           <!-- image -->
+          <img src="{% static 'view2D/img/model.png' %}" width="300" style="border: 1px solid lightgrey">
+        </div>
+        <div class="left">
+
+          <!-- description -->
+          <p class="well">
+            Choose a model you want to visualize. <br><br> For example: Role-based embedding (RBE)
+          </p>
+        </div>
+      </div>
+      <br>
+
+      <!-- Step 2 -->
+      <h3> Step 2 </h3>
+      <div class="step">
+        <div class="right">
+
+          <!-- image -->
           <img src="{% static 'view2D/img/noun.png' %}" width="300" style="border: 1px solid lightgrey">
         </div>
         <div class="left">
 
           <!-- description -->
           <p class="well">
-            At first you have to enter a noun in the "Noun" input field. This field must be filled in order to send the query.<br><br> For example: apple
+            You have to enter a noun in the "Noun" input field. This field must be filled in order to send the query.<br><br> For example: apple
           </p>
         </div>
       </div>
       <br>
 
 
-      <!-- Step 2 -->
-      <h3> Step 2 </h3>
+      <!-- Step 3 -->
+      <h3> Step 3 </h3>
       <div class="step">
         <div class="right">
 
@@ -93,8 +111,8 @@
       </div>
 
 
-      <!-- Step 3 -->
-      <h3> Step 3 </h3>
+      <!-- Step 4 -->
+      <h3> Step 4 </h3>
       <div class="step">
         <div class="right" >
 
@@ -111,9 +129,26 @@
       </div>
       <br><br>
 
+      <!-- Step 5 -->
+      <h3> Step 5 </h3>
+      <div class="step">
+        <div class="right">
 
-      <!-- Step 4 -->
-      <h3> Step 4 </h3>
+          <!-- image -->
+          <img src="{% static 'view2D/img/topn.png' %}" width="300" style="border: 1px solid lightgrey">
+        </div>
+        <div class="left">
+
+          <!-- description -->
+          <p class="well">
+            Choose how many results you want to visualize. <br><br> 
+          </p>
+        </div>
+      </div>
+      <br>
+
+      <!-- Step 6 -->
+      <h3> Step 6 </h3>
       <div class="step">
         <div class="right" >
 
@@ -133,8 +168,8 @@
       </div>
       <br>
 
-      <!-- Step 5 -->
-      <h3> Step 5 </h3>
+      <!-- Step 7 -->
+      <h3> Step 7 </h3>
       <div class="step">
         <div class="right" >
 
@@ -146,23 +181,6 @@
           <!-- description -->
           <p class="well">
             Just click the button and send the query!<br><br>The visualization needs a short while to compute depending on the complexity of your query.
-          </p>
-        </div>
-      </div>
-      <br>
-
-      <h3> Changing the model </h3>
-      <div class="step">
-        <div class="right" >
-
-            <!-- image -->
-            <img src="{% static 'view2D/img/model.png' %}" width="300" style="border: 1px solid lightgrey">
-        </div>
-        <div class="left">
-
-          <!-- description -->
-          <p class="well">
-            There are different models available which compute the word relations in different ways. Here you can specify another model. Choose it from the dropdown list and click the button.<br><br>Note that changing the model can take few minutes.
           </p>
         </div>
       </div>
