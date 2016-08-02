@@ -268,7 +268,7 @@ function addSlider() {
   });
 
   $('#font_slider').slider({
-    max:    20,
+    max:    48,
     min:    14,
     step:   1,
     value:  18,
