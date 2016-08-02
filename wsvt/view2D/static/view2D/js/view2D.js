@@ -269,10 +269,10 @@ function loadSession(raw_index){
                 // restore previous query infos            
                 if (lastQuery.group == 'verb'){
                     document.getElementById("lbl_noun_info").textContent = lastQuery.noun;
-                    document.getElementById("lbl_verb_info").textContent = lastQuery.verb + ' (selector)';
+                    document.getElementById("lbl_verb_info").textContent = lastQuery.verb + ' (primal)';
                 }
                 else{
-                    document.getElementById("lbl_noun_info").textContent = lastQuery.noun + ' (selector)';
+                    document.getElementById("lbl_noun_info").textContent = lastQuery.noun + ' (primal)';
                     document.getElementById("lbl_verb_info").textContent = lastQuery.verb;
                 }
 

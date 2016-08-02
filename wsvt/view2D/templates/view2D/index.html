@@ -17,28 +17,28 @@
     <link href="{% static 'view2D/jquery-ui/jquery-ui.min.css' %}" rel="stylesheet">    
     
     <!-- Bootstrap core CSS -->
-      <link href="{% static 'view2D/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'view2D/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="{% static 'view2D/css/index.css' %}" rel="stylesheet">
 
     <!-- jquery.min.js to use it in javascript -->
-      <script src="{% static 'view2D/js/jquery.min.js' %}"></script>
+    <script src="{% static 'view2D/js/jquery.min.js' %}"></script>
     <script src="{% static 'view2D/jquery-ui/jquery-ui.min.js' %}"></script>
 
       <script src="{% static 'view2D/bootstrap/js/bootstrap.min.js' %}"></script>
 
-      <!-- js loading order matters because of dependencies -->
-      <!-- js for input validation -->
-      <script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
-      <!-- js responsible for visualization -->
-      <script src="{% static 'view2D/js/view2D.js' %}"></script>
-      <script src="{% static 'view2D/js/view2D_models.js' %}"></script>
-      <script src="{% static 'view2D/js/view2D_draw.js' %}"></script>
-      <script src="{% static 'view2D/js/view2D_events.js' %}"></script>
-      <script src="{% static 'view2D/js/view2D_main.js' %}"></script>
-      <!-- js for others -->
-      <script src="{% static 'view2D/js/index.js' %}"></script>
+    <!-- js loading order matters because of dependencies -->
+    <!-- js for input validation -->
+    <script src="{% static 'view2D/js/inputTextFilter.js' %}"></script>
+    <!-- js responsible for visualization -->
+    <script src="{% static 'view2D/js/view2D.js' %}"></script>
+    <script src="{% static 'view2D/js/view2D_models.js' %}"></script>
+    <script src="{% static 'view2D/js/view2D_draw.js' %}"></script>
+    <script src="{% static 'view2D/js/view2D_events.js' %}"></script>
+    <script src="{% static 'view2D/js/view2D_main.js' %}"></script>
+    <!-- js for others -->
+    <script src="{% static 'view2D/js/index.js' %}"></script>
   </head>
 
   <body>
@@ -78,21 +78,21 @@
         <div class="col-md-2 col-sm-2 col-xs-12 col-ld-3 left_column content_columns" id="left_menu_bar">
           <div id="query_form">
 
-            <h4>Query</h4>
+            <h4>Query: </h4>
 
             
             <!-- form element which collects the information from the user entered fields below -->
             <form id="myDiv">
 
               <!-- div containing the fourth "input element", which means the dropdown box for model selection -->
-              <div class="input_element" data-toggle="tooltip_button" title="Choose a model">
+              <div class="input_element" data-toggle="tooltip_bottom" title="Choose a model">
                 <span class="left_align">Model:</span><br>
                 <div>
                   <select id="select_model" class="form-control" name='select_model'>
                     <option value="SDDM">Malt-only SDDM (Sayeed et al., 2015)</option>
                     <option value="TypeDM">TypeDM (Baroni and Lenci, 2010)</option>
-                    <option value="RBE" selected="selected">Role-based embeddings (RBE)(Tilk et al., to appear)</option>
-                    <option value="W2V">Word2Vec (W2V)(Mikolov et al., 2013)(beta)</option>
+                    <option value="RBE" selected="selected">Role-based embeddings (RBE)(Tilk et al., 2016)</option>
+                    <option value="W2V">word2vec (W2V)(Mikolov et al., 2013)(beta)</option>
                   </select>
                 </div>
               </div>
@@ -100,21 +100,23 @@
 
               <!-- div containing the first "input element" which means, the "Verb:", the input field for the verb, "Verb selects Noun"-radio button, label for error messages -->
               <div class="input_element">
-                <span class="left_align">Verb:</span>
-                <input id="input_verb" type="text" name="verb" value ="eat" class="form-control"  placeholder="e.g. eat" data-toggle="tooltip" title="Enter a verb!">
+                <div data-toggle="tooltip_right" title="Enter a verb">
+                  <span class="left_align">Verb:</span>
+                  <input id="input_verb" type="text" name="verb" value ="eat" class="form-control"  placeholder="e.g. eat">
+                </div>
+
                 <div class="input_element radio">
-                  <label class="left_align">
+                  <label class="left_align"  data-toggle="tooltip_bottom" title="Use verb as primal query word">
                     <input id="radio_verb" type="radio" name="group1" value="verb" checked="checked">Verb selects noun
                   </label>
                 </div>
-
                 <!-- label show related error message for the input -->
                 <label id="label_msg_verb"></label>
               </div>
               <br>
 
               <!-- div containing the second "input element" which means, dropdown selection menu for the role -->
-              <div class="input_element" data-toggle="tooltip" title="Specify the role of the noun!">
+              <div class="input_element" data-toggle="tooltip_bottom" title="Specify the role of the noun">
                 <span class="left_align">Role:</span><br>
 
                 <select id="select_role" class="form-control" name='role'>
@@ -125,10 +127,13 @@
 
               <!-- div containing the third "input element" which means the "Noun:", the input field for the noun, "Noun selects Verb"-radio button, label for error messages  -->
               <div class="input_element">
-                <span class="left_align">Noun:</span>
-                <input id="input_noun" type="text" name="noun" value="apple" class="form-control"  placeholder="e.g. apple" data-toggle="tooltip_noun" title="Enter a noun here!">
+                <div data-toggle="tooltip_right" title="Enter a noun">
+                  <span class="left_align">Noun:</span>
+                  <input id="input_noun" type="text" name="noun" value="apple" class="form-control"  placeholder="e.g. apple">
+                </div>
+
                 <div class="input_element radio">
-                  <label class="left_align">
+                  <label class="left_align" data-toggle="tooltip_bottom" title="Use noun as primal query word">
                     <input id="radio_noun" type="radio" name="group1" value="noun">Noun selects verb
                   </label>
                 </div>
@@ -138,20 +143,20 @@
               <br>
 
               <!-- div containing the fourth "input element", which means the "Top N results" scroll bar  -->
-              <div class="input_element">
-                Top N results: 
+              <div class="input_element" data-toggle="tooltip_bottom" title="How many results words do you want?">
+                Top N: 
                 <label id="slider_val" name='top_results'></label>
                 <div>     
-                    <div id="slider" data-toggle="tooltip_button" title="How many result words do you want?"></div>
+                    <div id="slider"></div>
                 </div>
               </div>
               <br>
             
               <!-- button which sends the query to the backend and builds the visualization, when the user clicks it -->
-              <div class="input_element">
+              <div class="input_element" >
                 <span class="left_align">Mapping Method:</span><br>
-                <div class="left_align" data-toggle="tooltip_quadrant" title="Which mapping method do you want?">
-                  <select id="select_quadrant" class="form-control" name='quadrant'>
+                <div class="left_align">
+                  <select id="select_quadrant" class="form-control" name='quadrant' data-toggle="tooltip_right" title="Which mapping method do you want?">
                     <option value="-2" selected="selected">SVDCos (beta)</option>
                     <option value="-1">SVD (beta)</option>
                     <option class="FCVM" value="4" >FCVM 4-q</option>
@@ -162,9 +167,9 @@
                     -->                    
                   </select>
                   <br>
-                  <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:submitQuery()>Submit</button>
+                  <button id="submitBtn" type='button' class="btn btn-primary" onclick=javascript:submitQuery()>Submit Query</button>
 
-                    <input id="csrftoken" type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                  <input id="csrftoken" type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                 </div>
               </div>
               <br>
@@ -186,7 +191,7 @@
             <!-- canvas which contains the final visualized result of the query -->
             <canvas id="myCanvas" class="canvas_style">
                     This text is displayed if your browser does not support HTML5 Canvas.
-              </canvas>
+            </canvas>
           </div>
         </div>
 
@@ -227,26 +232,26 @@
             <div class="right_align">
                 Image Font Size:
                 <label id="font_size" name='font_size'></label>
-                <div id="font_slider" data-toggle="tooltip_quadrant" title="Which font size of the text do you want in your image?"></div>
+                <div id="font_slider" data-toggle="tooltip_bottom" title="Which font size of the text do you want?"></div>
                 <br>
             </div>
 
             <div>
                 <!-- button to recenter the view in the canvas to the centroid (default view after querying) -->
                 <button id="resetViewBtn" type='button' class="btn btn-primary" onclick=javascript:resetView()>Re-centralize</button>
-                <br><br>
+                <br>
             </div>
           </div>
 
-          <div class="right_menu_column">
-            <h4>Query History (beta):</h4>
+          <div class="right_menu_column" data-toggle="tooltip_left" title="First word is primal query word. Role is represented by the first letter. ">
+            <h4>Query History: </h4>
               <select name="select_history" id='select_history' class="form-control" multiple='multiple' size='6' > 
 
               </select> 
               <br>
 
               <!-- button to recenter the view in the canvas to the centroid (default view after querying) -->
-              <button id="clearHistoryBtn" type='button' class="btn btn-primary" onclick=javascript:clearHistories()>Clear Query History</button>
+              <button id="clearHistoryBtn" type='button' class="btn btn-primary" onclick=javascript:clearHistories()>Clear  History</button>
 
 
           </div>
@@ -260,10 +265,11 @@
 
     <!-- initializing the tooltips on the elements in the first, left column, where the user enters the query -->
     <script>
-      $('[data-toggle="tooltip"]').tooltip({'placement': 'right'});
+      $('[data-toggle="tooltip_left"]').tooltip({'placement': 'left'});
+      $('[data-toggle="tooltip_right"]').tooltip({'placement': 'right'});
+      $('[data-toggle="tooltip_bottom"]').tooltip({'placement': 'bottom'});
+
       $('[data-toggle="tooltip_noun"]').tooltip({'placement': 'right'});
-      $('[data-toggle="tooltip_button"]').tooltip({'placement': 'right'});
-      $('[data-toggle="tooltip_quadrant"]').tooltip({'placement': 'bottom'});
     </script>
   </body>
   
