@@ -48,9 +48,6 @@ function getRoleDict () {
   if(!sessionStorage.roleDictJSON){
     $.ajax({
       url:      'roleDictJSON/',
-      type:     'GET',
-      data:     null,
-      async:    true,
       success:  function(response){
         loadRoleDictJSON(response)
         sessionStorage.roleDictJSON = JSON.stringify(response);
@@ -80,9 +77,6 @@ function getErrCodeJSON () {
   if (!sessionStorage.errorCodeJSON){
     $.ajax({
       url:      'errorCodeJSON/',
-      type:     'GET',
-      data:     null,
-      async:    true,
       success:  function(response){
         loadErrCodeJSON(response);
         sessionStorage.errorCodeJSON = JSON.stringify(response);
@@ -100,6 +94,8 @@ function submitQuery() {
   var noun = $('#input_noun').val();
   var verb = $('#input_verb').val();
   var model = $('#select_model').val();
+  
+  //TODO if there is other radio boxes this may result undefined behavior
   var group = $('input[name=group1]:checked').val();
   var slider_val = $('#slider_val').text();
 
@@ -113,9 +109,7 @@ function submitQuery() {
     url:      'query/',
     type:     'POST',
     data:     content,
-    async:    true,
     success:  function(response){
-      //TODO if there is other radio boxes this may result undefined behavior
 
       // only store query information if no error returned
       if (response.errCode == null) {
