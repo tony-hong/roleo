@@ -21,6 +21,7 @@ window.onload = function() {
 
   $('#select_history').change(function () {
     var selectedHistory = $('#select_history option:selected').val()
+    clearErrMsgLabel()
     loadSession(selectedHistory)
   });
 
@@ -104,6 +105,7 @@ function submitQuery() {
   var mapping = $('#select_quadrant option:selected').text()
 
   setIsInProcessing(true);
+  clearErrMsgLabel();
   var content = $('#myDiv').serialize()+'&top_results=' + slider_val
   $.ajax({
     url:      'query/',
@@ -134,6 +136,8 @@ function submitQuery() {
         loadLastSession();
       } 
       else {
+        // Show detailed error information in a label
+        setErrMsgLabel(errCodeJSON[response.errCode]);
         updateQuerySet(createNodesFromJSON(response));
       }
       // invoke APIs in view2D.js to visualize the result
@@ -152,7 +156,6 @@ function submitQuery() {
   });
 }
 
-
 function showChangeLabelError () {
   var msg = 'This is the current model, no need to change';
   $('#label_msg_changeModel_error').text(msg);
@@ -161,6 +164,24 @@ function showChangeLabelError () {
   }, 3000);
 }
 
+/**
+ * Show error message
+ */
+function setErrMsgLabel (msg) {
+    // New Version: Show error message using other element out side of the canvas
+    var lbl_msg_query_error = document.getElementById("label_msg_query_error");
+    if (lbl_msg_query_error == null) alert("getElementById(\"label_msg_query_error\") failed");
+    lbl_msg_query_error.textContent = msg
+}
+
+/**
+ * Clear error message 
+ */
+function clearErrMsgLabel () {
+    var lbl_msg_query_error = document.getElementById("label_msg_query_error");
+    if (lbl_msg_query_error == null) alert("getElementById(\"label_msg_query_error\") failed");
+    lbl_msg_query_error.textContent = ""
+}
 
 /** Fill the roleLabel:roleName pairs to the list of drawdown box
  *  @param {str} modelName - A string contains name of the model

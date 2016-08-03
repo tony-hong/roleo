@@ -219,19 +219,9 @@ function showErrorMsg(json_errCode) {
         ctx.fillStyle = "red";
         ctx.fillText(canvasMsg, 0.5*WIDTH, 0.5*HEIGHT);
         TRANSFORMATION.updateTransform();
-        // Show detailed error information in a label
-        setErrMsgLabel(errCodeJSON[json_errCode]);
     }
     else {
-        setErrMsgLabel("");
     }
-}
-
-function setErrMsgLabel (msg) {
-    // New Version: Show error message using other element out side of the canvas
-    var lbl_msg_query_error = document.getElementById("label_msg_query_error");
-    if (lbl_msg_query_error == null) alert("getElementById(\"label_msg_query_error\") failed");
-    lbl_msg_query_error.textContent = msg
 }
 
 /** Function draws text as feedback during querying */
