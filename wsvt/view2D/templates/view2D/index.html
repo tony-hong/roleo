@@ -79,16 +79,16 @@
           <div id="query_form">
 
             <h4>Query: </h4>
-
+            <!-- <br> -->
             
             <!-- form element which collects the information from the user entered fields below -->
             <form id="myDiv">
 
               <!-- div containing the fourth "input element", which means the dropdown box for model selection -->
-              <div class="input_element" data-toggle="tooltip_bottom" title="Choose a model">
+              <div class="input_element">
                 <span class="left_align">Model:</span><br>
                 <div>
-                  <select id="select_model" class="form-control" name='select_model'>
+                  <select id="select_model" class="form-control" name='select_model' data-toggle="tooltip_top" title="Choose a model">
                     <option value="SDDM">Malt-only SDDM (Sayeed et al., 2015)</option>
                     <option value="TypeDM">TypeDM (Baroni and Lenci, 2010)</option>
                     <option value="RBE" selected="selected">Role-based embeddings (RBE)(Tilk et al., 2016)</option>
@@ -100,26 +100,27 @@
 
               <!-- div containing the first "input element" which means, the "Verb:", the input field for the verb, "Verb selects Noun"-radio button, label for error messages -->
               <div class="input_element">
-                <div data-toggle="tooltip_right" title="Enter a verb">
+                <div>
                   <span class="left_align">Verb:</span>
-                  <input id="input_verb" type="text" name="verb" value ="eat" class="form-control"  placeholder="e.g. eat">
+
+                  <div class="input_element radio rignt_align">
+                    <label data-toggle="tooltip_top" title="Use verb as selector, and noun as query word">
+                      <input id="radio_verb" type="radio" name="group1" value="verb" checked="checked">as selector
+                    </label>
+                  </div>         
+
+                  <input id="input_verb" type="text" name="verb" value ="eat" class="form-control"  placeholder="e.g. eat" data-toggle="tooltip_right" title="Enter a verb">
                 </div>
 
-                <div class="input_element radio">
-                  <label class="left_align"  data-toggle="tooltip_bottom" title="Use verb as selector, and noun as query word">
-                    <input id="radio_verb" type="radio" name="group1" value="verb" checked="checked">Verb selects noun
-                  </label>
-                </div>
                 <!-- label show related error message for the input -->
                 <label id="label_msg_verb"></label>
               </div>
-              <br>
 
               <!-- div containing the second "input element" which means, dropdown selection menu for the role -->
-              <div class="input_element" data-toggle="tooltip_bottom" title="Specify the role of the noun">
+              <div class="input_element">
                 <span class="left_align">Role:</span><br>
 
-                <select id="select_role" class="form-control" name='role'>
+                <select id="select_role" class="form-control" name='role'  data-toggle="tooltip_top" title="Specify the role of the noun">
                   <option type="hidden" value="Patient"></option>
                 </select>
               </div>
@@ -127,23 +128,25 @@
 
               <!-- div containing the third "input element" which means the "Noun:", the input field for the noun, "Noun selects Verb"-radio button, label for error messages  -->
               <div class="input_element">
-                <div data-toggle="tooltip_right" title="Enter a noun">
+                <div>
                   <span class="left_align">Noun:</span>
-                  <input id="input_noun" type="text" name="noun" value="apple" class="form-control"  placeholder="e.g. apple">
+
+                  <div class="input_element radio rignt_align">
+                    <label  data-toggle="tooltip_top" title="Use noun as selector, and verb as query word">
+                      <input id="radio_noun" type="radio" name="group1" value="noun">as selector
+                    </label>
+                  </div>
+
+                  <input id="input_noun" type="text" name="noun" value="apple" class="form-control"  placeholder="e.g. apple" data-toggle="tooltip_right" title="Enter a noun">
                 </div>
 
-                <div class="input_element radio">
-                  <label class="left_align" data-toggle="tooltip_bottom" title="Use noun as selector, and verb as query word">
-                    <input id="radio_noun" type="radio" name="group1" value="noun">Noun selects verb
-                  </label>
-                </div>
+
                 <!-- label show related error message for the input -->
                 <label id="label_msg_noun"></label>
               </div>
-              <br>
 
               <!-- div containing the fourth "input element", which means the "Top N results" scroll bar  -->
-              <div class="input_element" data-toggle="tooltip_bottom" title="How many results words do you want?">
+              <div class="input_element" data-toggle="tooltip_right" title="How many results words do you want?">
                 Top N: 
                 <label id="slider_val" name='top_results'></label>
                 <div>     
@@ -177,11 +180,11 @@
           </form>
           <br>
 
-          <!-- red information text, which helps the user to understand that the visualization is below the query input column on smaller mobile devices -->
-          <div class="hide_information_when_small"> ! Visualization below !</div>
+        <!-- red information text, which helps the user to understand that the visualization is below the query input column on smaller mobile devices -->
+        <div class="hide_information_when_small"> ! Visualization below !</div>
         </div>
         <!-- second column, containing the canvas with the visualization -->
-        <div class="col-md-7 col-sm-7 col-xs-12 col-ld-6" id="canvas_column">
+        <div class="col-md-7 col-sm-7 col-xs-12 col-ld-6" id="canvas_column">          
           <!-- data-toggle="tooltip_left" title="Colors of words are the angles of the point. " -->
           <div class="visualization" id="visualization_result" >
 
@@ -196,7 +199,7 @@
         </div>
 
         <!-- third column, containing information of the current query and containing buttons which perform actions regarding the query result -->
-        <div class="col-md-3 col-sm-2 col-xs-12 col-ld-3" id="right_menu_column">
+        <div class="col-md-3 col-sm-3 col-xs-12 col-ld-3" id="right_menu_column">
 
           <!-- div containing the information about the current query, which is visualized in the canvas -->
           <div class="right_menu_column">
