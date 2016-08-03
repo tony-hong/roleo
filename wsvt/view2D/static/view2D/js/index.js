@@ -138,7 +138,17 @@ function submitQuery() {
       }
       // invoke APIs in view2D.js to visualize the result
       setIsInProcessing(false);
-    }
+    },
+    statusCode: {
+      500: function(){
+        setIsInProcessing(false);
+        setErrMsgLabel("Internal server error. Please perform a query later.");
+      },
+      504: function(){
+        setIsInProcessing(false);
+        setErrMsgLabel("Request time out. Please refresh the page and perform another query. Try with a smaller top N.");
+      }
+    },
   });
 }
 
