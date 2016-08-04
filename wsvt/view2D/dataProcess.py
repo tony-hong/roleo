@@ -153,24 +153,29 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
 
         vectorSum = np.zeros(len(temp))
 
+        tempList = list()
+
         for w in wordList:
             wordParts = w.split('-')
             wordName = wordParts[0]
             wordIndex = vocabulary.get(wordName, -1)
 
             if wordIndex == -1:
-                # Second query word does not exist in the model
-                logger.error( 'errCode: %d. Returned word in the distributional model is not in the word embedding. ', errorCode.INTERNAL_ERROR)
-                result = {'errCode' : errorCode.NOT_IN_EMBEDDING}
-                return result
+                continue
 
             if modelName == 'RBE':
                 wordArray = embedding[roleName][wordIndex]
             else:
-                wordArray = embedding[roleName][wordName]                
+                wordArray = embedding[roleName].get(wordName, -1)
+                if type(wordArray) == type(1):
+                    continue
+
             vectorSum = vectorSum + wordArray
+            tempList.append(w)
             vectorList.append(wordArray)
 
+        wordList = tempList
+        
         # Reshape wordList, vectorList to a dict(), with key is word and value is vector
         wordVectors = dict(zip(wordList, vectorList))
 
@@ -195,7 +200,12 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
                 if modelName == 'RBE':
                     query = embedding[roleName][queryIndex]
                 else:
-                    query = embedding[roleName][queryWord]
+                    query = embedding[roleName].get(queryWord, -1)
+                    if type(query) == type(1):
+                        logger.error( 'errCode: %d. query is empty', errorCode.QUERY_EMPTY)
+                        result = {'errCode' : errorCode.QUERY_EMPTY}
+                        return result  
+
                 queryCosine = cosine_sim(centroid, query)
                 wordVectors[queryWord1] = query
                 if queryWord1 in wordList:
