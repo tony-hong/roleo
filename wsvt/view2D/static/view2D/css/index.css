@@ -101,3 +101,8 @@ label.error {
     color: red;
     font-size: 15px;
 }
+
+label#label_warning {
+    color: red;
+    font-size: 10px;
+}

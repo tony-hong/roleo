@@ -15,6 +15,9 @@ window.onload = function() {
 
   $('#select_model').change(function () {
     var currentModel = $('#select_model option:selected').val()
+    if(currentModel == "TypeDM"){
+      showWarningLabel()
+    }
     fillRoleList(currentModel)
     chageMappingList(currentModel)
   });
@@ -156,12 +159,12 @@ function submitQuery() {
   });
 }
 
-function showChangeLabelError () {
-  var msg = 'This is the current model, no need to change';
-  $('#label_msg_changeModel_error').text(msg);
+function showWarningLabel () {
+  var msg = 'Time-consuming using TypeDM. Better with Top N<20'; 
+  $('#label_warning').text(msg);
   setTimeout(function (){
-    $('#label_msg_changeModel_error').text('');
-  }, 3000);
+    $('#label_warning').text('');
+  }, 5000);
 }
 
 /**
@@ -300,6 +303,10 @@ function addSlider() {
     },
     slide: function(event, ui){
       $('#slider_val').text(ui.value)
+      var currentModel = $('#select_model option:selected').val()
+      if(currentModel == "TypeDM" && ui.value > 20){
+        showWarningLabel()
+      }
     }
   });
 
