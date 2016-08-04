@@ -29,7 +29,7 @@ def mapping(parameters, quadrant = 4):
         return -1, -1
 
 
-def mapping_1q(sumFraction, cosine, minVal):
+def mapping_1q(sumFraction, cosine, maxVal = 1):
     '''
     Mapping from fraction, and cosine to the x, y coordinate.
     This is a simple function which maps the high dimension vector to 2D.
@@ -49,6 +49,7 @@ def mapping_1q(sumFraction, cosine, minVal):
 
     # Compute radial coordinates
     r = math.sqrt((math.pow(x, 2) + math.pow(y, 2))) * 1.5
+
     if x - 0 < 1e-3:
         rad_b = math.pi / 2
     else:
@@ -63,7 +64,7 @@ def mapping_1q(sumFraction, cosine, minVal):
     return x, y
 
 
-def mapping_nq(sumFraction, cosine, minVal, quadrant = 4):
+def mapping_nq(sumFraction, cosine, maxVal = 1, quadrant = 4):
     '''
     Mapping from fraction, and cosine to the x, y coordinate.
     This is a simple function which maps the high dimension vector to 2D.
@@ -76,13 +77,15 @@ def mapping_nq(sumFraction, cosine, minVal, quadrant = 4):
         (x, y) is a tuple
     '''
     # Scale fraciton and cosine, let them become more sparse over [0, 1]
-    x = 1 - sumFraction
-    y = 1 - cosine
+    x = 1 - sumFraction / maxVal
+    y = 1 - cosine / maxVal
     weight = 0.5
 
     # Compute radial coordinates
     r = math.sqrt(((1 - weight) * math.pow(x, 2) + weight * math.pow(y, 2)))
     
+    r = r * ZOOM_WEIGHT
+
     rad_b = math.atan2( weight * y, ((1 - weight) * x))
 
     rad = rad_b * quadrant

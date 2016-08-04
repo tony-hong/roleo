@@ -257,11 +257,13 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
 
 def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, queryWord1, queryCosine, quadrant):
     sumFraction = 0
+    maxValue = 1
 
     resultList = []
     wordSumFractions = dict()
     wordCosines = dict()
-    
+
+
     if(queryWord1):
         query = wordVectors[queryWord1]
 
@@ -272,7 +274,7 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
     queryFraction = float(querySupport) / centroidSupport
     sumFraction = sumFraction + queryFraction
 
-    q_x, q_y = ms.mapping([queryFraction, queryCosine, min(queryFraction, queryCosine)], quadrant)
+    q_x, q_y = ms.mapping([queryFraction, queryCosine, 1 - min(queryFraction, queryCosine)], quadrant)
 
     wordList.reverse()
 
@@ -286,25 +288,24 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
         fraction = float(support) / centroidSupport
         sumFraction = fraction + sumFraction
         wordCosine = cosine_sim(centroid, v)
-        
+
+
         wordSumFractions[w] = sumFraction
         wordCosines[w] = wordCosine
 
-    minValue = min(min(wordSumFractions.values()), min(wordCosines.values()))
-
+    maxValue = 1 - min(min(wordSumFractions.values()), min(wordCosines.values()))
 
     for w in wordList:
+
         # Apply mapping to each word
         if w == queryWord1:
             # Apply mapping to second query word
-            q_x, q_y = ms.mapping([wordSumFractions[w], wordCosines[w], minValue], quadrant)
+            q_x, q_y = ms.mapping([wordSumFractions[w], wordCosines[w], maxValue], quadrant)
         else:
-            x, y = ms.mapping([wordSumFractions[w], wordCosines[w], minValue], quadrant)
+            x, y = ms.mapping([wordSumFractions[w], wordCosines[w], maxValue], quadrant)
+    
 
-            # simularities[w] = wordCosine
-            # fractions[w] = fraction
 
-            # print w, wordCosine, sumFraction, minValue
 
             resultList.append({
                 'y'     : y,
