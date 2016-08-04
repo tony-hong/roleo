@@ -178,7 +178,7 @@ function setCanvasDimensions(){
         rightmenuwidth = 0;
     }
     var w = (window.innerWidth - querybarwidth - rightmenuwidth) * scaleW;
-    var h = window.innerHeight * 0.9;
+    var h = window.innerHeight * 0.85;
     canvas.width = w;
     canvas.height = h;
     WIDTH = w;

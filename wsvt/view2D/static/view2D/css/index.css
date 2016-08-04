@@ -17,12 +17,12 @@ div.query {
 }
 
 div.right_menu_column {
-  padding-top: 5px;
+  padding-top: 4px;
   padding-right: 5px;
 }
 
 canvas.canvas_style {
-  float:right;
+  /*float:right;*/
   border:1px solid #000000;
 }
 
@@ -44,6 +44,7 @@ canvas.canvas_style {
 div.visualization {
   padding-top: 5px;
   text-align: center;
+  padding-bottom: 25px;
 }
 
 div.fill_display_with_padding{
@@ -62,6 +63,7 @@ div.fill_display_with_padding{
       padding-bottom: 9999px;
       margin-bottom: -9999px;
   }
+
   div.hide_information_when_small {
       display: none;
       color:red;
@@ -80,7 +82,7 @@ div.fill_display_with_padding{
 }
 
 div.left_column {
-  padding-top:5px;
+  padding-top:4px;
   background-color:lavender;
   height:100%;
 }
