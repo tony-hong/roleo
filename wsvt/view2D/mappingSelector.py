@@ -29,7 +29,7 @@ def mapping(parameters, quadrant = 4):
         return -1, -1
 
 
-def mapping_1q(fraction, cosine, sumFraction):
+def mapping_1q(sumFraction, cosine, minVal):
     '''
     Mapping from fraction, and cosine to the x, y coordinate.
     This is a simple function which maps the high dimension vector to 2D.
@@ -63,7 +63,7 @@ def mapping_1q(fraction, cosine, sumFraction):
     return x, y
 
 
-def mapping_nq(fraction, cosine, sumFraction, quadrant = 4):
+def mapping_nq(sumFraction, cosine, minVal, quadrant = 4):
     '''
     Mapping from fraction, and cosine to the x, y coordinate.
     This is a simple function which maps the high dimension vector to 2D.

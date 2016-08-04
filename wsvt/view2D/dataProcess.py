@@ -259,8 +259,8 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
     sumFraction = 0
 
     resultList = []
-    wordSumFractions = list()
-    wordCosines = list()
+    wordSumFractions = dict()
+    wordCosines = dict()
     
     if(queryWord1):
         query = wordVectors[queryWord1]
@@ -271,6 +271,8 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
 
     queryFraction = float(querySupport) / centroidSupport
     sumFraction = sumFraction + queryFraction
+
+    q_x, q_y = ms.mapping([queryFraction, queryCosine, min(queryFraction, queryCosine)], quadrant)
 
     wordList.reverse()
 
@@ -285,21 +287,24 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
         sumFraction = fraction + sumFraction
         wordCosine = cosine_sim(centroid, v)
         
-        wordSumFractions.append(sumFraction)
-        wordCosines.append(wordCosine)
+        wordSumFractions[w] = sumFraction
+        wordCosines[w] = wordCosine
 
-    minValue = min(min(wordSumFractions), min(wordCosines))
+    minValue = min(min(wordSumFractions.values()), min(wordCosines.values()))
 
-    q_x, q_y = ms.mapping([queryFraction, queryCosine, minValue], quadrant)
 
     for w in wordList:
         # Apply mapping to each word
         if w == queryWord1:
             # Apply mapping to second query word
-            q_x, q_y = ms.mapping([wordCosine, sumFraction, minValue], quadrant)
+            q_x, q_y = ms.mapping([wordSumFractions[w], wordCosines[w], minValue], quadrant)
         else:
-            x, y = ms.mapping([wordCosine, sumFraction, minValue], quadrant)
+            x, y = ms.mapping([wordSumFractions[w], wordCosines[w], minValue], quadrant)
 
+            # simularities[w] = wordCosine
+            # fractions[w] = fraction
+
+            # print w, wordCosine, sumFraction, minValue
 
             resultList.append({
                 'y'     : y,
