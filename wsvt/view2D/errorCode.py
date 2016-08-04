@@ -26,6 +26,9 @@ QUERY_EMPTY         = 404
 # "error: query.ix[semanticRole] is empty, semantic role of query word does not exist"
 SMT_ROLE_EMPTY      = 405
 
+# Returned word in the distributional model is not in the word embedding.
+NOT_IN_EMBEDDING    = 406
+
 # "error: internal error!"
 INTERNAL_ERROR      = 501
 

@@ -159,8 +159,8 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
 
             if wordIndex == -1:
                 # Second query word does not exist in the model
-                logger.error( 'errCode: %d. Returned word in Malt is not in word embedding', errorCode.INTERNAL_ERROR)
-                result = {'errCode' : errorCode.INTERNAL_ERROR}
+                logger.error( 'errCode: %d. Returned word in the distributional model is not in the word embedding. ', errorCode.INTERNAL_ERROR)
+                result = {'errCode' : errorCode.NOT_IN_EMBEDDING}
                 return result
 
             if modelName == 'RBE':
