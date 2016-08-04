@@ -130,12 +130,13 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
         else:
             roleName = roleParts[0] + '-' + roleParts[1]
 
+
         # list of words
         wordList = matrix.getMemberList(queryWord0, 'word1', 'word0', {'link':roleList}, topN)
 
         # A hack checking whether the return is empty
         # if it is not list(), it is empty, the model return nothing for the primal query word
-        if type(wordList) != type(list()):
+        if len(wordList) == 0:
             logger.error('errCode: %d. memberVectors is empty', errorCode.MBR_VEC_EMPTY)
             result = {'errCode' : errorCode.MBR_VEC_EMPTY}
             return result
@@ -204,15 +205,13 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
         # memberTuple[0]: list of vectors
         # memberTuple[1]: list of words
         memberTuple = matrix.getMemberVectors(queryWord0, 'word1', 'word0', {'link':roleList}, topN)
-
-        # A hack checking whether the return is empty
-        # if it is not tuple(), it is empty, the model return nothing for the primal query word
-        if type(memberTuple) != type(tuple()):
+        vectorList, wordList = memberTuple
+        
+        # A checking whether the return is empty
+        if len(wordList) == 0:
             logger.error('errCode: %d. memberVectors is empty', errorCode.MBR_VEC_EMPTY)
             result = {'errCode' : errorCode.MBR_VEC_EMPTY}
             return result
-        else:
-            vectorList, wordList = memberTuple
 
         # Reshape wordList, vectorList to a dict(), with key is word and value is vector
         wordVectors = dict(zip(wordList, vectorList))
