@@ -4,6 +4,9 @@
 
 import math
 
+ZOOM_WEIGHT = 0.9
+
+
 def mapping(parameters, quadrant = 4):
     if quadrant == 1:
         return mapping_1q(parameters[0], parameters[1], parameters[2])
@@ -97,6 +100,8 @@ def mapping_svd_cosine(x, y, cos, minCos):
     rad = math.atan2(y, x)
     r = (1 - cos) / maxR
 
+    r = r * ZOOM_WEIGHT
+
     # Transform back to Cartesian coordinates
     x = r * math.cos(rad)
     y = r * math.sin(rad)
@@ -107,6 +112,8 @@ def mapping_svd_cosine(x, y, cos, minCos):
 def mapping_svd(x, y, maxVal):
     rad = math.atan2(y, x)
     r = math.sqrt(math.pow(x, 2) + math.pow(y, 2)) / maxVal
+
+    r = r * ZOOM_WEIGHT
 
     # Transform back to Cartesian coordinates
     x = r * math.cos(rad)
