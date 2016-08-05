@@ -175,7 +175,7 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
             vectorList.append(wordArray)
 
         wordList = tempList
-        
+
         # Reshape wordList, vectorList to a dict(), with key is word and value is vector
         wordVectors = dict(zip(wordList, vectorList))
 
@@ -313,14 +313,11 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
             q_x, q_y = ms.mapping([wordSumFractions[w], wordCosines[w], maxValue], quadrant)
         else:
             x, y = ms.mapping([wordSumFractions[w], wordCosines[w], maxValue], quadrant)
-    
-
-
 
             resultList.append({
                 'y'     : y,
                 'x'     : x, 
-                'cos'   : wordCosine, 
+                'cos'   : wordCosines[w], 
                 'word'  : w,
             })
 
