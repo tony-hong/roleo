@@ -92,7 +92,7 @@
                     <option value="SDDM">Malt-only SDDM (Sayeed et al., 2015)</option>
                     <option value="TypeDM">TypeDM (Baroni and Lenci, 2010)</option>
                     <option value="RBE" selected="selected">Role-based embeddings (RBE)(Tilk et al., 2016)</option>
-                    <option value="W2V">word2vec (W2V)(Mikolov et al., 2013)(beta)</option>
+                    <option value="W2V">word2vec (W2V)(Mikolov et al., 2013)</option>
                   </select>
                 </div>
               </div>
@@ -101,7 +101,7 @@
               <!-- div containing the first "input element" which means, the "Verb:", the input field for the verb, "Verb selects Noun"-radio button, label for error messages -->
               <div class="input_element">
                 <div>
-                  <span class="left_align">Verb(</span>
+                  <span class="left_align">Verb (</span>
 
                   <div class="input_element radio rignt_align">
                     <label data-toggle="tooltip_top" title="Use verb as selector, and noun as query word">
@@ -129,7 +129,7 @@
               <!-- div containing the third "input element" which means the "Noun:", the input field for the noun, "Noun selects Verb"-radio button, label for error messages  -->
               <div class="input_element">
                 <div>
-                  <span class="left_align">Noun(</span>
+                  <span class="left_align">Noun (</span>
 
                   <div class="input_element radio rignt_align">
                     <label  data-toggle="tooltip_top" title="Use noun as selector, and verb as query word">
@@ -146,7 +146,7 @@
               </div>
 
               <!-- div containing the fourth "input element", which means the "Top N results" scroll bar  -->
-              <div class="input_element" data-toggle="tooltip_right" title="How many results words do you want?">
+              <div class="input_element" data-toggle="tooltip_right" title="Number of results words">
                 Top N: 
                 <label id="slider_val" name='top_results'></label>
                 <div>     
@@ -159,9 +159,9 @@
               <div class="input_element" >
                 <span class="left_align">Mapping Method:</span><br>
                 <div class="left_align">
-                  <select id="select_quadrant" class="form-control" name='quadrant' data-toggle="tooltip_right" title="Which mapping method do you want?">
-                    <option value="-2" selected="selected">SVDCos (beta)</option>
-                    <option value="-1">SVD (beta)</option>
+                  <select id="select_quadrant" class="form-control" name='quadrant' data-toggle="tooltip_right" title="Which mapping method?">
+                    <option value="-2" selected="selected">SVDCos</option>
+                    <option value="-1">SVD</option>
                     <option class="FCVM" value="4" >FCVM 4-q</option>
                     <option class="FCVM" value="1" >FCVM 1-q</option>
                     <option class="FCVM" value="32">FCVM 32-q</option>
@@ -192,7 +192,7 @@
                     This text is displayed if your browser does not support HTML5 Canvas.
             </canvas>
             <!-- Label show query errors passed from backend -->
-            <label id="label_msg_query_error" class="error"></label>
+            <label id="label_msg_query_error" class="msg">Color of a point represents angle from vertical around centroid. Distance from a point to the centroid is cosine distance.</label>
 
           </div>
         </div>
@@ -208,7 +208,8 @@
             Noun:&nbsp <label id="lbl_noun_info"></label><br>
             Model:&nbsp <label  id="lbl_model_info"></label><br>
             Top N:&nbsp <label id="lbl_topN_info"></label><br>
-            Mapping:&nbsp <label id="lbl_mapping_info"></label><br><br>
+            Mapping:&nbsp <label id="lbl_mapping_info"></label>
+            <br>
 
             <!-- buttons which contain actions related to the current query, which is visualized in the canvas -->
             <!-- Add a dropdown menu let user specify image format -->
@@ -224,23 +225,21 @@
             <br><br>
             -->
 
-            <!-- button to download the current visualization, which is in the canvas -->
-            <div class="left_align">
-                <button id="downloadBtn" class="btn btn-primary" onclick=javascript:downloadImage()>Download Image</button>
-                <a href="#" id="downloadA" download></a>
-                <br><br>
-            </div>
-
-            <div class="right_align">
+            <div class="input_element">
                 Image Font Size:
                 <label id="font_size" name='font_size'></label>
-                <div id="font_slider" data-toggle="tooltip_bottom" title="Which font size of the text do you want?"></div>
+                <div id="font_slider" data-toggle="tooltip_left" title="Font size of the text"></div>
                 <br>
             </div>
 
-            <div>
+            <!-- button to download the current visualization, which is in the canvas -->
+            <div class="input_element">
                 <!-- button to recenter the view in the canvas to the centroid (default view after querying) -->
                 <button id="resetViewBtn" type='button' class="btn btn-primary" onclick=javascript:resetView()>Re-centralize</button>
+
+                <button id="downloadBtn" class="btn btn-primary" onclick=javascript:downloadImage()>Download Image</button>
+                <a href="#" id="downloadA" download></a>
+                <br>
                 <br>
             </div>
           </div>
