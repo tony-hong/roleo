@@ -137,6 +137,7 @@ function submitQuery() {
         sessionStorage.searchHistory = JSON.stringify(histories)
         fillHistories(histories)
         loadLastSession();
+        showExplanation(quadrant)
       } 
       else {
         // Show detailed error information in a label
@@ -167,6 +168,17 @@ function showWarningLabel () {
   }, 5000);
 }
 
+function showExplanation (quadrant) {
+    if(quadrant < 0){
+      setMsgLabel('Color of a point represents angle from vertical around centroid. ' + 
+        'Distance from a point to the centroid is cosine distance.');
+    } else if(quadrant == 1){
+      setMsgLabel('Y-axis is cosine distance. X-axis is normalized Local Mutual Information.');
+    } else {
+      setMsgLabel('Color of a point represents angle. ');
+    }
+}
+
 /**
  * Show error message
  */
@@ -174,6 +186,21 @@ function setErrMsgLabel (msg) {
     // New Version: Show error message using other element out side of the canvas
     var lbl_msg_query_error = document.getElementById("label_msg_query_error");
     if (lbl_msg_query_error == null) alert("getElementById(\"label_msg_query_error\") failed");
+
+    // TODO: change class
+    lbl_msg_query_error.textContent = msg
+}
+
+
+/**
+ * Show message
+ */
+function setMsgLabel (msg) {
+    // New Version: Show error message using other element out side of the canvas
+    var lbl_msg_query_error = document.getElementById("label_msg_query_error");
+    if (lbl_msg_query_error == null) alert("getElementById(\"label_msg_query_error\") failed");
+
+    // TODO: change class
     lbl_msg_query_error.textContent = msg
 }
 
@@ -217,9 +244,10 @@ function deleteSelected() {
 
   histories = JSON.parse(sessionStorage.searchHistory)
   histories.splice(selectedIndex, 1)
-  sessionStorage.searchHistory = JSON.stringify(histories) 
-  
+  sessionStorage.searchHistory = JSON.stringify(histories)
   fillHistories(histories)
+
+  loadLastSession()
 }
 
 function fillHistories(histories) {

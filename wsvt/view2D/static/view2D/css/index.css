@@ -44,7 +44,7 @@ canvas.canvas_style {
 div.visualization {
   padding-top: 5px;
   text-align: center;
-  padding-bottom: 25px;
+  padding-bottom: 5px;
 }
 
 div.fill_display_with_padding{
@@ -99,7 +99,11 @@ label#label_msg_noun, label#label_msg_verb {
 
 label.error {
     color: red;
-    font-size: 15px;
+    font-size: 14px;
+}
+
+label.msg {
+    font-size: 12px;
 }
 
 label#label_warning {
