@@ -22,8 +22,11 @@ def getRoleDict():
 
     # Get RBE
     modelResult = SemanticRole.objects.exclude(
+        modelSupport = 0
+    ).exclude(
         modelSupport = 1
     )
+    
     for r in modelResult:
         role_list_SDDM_Embedding.append({
             'label'   :   r.labelSDDM,
@@ -33,9 +36,14 @@ def getRoleDict():
     response['W2V'] = role_list_SDDM_Embedding
     
     # Get TypeDM
-    modelResult = SemanticRole.objects.filter(
-        modelSupport = 3
+    modelResult = SemanticRole.objects.exclude(
+        modelSupport = 1
+    ).exclude(
+        modelSupport = 2
     )
+
+    print modelResult
+
     for r in modelResult:
         role_list_TypeDM.append({
             'label'   :   r.labelTypeDM,
@@ -58,10 +66,13 @@ def getRoleMapping():
         role_mapping_SDDM[str(r.name)] = [str(r.labelSDDM)]
     
     # Get TypeDM
-    modelResult = SemanticRole.objects.filter(
-        modelSupport = 3
+    modelResult = SemanticRole.objects.exclude(
+        modelSupport = 1
+    ).exclude(
+        modelSupport = 2
     )
-    for r in modelResult:
+
+    for r in modelResult: 
         role_mapping_TypeDM[str(r.name)] = [str(u) for u in r.labelTypeDM.split(',')]
 
     role_mapping = {

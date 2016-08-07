@@ -12,6 +12,7 @@ class SemanticRole(models.Model):
     labelTypeDM = models.CharField(default = 'null', max_length=32)
     name = models.CharField(default = 'null', max_length=32)
     
+    # 0: SDDM and TypeDM
     # 1: SDDM only; 
     # 2: both SDDM and RBE 
     # 3: both SDDM, RBE and TypeDM; 
