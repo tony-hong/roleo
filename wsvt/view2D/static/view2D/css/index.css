@@ -99,7 +99,7 @@ label#label_msg_noun, label#label_msg_verb {
 
 label.error {
     color: red;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 label.msg {
