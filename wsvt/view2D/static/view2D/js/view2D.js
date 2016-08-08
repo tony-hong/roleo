@@ -259,6 +259,7 @@ function loadSession(raw_index){
                 $('#select_role').val(lastQuery.role)
                 $('#select_model').val(lastQuery.model);
                 $('#select_quadrant').val(lastQuery.quadrant);
+                showExplanation(lastQuery.quadrant)
 
                 var radioId = 'radio_' + lastQuery.group;
                 document.getElementById(radioId).checked = true;

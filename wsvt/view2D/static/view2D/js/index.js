@@ -108,7 +108,7 @@ function submitQuery() {
   var mapping = $('#select_quadrant option:selected').text()
 
   setIsInProcessing(true);
-  clearErrMsgLabel();
+
   var content = $('#myDiv').serialize()+'&top_results=' + slider_val
   $.ajax({
     url:      'query/',
@@ -137,7 +137,6 @@ function submitQuery() {
         sessionStorage.searchHistory = JSON.stringify(histories)
         fillHistories(histories)
         loadLastSession();
-        showExplanation(quadrant)
       } 
       else {
         // Show detailed error information in a label
