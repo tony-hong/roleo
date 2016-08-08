@@ -56,7 +56,7 @@ function getRoleDict () {
         loadRoleDictJSON(response)
         sessionStorage.roleDictJSON = JSON.stringify(response);
 
-        var model = 'RBE'
+        var model = 'SDDM'
         fillRoleList(model)
         chageMappingList(model)
       }
@@ -321,11 +321,11 @@ function downloadImage() {
 }
 
 function addSlider() {
-  var slider_val = sessionStorage.prevTopN ? sessionStorage.prevTopN : 30;
+  var slider_val = sessionStorage.prevTopN ? sessionStorage.prevTopN : 20;
   // alert(v)
   $('#slider').slider({
     max:    50,
-    min:    5,
+    min:    6,
     step:   2,
     value:  slider_val,
     create: function(event, ui) {
