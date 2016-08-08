@@ -188,6 +188,7 @@ function setErrMsgLabel (msg) {
 
     // TODO: change class
     lbl_msg_query_error.textContent = msg
+    $('#label_msg_query_error').attr('class', 'error')
 }
 
 
@@ -201,6 +202,7 @@ function setMsgLabel (msg) {
 
     // TODO: change class
     lbl_msg_query_error.textContent = msg
+    $('#label_msg_query_error').attr('class', 'msg')
 }
 
 /**
