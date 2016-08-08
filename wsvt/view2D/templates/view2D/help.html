@@ -77,21 +77,20 @@
       <!-- Step 2 -->
       <h3> Step 2 </h3>
       <div class="step">
-        <div class="right">
+        <div class="right" >
 
           <!-- image -->
-          <img src="{% static 'view2D/img/noun.png' %}" width="300" style="border: 1px solid lightgrey">
+          <img src="{% static 'view2D/img/verb.png' %}" width="300" style="border: 1px solid lightgrey">
         </div>
         <div class="left">
 
           <!-- description -->
           <p class="well">
-            You have to enter a noun in the "Noun" input field. This field must be filled in order to send the query.<br><br> For example: apple
+            Then you have to enter a verb in the "Verb" input field. This field must be filled in order to send the query.<br><br> For example: eat
           </p>
         </div>
       </div>
-      <br>
-
+      <br><br>
 
       <!-- Step 3 -->
       <h3> Step 3 </h3>
@@ -110,24 +109,23 @@
         </div>
       </div>
 
-
       <!-- Step 4 -->
       <h3> Step 4 </h3>
       <div class="step">
-        <div class="right" >
+        <div class="right">
 
           <!-- image -->
-          <img src="{% static 'view2D/img/verb.png' %}" width="300" style="border: 1px solid lightgrey">
+          <img src="{% static 'view2D/img/noun.png' %}" width="300" style="border: 1px solid lightgrey">
         </div>
         <div class="left">
 
           <!-- description -->
           <p class="well">
-            Then you have to enter a verb in the "Verb" input field. This field must be filled in order to send the query.<br><br> For example: eat
+            You have to enter a noun in the "Noun" input field. This field must be filled in order to send the query.<br><br> For example: apple
           </p>
         </div>
       </div>
-      <br><br>
+      <br>
 
       <!-- Step 5 -->
       <h3> Step 5 </h3>
@@ -141,7 +139,7 @@
 
           <!-- description -->
           <p class="well">
-            Choose how many results you want to visualize. <br><br> 
+            Choose the number of results you want to visualise. <br><br> 
           </p>
         </div>
       </div>
@@ -153,16 +151,17 @@
         <div class="right" >
 
           <!-- image -->
-          <img src="{% static 'view2D/img/select.png' %}" width="300" style="border: 1px solid lightgrey">
+          <img src="{% static 'view2D/img/select1.png' %}" width="250" style="border: 1px solid lightgrey">
+          <img src="{% static 'view2D/img/select2.png' %}" width="250" style="border: 1px solid lightgrey">
         </div>
         <div class="left">
 
           <!-- description -->
           <p class="well">
-            This option defines whether you are more interested in verbs, which are surrounding the entered noun or in nouns, which are surrounding the entered verb. This is why you have these two options to choose from:<br>
-            Noun selects verb<br>
-            Verb selects noun<br><br>
-            For example: Noun selects verb
+            This option defines whether you are more interested in verbs, which are surrounding the entered noun or in nouns, which are surrounding the entered verb. In other words, using verb as selector or using noun as selector. If verb is used as selector, noun is query word, also named as filler. This is why you have these two options to choose from:<br>
+            Verb as selector<br>
+            Noun as selector<br><br>
+            For example: Noun as selector
           </p>
         </div>
       </div>
@@ -170,6 +169,32 @@
 
       <!-- Step 7 -->
       <h3> Step 7 </h3>
+      <div class="step">
+        <div class="right" >
+
+          <!-- image -->
+          <img src="{% static 'view2D/img/mapping.png' %}" width="200" style="border: 1px solid lightgrey">
+        </div>
+        <div class="left">
+
+          <!-- description -->
+          <p class="well">
+            This option is to choose mapping methods. There are 2 groups of mapping methods: Singular Vector Decomposition(SVD)-based and fraction cosine vector mapping (FCVM). <br>
+            1. SVD-based: <br>
+            SVDCos: SVD rescale by cosine to the centroid; <br>
+            SVD: truncated SVD with rank of 2. <br>
+            2. FCVM: fast mapping method for high dimension vector in distributional memory model; <br>
+            "-[n]q" represents the quadrants of the result is n. <br>
+            Distance from a point to the centroid is combination of cosine distance and normalized Local Mutual Information <br>
+            As an example, we use SVDCos here.<br>
+
+          </p>
+        </div>
+      </div>
+      <br>
+
+      <!-- Step 8 -->
+      <h3> Step 8 </h3>
       <div class="step">
         <div class="right" >
 
@@ -183,6 +208,31 @@
             Just click the button and send the query!<br><br>The visualization needs a short while to compute depending on the complexity of your query.
           </p>
         </div>
+      </div>
+      <br>
+
+      <!-- title -->
+      <h2> How to interpret the visualisation? </h2>
+
+      <div class="step">
+        <div class="right">
+          <!-- description -->
+          <p class="well">
+            After the mapping, points with colors are presented on the 2D visualization plane. <br>
+            Each point represents a word in the result returned from the model. In the center, <br>
+            a point name centroid in grey is the centroid of the result. <br><br>
+            The color represents the angular coordinate of the point, which means points with angular coordinates close to each other will have similar colors. <br><br>
+            The distance from each point to the centroid is the cosine distance mentioned above. This indicates the thematic fit score of the word in given context. <br><br>
+            The cosine value of query word is shown on bottom left corner. As the mouse is over any point, the cosine value of corresponding word is shown on bottom right corner. 
+          </p>
+        </div>
+
+        <div class="left" >
+
+          <!-- image -->
+          <img src="{% static 'view2D/img/canvas.png' %}" width="700" style="border: 1px solid lightgrey">
+        </div>
+
       </div>
       <br>
 
