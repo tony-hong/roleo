@@ -174,7 +174,8 @@ function showExplanation (quadrant) {
     } else if(quadrant == 1){
       setMsgLabel('Y-axis is cosine distance. X-axis is normalized Local Mutual Information.');
     } else {
-      setMsgLabel('Color of a point represents angle. ');
+      setMsgLabel('Color of a point represents angle. Distance from a point to the centroid is' 
+        + ' combination of cosine distance and normalized Local Mutual Information');
     }
 }
 
