@@ -54,7 +54,7 @@
     <div class="container padding_top_menu">
 
       <!-- title -->
-      <h2> How to perform a query </h2>
+      <h2> How to perform a query?</h2>
 
       <!-- Step 1 -->
       <h3> Step 1 </h3>
@@ -185,9 +185,9 @@
             SVD: truncated SVD with rank of 2. <br>
             2. FCVM: fast mapping method for high dimension vector in distributional memory model; <br>
             "-[n]q" represents the quadrants of the result is n. <br>
-            Distance from a point to the centroid is combination of cosine distance and normalized Local Mutual Information <br>
+            Color of a point represents angle from vertical around centroid. <br>
+            Distance from a point to the centroid is combination of cosine distance and normalized Local Mutual Information (LMI)<br>
             As an example, we use SVDCos here.<br>
-
           </p>
         </div>
       </div>
@@ -221,7 +221,7 @@
             After the mapping, points with colors are presented on the 2D visualization plane. <br>
             Each point represents a word in the result returned from the model. In the center, <br>
             a point name centroid in grey is the centroid of the result. <br><br>
-            The color represents the angular coordinate of the point, which means points with angular coordinates close to each other will have similar colors. <br><br>
+            The color represents the angular coordinate around the centroid of the point, which means points with angular coordinates close to each other will have similar colors. <br><br>
             The distance from each point to the centroid is the cosine distance mentioned above. This indicates the thematic fit score of the word in given context. <br><br>
             The cosine value of query word is shown on bottom left corner. As the mouse is over any point, the cosine value of corresponding word is shown on bottom right corner. 
           </p>
