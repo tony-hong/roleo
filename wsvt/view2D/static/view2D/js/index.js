@@ -174,7 +174,7 @@ function showExplanation (quadrant) {
     } else if(quadrant == 1){
       setMsgLabel('Y-axis is cosine distance. X-axis is normalized Local Mutual Information.');
     } else {
-      setMsgLabel('Distance from a point to the centroid is' 
+      setMsgLabel('Distance from a point to the centroid is ' 
         + 'combination of cosine distance and normalized LMI (see Help)');
     }
 }
