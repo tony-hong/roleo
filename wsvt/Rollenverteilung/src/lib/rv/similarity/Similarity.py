@@ -2,7 +2,9 @@
 
 import os
 import sys
+import numpy as np
 import pandas as pd
+
 from numpy.linalg import norm
 
 
@@ -18,7 +20,7 @@ def ecu_dist(series1, series2):
     A = A.fillna(0)
     B = B.fillna(0)
 
-    return norm(A - B)
+    return norm(A / norm(A) - B / norm(B))
 
 def cosine_sim(vector1, vector2):
     """
@@ -27,12 +29,33 @@ def cosine_sim(vector1, vector2):
     """
     if isinstance(vector1, pd.Series):
         A, B = vector1.align(vector2)
-        A = A.fillna(0)
-        B = B.fillna(0)
+        A = A.fillna(0).values
+        B = B.fillna(0).values
+        result = A.dot(B) / (norm(A) * norm(B))
     else:
         A = vector1
         B = vector2
-    return A.dot(B)/(norm(A) * norm(B))
+        result = A.dot(B) / (norm(A) * norm(B))
+
+    return result
+
+def cosine_sim_mat(M):
+    # base similarity matrix (all dot products)
+    # replace this with A.dot(A.T).todense() for sparse representation
+    similarity = np.dot(M, M.T)
+    # squared magnitude of preference vectors (number of occurrences)
+    square_mag = np.diag(similarity)
+    # inverse squared magnitude
+    inv_square_mag = 1 / square_mag
+    # if it doesn't occur, set it's inverse magnitude to zero (instead of inf)
+    inv_square_mag[np.isinf(inv_square_mag)] = 0
+    # inverse of the magnitude
+    inv_mag = np.sqrt(inv_square_mag)
+    # cosine similarity (elementwise multiply by inverse magnitudes)
+    cosine = similarity * inv_mag
+    cosine = cosine.T * inv_mag
+
+    return cosine
 
 def vector_sum(vecs, level=None):
     """
