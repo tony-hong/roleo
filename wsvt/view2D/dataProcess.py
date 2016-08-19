@@ -20,7 +20,7 @@ import math
 import numpy as np
 import pandas as pd
 
-from rv.similarity.Similarity import cosine_sim
+from rv.similarity.Similarity import cosine_sim, cosine_sim_mat
 
 import errorCode as errorCode
 import mappingSelector as ms
@@ -273,6 +273,8 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
     wordSumFractions = dict()
     wordCosines = dict()
 
+    N = len(wordList) + 1
+    D = len(centroid)
 
     if(queryWord1):
         query = wordVectors[queryWord1]
@@ -288,21 +290,38 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
 
     wordList.reverse()
 
+    A = np.zeros((N, D))
+    i = 0
+
     # Obtain all supports and compute the sum support
     for w in wordList:
         v = wordVectors[w]
+
+        v, _ = (wordVectors[w]).align(centroid)        
+        v.fillna(0, inplace=True)
+        A[i] = v.values
+        i=i+1
+
         support = sum([getSupport(v, r, queryWord0) for r in roleList])
     
         # Computer fraction and cosine
         # If the mapping function is changed, this must be changed
         fraction = float(support) / centroidSupport
         sumFraction = fraction + sumFraction
-        wordCosine = cosine_sim(centroid, v)
-
 
         wordSumFractions[w] = sumFraction
-        wordCosines[w] = wordCosine
 
+        # wordCosine = cosine_sim(centroid, v)
+        # wordCosines[w] = wordCosine
+
+    A[N - 1] = centroid
+    cosines = cosine_sim_mat(A)
+    i = 0
+    for w in wordList:
+        wordCosines[w] = cosines[N - 1][i]
+        i=i+1
+
+    # for auto-scaling 
     maxValue = 1 - min(min(wordSumFractions.values()), min(wordCosines.values()))
 
     for w in wordList:
@@ -340,53 +359,68 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
     return result
 
 
-
 def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadrant):
+    N = len(wordList) + 1
+    D = len(centroid)
+
     temp = wordVectors[wordList[0]]
     if isinstance(temp, pd.Series): 
         base = pd.concat(wordVectors.values()).sum(level=[0,1])
 
         M = pd.DataFrame()
+        A = np.zeros((N, len(base)))
         index = 0
-        resultList = []    
+        resultList = []
         wordDict = dict()
+
+        cv, _ = centroid.align(base)
+        cv.fillna(0, inplace=True)
 
         # Obtain all supports and compute the sum support 
         for w in wordVectors.keys():
-            s = pd.Series(base)
+            v = wordVectors[w]
+            s = (v.align(base))[0].fillna(0)
 
-            s[:] = 0
-
-            s = s + wordVectors[w] - centroid
-
-            s.fillna(0, inplace=True)
-
+            s = s - cv
+            # s.fillna(0, inplace=True)
+            
             s.name = w
             wordDict[w] = index
 
             M = M.append(s)
+            A[index] = .values
             index = index + 1
+
+        A[N-1] = cv
 
     else:
         keys = wordVectors.keys()
         num = len(keys)
-        M = np.zeros((num, len(temp)))
+        M = np.zeros((num, D))
+        A = np.zeros((N, D))
+
         index = 0
-        resultList = []    
+        resultList = []
         wordDict = dict()
 
         # Obtain all supports and compute the sum support 
         for w in keys:
             M[index] = wordVectors[w] - centroid
+            A[index] = wordVectors[w]
             wordDict[w] = index
             index = index + 1
+
+        A[N-1] = centroid
 
     # subtract the mean of target matrix
     meanVals = np.mean(M, axis=0)
     M = M - meanVals
-    
+
     # perform SVD
     U, sigma, V = np.linalg.svd(M, full_matrices=False, compute_uv=True)
+
+
+    cosines = cosine_sim_mat(A)
 
     wordCosines = dict()
     wordX = dict()
@@ -396,9 +430,12 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
     maxVal = -1
 
     for w in wordList:
-        cos = cosine_sim(centroid, wordVectors[w])
+
+        # cos = cosine_sim(centroid, wordVectors[w])
+
         i = wordDict[w]
         u = U[i]
+        cos = cosines[N-1][i]
 
         wordX[w] = u[0]
         wordY[w] = u[1]
