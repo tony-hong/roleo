@@ -370,25 +370,33 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
         M = pd.DataFrame()
         A = np.zeros((N, len(base)))
         index = 0
-        resultList = []
+        resultList = []    
         wordDict = dict()
 
+        cv = centroid
         cv, _ = centroid.align(base)
         cv.fillna(0, inplace=True)
+        cv = cv / np.linalg.norm(cv)
 
         # Obtain all supports and compute the sum support 
         for w in wordVectors.keys():
             v = wordVectors[w]
-            s = (v.align(base))[0].fillna(0)
 
-            s = s - cv
-            # s.fillna(0, inplace=True)
+            v = v / np.linalg.norm(v)
+
+            v, _ = v.align(base)
+            v.fillna(0, inplace=True)
+
+            A[index] = v.values
+
+            s = v - cv
+            s.fillna(0, inplace=True)
             
             s.name = w
-            wordDict[w] = index
 
+            wordDict[w] = index
             M = M.append(s)
-            A[index] = .values
+
             index = index + 1
 
         A[N-1] = cv
@@ -403,10 +411,13 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
         resultList = []
         wordDict = dict()
 
+
         # Obtain all supports and compute the sum support 
         for w in keys:
-            M[index] = wordVectors[w] - centroid
-            A[index] = wordVectors[w]
+            v = wordVectors[w] / np.linalg.norm(wordVectors[w])
+
+            M[index] = v - centroid
+            A[index] = v
             wordDict[w] = index
             index = index + 1
 
