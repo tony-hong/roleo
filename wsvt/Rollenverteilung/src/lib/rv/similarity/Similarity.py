@@ -39,7 +39,7 @@ def cosine_sim(vector1, vector2):
 
     return result
 
-def cosine_sim_mat(M):
+def sim_inv_mag(M):
     # base similarity matrix (all dot products)
     # replace this with A.dot(A.T).todense() for sparse representation
     similarity = np.dot(M, M.T)
@@ -51,11 +51,31 @@ def cosine_sim_mat(M):
     inv_square_mag[np.isinf(inv_square_mag)] = 0
     # inverse of the magnitude
     inv_mag = np.sqrt(inv_square_mag)
+
+    return similarity, inv_mag
+
+
+def cosine_sim_mat(M):
+    similarity, inv_mag = sim_inv_mag(M)
+
     # cosine similarity (elementwise multiply by inverse magnitudes)
     cosine = similarity * inv_mag
     cosine = cosine.T * inv_mag
 
     return cosine
+
+def cosine_sim_mat_n(M):
+    similarity, inv_mag = sim_inv_mag(M)
+
+    # cosine similarity (elementwise multiply by inverse magnitudes)
+    cosine = similarity * inv_mag
+    cosine = cosine.T * inv_mag
+
+    # normalize all vectors
+    B = M * inv_mag.reshape(len(inv_mag), 1)
+
+    return cosine, B
+
 
 def vector_sum(vecs, level=None):
     """
