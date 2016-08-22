@@ -20,7 +20,7 @@ import math
 import numpy as np
 import pandas as pd
 
-from rv.similarity.Similarity import cosine_sim, cosine_sim_mat
+from rv.similarity.Similarity import cosine_sim, cosine_sim_mat_n
 
 import errorCode as errorCode
 import mappingSelector as ms
@@ -230,8 +230,12 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
         logger.info('getMemberVectors finished...')
         # print wordList
 
+        # Reshape wordList, vectorList to a dict(), with key is word and value is vector
+        wordVectors = dict(zip(wordList, vectorList))
+
         # Compute centroid from the vectorList using pandas
         centroid = pd.concat(vectorList).sum(level=[0,1])
+        base = centroid
 
         query = pd.Series()
 
@@ -250,11 +254,17 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
             else:
                 queryCosine = cosine_sim(centroid, query)
                 wordVectors[queryWord1] = query
+                base = centroid.align(query)[0]
                 if queryWord1 in wordList:
                     inList = True
-
-
+    
     if quadrant < 0:
+        if not embeddingUsed:
+            for w in wordVectors.keys():
+                v = wordVectors[w]
+                v = v.align(base)[0]
+                wordVectors[w] = v.fillna(0).values
+            centroid = base.fillna(0).values
         result = svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadrant)
     else:
         result = fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, queryWord1, queryCosine, quadrant)
@@ -297,10 +307,10 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
     for w in wordList:
         v = wordVectors[w]
 
-        v, _ = (wordVectors[w]).align(centroid)        
+        v = (wordVectors[w]).align(centroid)[0]
         v.fillna(0, inplace=True)
         A[i] = v.values
-        i=i+1
+        i = i + 1
 
         support = sum([getSupport(v, r, queryWord0) for r in roleList])
     
@@ -315,11 +325,11 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
         # wordCosines[w] = wordCosine
 
     A[N - 1] = centroid
-    cosines = cosine_sim_mat(A)
+    cosines, B = cosine_sim_mat_n(A)
     i = 0
     for w in wordList:
         wordCosines[w] = cosines[N - 1][i]
-        i=i+1
+        i = i + 1
 
     # for auto-scaling 
     maxValue = 1 - min(min(wordSumFractions.values()), min(wordCosines.values()))
@@ -360,68 +370,31 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
 
 
 def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadrant):
-    N = len(wordList) + 1
-    D = len(centroid)
-
     temp = wordVectors[wordList[0]]
-    if isinstance(temp, pd.Series): 
-        base = pd.concat(wordVectors.values()).sum(level=[0,1])
+    keys = wordVectors.keys()
+    N = len(keys)
+    D = len(temp)
+    M = np.zeros((N, D))
+    A = np.zeros((N + 1, D))
 
-        M = pd.DataFrame()
-        A = np.zeros((N, len(base)))
-        index = 0
-        resultList = []    
-        wordDict = dict()
+    index = 0
+    resultList = []
+    wordDict = dict()
 
-        cv = centroid
-        cv, _ = centroid.align(base)
-        cv.fillna(0, inplace=True)
-        cv = cv / np.linalg.norm(cv)
+    # Obtain all supports and compute the sum support 
+    for w in keys:
+        v = wordVectors[w]
+        A[index] = v
+        wordDict[w] = index
+        index = index + 1
 
-        # Obtain all supports and compute the sum support 
-        for w in wordVectors.keys():
-            v = wordVectors[w]
+    A[N] = centroid
 
-            v = v / np.linalg.norm(v)
+    cosines, B = cosine_sim_mat_n(A)
 
-            v, _ = v.align(base)
-            v.fillna(0, inplace=True)
-
-            A[index] = v.values
-
-            s = v - cv
-            s.fillna(0, inplace=True)
-            
-            s.name = w
-
-            wordDict[w] = index
-            M = M.append(s)
-
-            index = index + 1
-
-        A[N-1] = cv
-
-    else:
-        keys = wordVectors.keys()
-        num = len(keys)
-        M = np.zeros((num, D))
-        A = np.zeros((N, D))
-
-        index = 0
-        resultList = []
-        wordDict = dict()
-
-
-        # Obtain all supports and compute the sum support 
-        for w in keys:
-            v = wordVectors[w] / np.linalg.norm(wordVectors[w])
-
-            M[index] = v - centroid
-            A[index] = v
-            wordDict[w] = index
-            index = index + 1
-
-        A[N-1] = centroid
+    for w in keys:
+        i = wordDict[w]
+        M[i] = B[i]
 
     # subtract the mean of target matrix
     meanVals = np.mean(M, axis=0)
@@ -431,7 +404,6 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
     U, sigma, V = np.linalg.svd(M, full_matrices=False, compute_uv=True)
 
 
-    cosines = cosine_sim_mat(A)
 
     wordCosines = dict()
     wordX = dict()
@@ -441,12 +413,9 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
     maxVal = -1
 
     for w in wordList:
-
-        # cos = cosine_sim(centroid, wordVectors[w])
-
         i = wordDict[w]
         u = U[i]
-        cos = cosines[N-1][i]
+        cos = cosines[N][i]
 
         wordX[w] = u[0]
         wordY[w] = u[1]
