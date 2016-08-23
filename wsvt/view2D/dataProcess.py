@@ -64,6 +64,7 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
     modelList = model.split('_')
     modelName = modelList[0]
     matrix = mf.getMatrix(modelName)
+
     if modelName == 'RBE' or modelName == 'W2V':
         embeddingUsed = True
         embedding = eb.getEmbedding(modelName)
@@ -71,20 +72,15 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
 
         if vocabulary == -1:
             logger.critical( 'errCode: %d. internal error!', errorCode.INTERNAL_ERROR)
-            result = {'errCode' : errorCode.INTERNAL_ERROR}
-            return result
+            return {'errCode' : errorCode.INTERNAL_ERROR}
 
 
     wordVectors = dict()
-    expandedVectors = dict()
     result = dict()
     
     logger.info('process start...')
 
-    memberIndex = dict()
-    double = False
     inList = False
-    queryExist = True
 
     role_mapping = getRoleMapping()
 
@@ -101,19 +97,16 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
         queryWord0 = noun + '-n'
         roleList = [r + '-1' for r in roleList]
         if verb:
-            double = True
             queryWord1 = verb + '-v'
     # Case of verb selects noun
     elif group == 'verb':
         queryWord0 = verb + '-v'
         roleList = roleList
         if noun:
-            double = True
             queryWord1 = noun + '-n'
     else:
         logger.critical( 'errCode: %d. internal error!', errorCode.INTERNAL_ERROR)
-        result = {'errCode' : errorCode.INTERNAL_ERROR}
-        return result
+        return {'errCode' : errorCode.INTERNAL_ERROR}
 
     queryFraction = 0
     queryCosine = 0
@@ -130,7 +123,6 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
         else:
             roleName = roleParts[0] + '-' + roleParts[1]
 
-
         # list of words
         wordList = matrix.getMemberList(queryWord0, 'word1', 'word0', {'link':roleList}, topN)
 
@@ -138,8 +130,7 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
         # if it is not list(), it is empty, the model return nothing for the primal query word
         if len(wordList) == 0:
             logger.error('errCode: %d. memberVectors is empty', errorCode.MBR_VEC_EMPTY)
-            result = {'errCode' : errorCode.MBR_VEC_EMPTY}
-            return result
+            return {'errCode' : errorCode.MBR_VEC_EMPTY}
 
         # LOG
         logger.info('getMemberVectors finished...')
@@ -194,8 +185,7 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
             if queryIndex == -1:
                 # Second query word does not exist in the model
                 logger.error( 'errCode: %d. query is empty', errorCode.QUERY_EMPTY)
-                result = {'errCode' : errorCode.QUERY_EMPTY}
-                return result
+                return {'errCode' : errorCode.QUERY_EMPTY}
             else:
                 if modelName == 'RBE':
                     query = embedding[roleName][queryIndex]
@@ -203,8 +193,7 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
                     query = embedding[roleName].get(queryWord, -1)
                     if type(query) == type(1):
                         logger.error( 'errCode: %d. query is empty', errorCode.QUERY_EMPTY)
-                        result = {'errCode' : errorCode.QUERY_EMPTY}
-                        return result  
+                        return {'errCode' : errorCode.QUERY_EMPTY}
 
                 queryCosine = cosine_sim(centroid, query)
                 wordVectors[queryWord1] = query
@@ -220,11 +209,7 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
         # A checking whether the return is empty
         if len(wordList) == 0:
             logger.error('errCode: %d. memberVectors is empty', errorCode.MBR_VEC_EMPTY)
-            result = {'errCode' : errorCode.MBR_VEC_EMPTY}
-            return result
-
-        # Reshape wordList, vectorList to a dict(), with key is word and value is vector
-        wordVectors = dict(zip(wordList, vectorList))
+            return {'errCode' : errorCode.MBR_VEC_EMPTY}
 
         # LOG
         logger.info('getMemberVectors finished...')
@@ -249,8 +234,7 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
             if query.isnull().all():
                 # Second query word does not exist in the model
                 logger.error( 'errCode: %d. query is empty', errorCode.QUERY_EMPTY)
-                result = {'errCode' : errorCode.QUERY_EMPTY}
-                return result
+                return {'errCode' : errorCode.QUERY_EMPTY}
             else:
                 queryCosine = cosine_sim(centroid, query)
                 wordVectors[queryWord1] = query
@@ -273,8 +257,6 @@ def processQuery(verb, noun, role, group, model, topN = 20, quadrant = 4):
 
     return result
 
-
-
 def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, queryWord1, queryCosine, quadrant):
     sumFraction = 0
     maxValue = 1
@@ -286,17 +268,14 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
     N = len(wordList) + 1
     D = len(centroid)
 
-    if(queryWord1):
-        query = wordVectors[queryWord1]
-
     centroidSupport = sum([getSupport(centroid, r, queryWord0) for r in roleList])
-    # vectorSum = pd.concat([getVector(query, r) for r in roleList]).sum(level = 0)
-    querySupport = sum([getSupport(query, r, queryWord0) for r in roleList])
 
-    queryFraction = float(querySupport) / centroidSupport
-    sumFraction = sumFraction + queryFraction
-
-    q_x, q_y = ms.mapping([queryFraction, queryCosine, 1 - min(queryFraction, queryCosine)], quadrant)
+    if queryWord1:
+        query = wordVectors[queryWord1]
+        querySupport = sum([getSupport(query, r, queryWord0) for r in roleList])
+        queryFraction = float(querySupport) / centroidSupport
+        sumFraction = sumFraction + queryFraction
+        q_x, q_y = ms.mapping([queryFraction, queryCosine, 1 - min(queryFraction, queryCosine)], quadrant)
 
     wordList.reverse()
 
@@ -337,7 +316,7 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
     for w in wordList:
 
         # Apply mapping to each word
-        if w == queryWord1:
+        if queryWord1 and w == queryWord1:
             # Apply mapping to second query word
             q_x, q_y = ms.mapping([wordSumFractions[w], wordCosines[w], maxValue], quadrant)
         else:
@@ -452,7 +431,6 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
     }
 
     if queryWord1:
-
         q_x, q_y = ms.mapping([qx0, qy0, queryCosine, minCosine, maxVal], quadrant)
 
         result['queried'] = {
