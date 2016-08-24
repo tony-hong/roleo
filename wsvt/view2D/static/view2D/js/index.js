@@ -16,7 +16,7 @@ window.onload = function() {
   $('#select_model').change(function () {
     var currentModel = $('#select_model option:selected').val()
     if(currentModel == "TypeDM"){
-      showWarningLabel()
+      showWarningLabel('#label_warning', 'Time-consuming using TypeDM. Better with Top N<30')
     }
     fillRoleList(currentModel)
     chageMappingList(currentModel)
@@ -159,11 +159,10 @@ function submitQuery() {
   });
 }
 
-function showWarningLabel () {
-  var msg = 'Time-consuming using TypeDM. Better with Top N<20'; 
-  $('#label_warning').text(msg);
+function showWarningLabel (label, msg) {
+  $(label).text(msg);
   setTimeout(function (){
-    $('#label_warning').text('');
+    $(label).text('');
   }, 5000);
 }
 
@@ -334,8 +333,8 @@ function addSlider() {
     slide: function(event, ui){
       $('#slider_val').text(ui.value)
       var currentModel = $('#select_model option:selected').val()
-      if(currentModel == "TypeDM" && ui.value > 20){
-        showWarningLabel()
+      if(currentModel == "TypeDM" && ui.value > 30){
+        showWarningLabel('#label_warning', 'Time-consuming using TypeDM. Better with Top N<30')
       }
     }
   });
