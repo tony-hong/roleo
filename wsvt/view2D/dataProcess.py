@@ -375,12 +375,47 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
         i = wordDict[w]
         M[i] = B[i]
 
-    # subtract the mean of target matrix
-    meanVals = np.mean(M, axis=0)
-    M = M - meanVals
+    
+    n_neighbors = N - 1
+    from sklearn import (manifold, datasets, decomposition, ensemble,
+                     discriminant_analysis, random_projection)
 
-    # perform SVD
-    U, sigma, V = np.linalg.svd(M, full_matrices=False, compute_uv=True)
+    if quadrant == -1 or quadrant == -2:
+        # SVD
+        # # subtract the mean of target matrix
+        meanVals = np.mean(M, axis=0)
+        M = M - meanVals
+        # perform SVD
+        U, sigma, V = np.linalg.svd(M, full_matrices=False, compute_uv=True)
+
+    elif quadrant == -3 or quadrant == -4:
+        # isomap, best clusters
+        U = manifold.Isomap(n_neighbors, n_components=2).fit_transform(M)
+
+    elif quadrant == -5 or quadrant == -6:
+        # Local Tangent Space Alignment (ltsa), 
+        clf = manifold.LocallyLinearEmbedding(n_neighbors, n_components=2, method='ltsa')
+        U = clf.fit_transform(M)
+
+    elif quadrant == -7 or quadrant == -8:
+        # MDS, circle like structure
+        clf = manifold.MDS(n_components=2, n_init=1, max_iter=100)
+        U = clf.fit_transform(M)
+        
+    elif quadrant == -9 or quadrant == -10:
+        # use precomputed cosine distances to speed up t-SNE, restrict the iteration to 200
+        tsne = manifold.TSNE(random_state = 0, n_iter=200, metric='precomputed')
+
+        cosine_dists = np.around(1.0 - cosines, decimals=8)
+
+        U = tsne.fit_transform(cosine_dists)
+        print U
+
+    else:
+        # Spectral Embedding, bad
+        embedder = manifold.SpectralEmbedding(n_components=2, random_state=0, eigen_solver="arpack")
+        U = embedder.fit_transform(M)
+
 
 
 
