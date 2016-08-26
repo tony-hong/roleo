@@ -14,13 +14,13 @@ def mapping(parameters, quadrant = 4):
         return mapping_nq(parameters[0], parameters[1], parameters[2], quadrant)
     # elif quadrant == 0:
     #     return mapping_sc(parameters[0], parameters[1], parameters[2])
-    elif quadrant == -2:
+    elif quadrant < 0 and quadrant % 2 == 1:
         x = parameters[0]
         y = parameters[1]
         cos = parameters[2]
         minCos = parameters[3]
         return mapping_svd_cosine(x, y, cos, minCos)
-    elif quadrant == -1:
+    elif quadrant < 0 and quadrant % 2 == 0:
         x = parameters[0]
         y = parameters[1]
         maxVal = parameters[4]
