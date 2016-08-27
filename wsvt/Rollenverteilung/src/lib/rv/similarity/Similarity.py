@@ -13,7 +13,7 @@ def ecu(centroid, vec, item, relations):
 
 def ecu_dist(series1, series2):
     """
-    takes two pandas Series and finds the euclidean distance between them,
+    Takes two pandas Series and finds the euclidean distance between them,
     even if they aren't aligned (it aligns them).
     """
     A, B = series1.align(series2)
@@ -24,7 +24,7 @@ def ecu_dist(series1, series2):
 
 def cosine_sim(vector1, vector2):
     """
-    takes two pandas Series and finds the cosine between them,
+    Takes two pandas Series or numpy array and finds the cosine between them,
     even if they aren't aligned (it aligns them).
     """
     if isinstance(vector1, pd.Series):

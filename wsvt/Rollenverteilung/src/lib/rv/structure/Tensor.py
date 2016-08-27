@@ -241,7 +241,7 @@ class Matricisation:
         return (membervectors, topmembers)
 
     def getMemberList(self, target, targetcol, membercol, criteria={}, topN=20, labelconverter=None, wordfilter=lambda x: True):
-        """Get the pre-centroid from the matricized tensor. The 'target' is the thing you want the centroid for. 
+        """Get the pre-centroid list from the matricized tensor. The 'target' is the thing you want the centroid for. 
         Modifier: Tony Hong
         The 'targetcol' is the name of the column (should be a matrix store already registered with the constructor).
         The 'membercol' is the place where you want to look up the 'members' of the centroid.
