@@ -29,13 +29,12 @@ def cosine_sim(vector1, vector2):
     """
     if isinstance(vector1, pd.Series):
         A, B = vector1.align(vector2)
-        A = A.fillna(0).values
-        B = B.fillna(0).values
-        result = A.dot(B) / (norm(A) * norm(B))
+        A = A.fillna(0)
+        B = B.fillna(0)
     else:
         A = vector1
         B = vector2
-        result = A.dot(B) / (norm(A) * norm(B))
+    return A.dot(B)/(norm(A) * norm(B))
 
     return result
 
