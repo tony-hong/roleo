@@ -39,6 +39,10 @@ def cosine_sim(vector1, vector2):
     return result
 
 def sim_inv_mag(M):
+    '''
+    Compute similarity matrix and the inverse of the magnitude on its diagonal for vectors.
+    The 'M' is a matrix containing input vectors.    
+    '''
     # base similarity matrix (all dot products)
     # replace this with A.dot(A.T).todense() for sparse representation
     similarity = np.dot(M, M.T)
@@ -55,6 +59,11 @@ def sim_inv_mag(M):
 
 
 def cosine_sim_mat(M):
+    '''
+    Compute cosine similarity matrix for vectors.
+    The 'M' is a matrix containing input vectors.
+    The return is a cosine similarity matrix containing similarities between all input vectors. The indices are the same with input.
+    '''
     similarity, inv_mag = sim_inv_mag(M)
 
     # cosine similarity (elementwise multiply by inverse magnitudes)
@@ -64,6 +73,11 @@ def cosine_sim_mat(M):
     return cosine
 
 def cosine_sim_mat_n(M):
+    '''
+    Compute cosine similarity matrix and normalisation for vectors
+    The 'M' is a matrix containing input vectors.
+    The return is a cosine similarity matrix containing similarities between all input vectors. The indices are the same with input.
+    '''
     similarity, inv_mag = sim_inv_mag(M)
 
     # cosine similarity (elementwise multiply by inverse magnitudes)
