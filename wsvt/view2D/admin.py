@@ -8,5 +8,9 @@
 from django.contrib import admin
 
 from .models import SemanticRole
+# from .models import SemanticModel
 
 admin.site.register(SemanticRole)
+
+# TODO: The hook for change model function
+# admin.site.register(SemanticModel)
