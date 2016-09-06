@@ -19,8 +19,10 @@ import math
 
 import numpy as np
 import pandas as pd
+from sklearn import (manifold, datasets, decomposition, ensemble,
+                         discriminant_analysis, random_projection)
 
-from rv.similarity.Similarity import cosine_sim, cosine_sim_mat_n
+from rv.similarity.Similarity import cosine_sim, cosine_sim_mat, mat_n
 
 import errorCode as errorCode
 import mappingSelector as ms
@@ -265,7 +267,7 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
     wordSumFractions = dict()
     wordCosines = dict()
 
-    N = len(wordList) + 1
+    N = len(wordList)
     D = len(centroid)
 
     centroidSupport = sum([getSupport(centroid, r, queryWord0) for r in roleList])
@@ -279,7 +281,7 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
 
     wordList.reverse()
 
-    A = np.zeros((N, D))
+    A = np.zeros((N + 1, D))
     i = 0
 
     # Obtain all supports and compute the sum support
@@ -288,7 +290,9 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
 
         v = (wordVectors[w]).align(centroid)[0]
         v.fillna(0, inplace=True)
-        A[i] = v.values
+        a = v.values
+        a = a / np.sqrt(np.square(a).sum())
+        A[i] = a 
         i = i + 1
 
         support = sum([getSupport(v, r, queryWord0) for r in roleList])
@@ -303,11 +307,13 @@ def fraction_cosine(wordList, wordVectors, roleList, centroid, queryWord0, query
         # wordCosine = cosine_sim(centroid, v)
         # wordCosines[w] = wordCosine
 
-    A[N - 1] = centroid
-    cosines, B = cosine_sim_mat_n(A)
+    centroidVec = sum(A) / N
+    A[N] = centroidVec
+
+    cosines = cosine_sim_mat(A)
     i = 0
     for w in wordList:
-        wordCosines[w] = cosines[N - 1][i]
+        wordCosines[w] = cosines[N][i]
         i = i + 1
 
     # for auto-scaling 
@@ -353,6 +359,7 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
     keys = wordVectors.keys()
     N = len(keys)
     D = len(temp)
+    B = np.zeros((N, D))
     M = np.zeros((N, D))
     A = np.zeros((N + 1, D))
 
@@ -363,28 +370,33 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
     # Obtain all supports and compute the sum support 
     for w in keys:
         v = wordVectors[w]
-        A[index] = v
+        B[index] = v
         wordDict[w] = index
         index = index + 1
 
-    A[N] = centroid
-
-    cosines, B = cosine_sim_mat_n(A)
-
+    M = mat_n(B)
+    centroid = sum(M) / N
+    
     for w in keys:
         i = wordDict[w]
-        M[i] = B[i]
+        A[i] = M[i]
+    A[N] = centroid
 
+    cosines = cosine_sim_mat(A)
+
+    # import cPickle
+    # print "\nSaving cPickle..."
+    # with open("vectors.pcl", 'wb') as f:
+    #     cPickle.dump(M, f, cPickle.HIGHEST_PROTOCOL)
     
     n_neighbors = N - 1
-    from sklearn import (manifold, datasets, decomposition, ensemble,
-                     discriminant_analysis, random_projection)
 
     if quadrant == -1 or quadrant == -2:
         # SVD
-        # # subtract the mean of target matrix
-        meanVals = np.mean(M, axis=0)
-        M = M - meanVals
+
+        # subtract the centroid of target matrix
+        M = M - centroid
+
         # perform SVD
         U, sigma, V = np.linalg.svd(M, full_matrices=False, compute_uv=True)
 
@@ -406,10 +418,10 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
         # use precomputed cosine distances to speed up t-SNE, restrict the iteration to 200
         tsne = manifold.TSNE(random_state = 0, n_iter=200, metric='precomputed')
 
-        cosine_dists = np.around(1.0 - cosines, decimals=8)
+        cosine_dists = np.arccos(cosines) / math.pi
+        print cosine_dists
 
-        U = tsne.fit_transform(cosine_dists)
-        print U
+        U = tsne.fit_transform(np.around(cosine_dists, decimals=8))
 
     else:
         # Spectral Embedding, bad
@@ -442,8 +454,10 @@ def svd_cosine(wordList, wordVectors, centroid, queryWord1, queryCosine, quadran
     if queryWord1:
         i = wordDict[queryWord1]
         
-        # only consider top 2         
+        # only consider top 2
         qx0, qy0 = U[i][0], U[i][1]
+        queryCosine = cosines[N][i]
+
         r = math.sqrt(qx0 * qx0 + qy0 * qy0)
         maxVal = r if (r > maxVal) else maxVal
 
