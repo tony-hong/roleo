@@ -306,7 +306,7 @@ function downloadImage() {
   if(typeof(Storage) !== "undefined") {
     // restore previous query history
     var histories = JSON.parse(sessionStorage.searchHistory)
-    var index = histories.length - 1
+    var index = $('#select_history option:selected').val()
     var lastQuery = histories[index]
 
     var text = getStringFromHistory(lastQuery)
