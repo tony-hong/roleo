@@ -5,8 +5,11 @@ import sys
 import numpy as np
 import pandas as pd
 
-from numpy.linalg import norm
+# from numpy.linalg import norm
 
+
+def norm(v):
+    return np.sqrt(np.square(v).sum())
 
 def ecu(centroid, vec, item, relations):
     pass
@@ -29,12 +32,13 @@ def cosine_sim(vector1, vector2):
     """
     if isinstance(vector1, pd.Series):
         A, B = vector1.align(vector2)
-        A = A.fillna(0)
-        B = B.fillna(0)
+        A = A.fillna(0).values
+        B = B.fillna(0).values
+        result = A.dot(B) / (norm(A) * norm(B))
     else:
         A = vector1
         B = vector2
-    return A.dot(B)/(norm(A) * norm(B))
+        result = A.dot(B) / (norm(A) * norm(B))
 
     return result
 
@@ -72,22 +76,13 @@ def cosine_sim_mat(M):
 
     return cosine
 
-def cosine_sim_mat_n(M):
-    '''
-    Compute cosine similarity matrix and normalisation for vectors
-    The 'M' is a matrix containing input vectors.
-    The return is a cosine similarity matrix containing similarities between all input vectors. The indices are the same with input.
-    '''
-    similarity, inv_mag = sim_inv_mag(M)
-
-    # cosine similarity (elementwise multiply by inverse magnitudes)
-    cosine = similarity * inv_mag
-    cosine = cosine.T * inv_mag
+def mat_n(M):
+    _, inv_mag = sim_inv_mag(M)
 
     # normalize all vectors
     B = M * inv_mag.reshape(len(inv_mag), 1)
 
-    return cosine, B
+    return B
 
 
 def vector_sum(vecs, level=None):

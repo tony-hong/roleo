@@ -20,13 +20,14 @@ def read_pcl_file(path):
     '''
     f = open(path, 'r')
     result = pickle.load(f)
+    f.close()
     return result
 
 def get_file_dict(container, file_dir, sp_filetype=''):
     result = dict()
-    if type(container) == type({}):
+    if type(container) == type(dict()):
         filenames = container.itervalues()
-    elif type(container) == type([]):
+    elif type(container) == type(list()):
         filenames = container
     else:
         return result
@@ -57,7 +58,7 @@ def get_text_dict(file_dict):
 
 def get_pcl_dict(file_dict):
     '''
-    set up text dict from pcl file dict
+    set up text dict from file dict
     '''
     result = dict()
     for k, v in file_dict.iteritems():

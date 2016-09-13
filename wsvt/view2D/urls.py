@@ -14,6 +14,5 @@ urlpatterns = [
     url(r'^query/', views.query, name='query'),
     # The url hook for change model function 
     url(r'^errorCodeJSON/', views.errorCodeJSON, name='errorCodeJSON'),
-    url(r'^roleDictJSON/', views.roleDictJSON, name='roleDictJSON'),
-    
+    url(r'^roleDictJSON/', views.roleDictJSON, name='roleDictJSON'),    
 ]

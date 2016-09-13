@@ -217,7 +217,7 @@ class Matricisation:
         self.indices = {}
 
     def getMemberVectors(self, target, targetcol, membercol, criteria={}, topN=20, labelconverter=None, wordfilter=lambda x: True):
-        """Get the pre-centroid from the matricized tensor. The 'target' is the thing you want the centroid for. 
+        """Get the pre-centroid vectors from the matricized tensor. The 'target' is the thing you want the centroid for. 
         The 'targetcol' is the name of the column (should be a matrix store already registered with the constructor).
         The 'membercol' is the place where you want to look up the 'members' of the centroid.
         The 'lengthstore' is a LengthStore as above and provides the lengths as a DataFrame.
@@ -233,7 +233,9 @@ class Matricisation:
         membervectors = []
         for x in topmembers:
             try:
-                membervectors.append(self.stores[membercol][x][x])
+                v = self.stores[membercol][x][x]
+                # v = v / np.sqrt(np.square(v).sum())
+                membervectors.append(v)
             except KeyError:
                 print >>sys.stderr, "missing", x, "in column for", target
         #membertable = reduce(lambda x, y: x.join(y, how="outer"), membervectors[1:], membervectors[0])
@@ -241,8 +243,9 @@ class Matricisation:
         return (membervectors, topmembers)
 
     def getMemberList(self, target, targetcol, membercol, criteria={}, topN=20, labelconverter=None, wordfilter=lambda x: True):
-        """Get the pre-centroid list from the matricized tensor. The 'target' is the thing you want the centroid for. 
+        """Get the pre-centroid word list from the matricized tensor. Only return the list of words.
         Modifier: Tony Hong
+        The 'target' is the thing you want the centroid for. 
         The 'targetcol' is the name of the column (should be a matrix store already registered with the constructor).
         The 'membercol' is the place where you want to look up the 'members' of the centroid.
         The 'lengthstore' is a LengthStore as above and provides the lengths as a DataFrame.
@@ -284,10 +287,10 @@ class Matricisation:
         # relevantnorms.sort(ascending=False)
         # Hint: FutureWarning: sort is deprecated, use sort_values(inplace=True) for INPLACE sorting
         relevantnorms.sort_values(inplace=True, ascending=False)
-                
+        
         # get the top members.
         topmembers = [x for x in relevantnorms.index.tolist() if wordfilter(x)][:topN]
- 
+
         return topmembers
 
     def getCentroid(self, target, targetcol, membercol, criteria={}, topN=20, labelconverter=None, wordfilter=lambda x: True):
@@ -302,6 +305,7 @@ class Matricisation:
 
         membervectors = self.getMemberVectors(target, targetcol, membercol, criteria, topN, labelconverter, wordfilter=wordfilter)
 
+        # TODO: not normalized, should be
         # transpose the new matrix and sum the columns. This is the centroid.
         return pd.concat(membervectors[0]).sum(level=[0,1])
 
@@ -346,7 +350,9 @@ class Matricisation:
         """Returns a single row from one of the matricisations."""
         cache = self.stores[rowname]
         try:
-            return cache[rowval].T.sum()
+            v = cache[rowval].T.sum()
+            # v = v / np.sqrt(np.square(v).sum())
+            return v
         except KeyError:
             return pd.DataFrame().sum()
 
